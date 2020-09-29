@@ -113,7 +113,7 @@ class GCNRelationModel(nn.Module):
         maxlen = max(l)
 
         def inputs_to_tree_reps(head, words, l, prune, subj_pos, obj_pos, weights):
-            head, words, subj_pos, obj_pos, weights = head.cpu().numpy(), words.cpu().numpy(), subj_pos.cpu().numpy(), obj_pos.cpu().numpy(), weights.cup().numpy()
+            head, words, subj_pos, obj_pos, weights = head.cpu().numpy(), words.cpu().numpy(), subj_pos.cpu().numpy(), obj_pos.cpu().numpy(), weights.cpu().numpy()
             trees = [head_to_tree(head[i], words[i], l[i], prune, subj_pos[i], obj_pos[i], weights[i]) for i in range(len(l))]
             adj = [tree_to_adj(maxlen, tree, directed=False, self_loop=False).reshape(1, maxlen, maxlen) for tree in trees]
             adj = np.concatenate(adj, axis=0)
