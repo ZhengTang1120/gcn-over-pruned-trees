@@ -140,21 +140,13 @@ class GCNRelationModel(nn.Module):
         pool_type = self.opt['pooling']
         denom = adj.sum(2).unsqueeze(2) + 1
         pool_mask = (adj.sum(2) + adj.sum(1)).eq(0).unsqueeze(2)
-        print (adj.sum(1))
-        print ("---------")
-        print (adj.sum(2))
         d_mask  = (adj.sum(1)).eq(0)
         deprel  = self.deprel_emb(deprel)
         deprel  = deprel.masked_fill(d_mask.unsqueeze(2), 0)
         query   = pool(h, pool_mask, type=pool_type)
         weights = self.attn(deprel, d_mask, query)
 
-        print (adj.size())
-        print (weights.size())
-        print (adj[0])
-        print (weights[0])
-        adj = adj * weights
-        print (adj[0])
+        adj = adj * weights[:, :, None]
         adj = adj + adj.transpose(1, 2)
 
         exit()
