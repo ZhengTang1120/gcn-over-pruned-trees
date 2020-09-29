@@ -142,8 +142,8 @@ class GCNRelationModel(nn.Module):
         # gcn layer
         denom = adj.sum(2).unsqueeze(2) + 1
         pool_mask = (adj.sum(2) + adj.sum(1)).eq(0).unsqueeze(2)
-        print (adj.sum(1))
         print (adj.sum(2))
+        print (h.size())
         print (pool_mask.size())
         d_mask  = (adj.sum(1)).eq(0).unsqueeze(2)
         print (d_mask.size())
