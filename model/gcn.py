@@ -146,7 +146,7 @@ class GCNRelationModel(nn.Module):
         query   = pool(h, pool_mask, type=pool_type)
         weights = self.attn(deprel, d_mask, query)
 
-        adj = adj * weights[:, :, None]
+        adj = adj * weights.unsqueeze(2)
         adj = adj + adj.transpose(1, 2)
 
         exit()
