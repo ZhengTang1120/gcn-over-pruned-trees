@@ -14,10 +14,10 @@ class Tree(object):
         self.num_children = 0
         self.children = list()
 
-    def add_child(self,child,weight):
+    def add_child(self,child):
         child.parent = self
         self.num_children += 1
-        self.children.append((child, weights))
+        self.children.append(child)
 
     def size(self):
         if getattr(self,'_size'):
@@ -47,7 +47,7 @@ class Tree(object):
             for x in c:
                 yield x
 
-def head_to_tree(head, tokens, len_, prune, subj_pos, obj_pos, weights):
+def head_to_tree(head, tokens, len_, prune, subj_pos, obj_pos):
     """
     Convert a sequence of head indexes into a tree object.
     """
@@ -65,7 +65,7 @@ def head_to_tree(head, tokens, len_, prune, subj_pos, obj_pos, weights):
             if h == 0:
                 root = nodes[i]
             else:
-                nodes[h-1].add_child(nodes[i], weights[i])
+                nodes[h-1].add_child(nodes[i])
     else:
         # find dependency path
         subj_pos = [i for i in range(len_) if subj_pos[i] == 0]
@@ -143,7 +143,7 @@ def head_to_tree(head, tokens, len_, prune, subj_pos, obj_pos, weights):
             nodes[i].dist = dist[i]
             if h > 0 and i != highest_node:
                 assert nodes[h-1] is not None
-                nodes[h-1].add_child(nodes[i], weights[i])
+                nodes[h-1].add_child(nodes[i])
 
         root = nodes[highest_node]
 
@@ -163,8 +163,8 @@ def tree_to_adj(sent_len, tree, directed=True, self_loop=False):
 
         idx += [t.idx]
 
-        for c, w in t.children:
-            ret[t.idx, c.idx] = w
+        for c in t.children:
+            ret[t.idx, c.idx] = 1
         queue += t.children
 
     if not directed:

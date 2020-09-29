@@ -63,11 +63,10 @@ class GCNRelationModel(nn.Module):
         self.in_drop = nn.Dropout(opt['input_dropout'])
         self.gcn_drop = nn.Dropout(opt['gcn_dropout'])
 
-        #attention layer
+        # deprel attention
         self.deprel_emb = nn.Embedding(len(constant.DEPREL_TO_ID), opt['deprel_dim'],
                     padding_idx=constant.PAD_ID)
-        self.attn = Attention(opt['deprel_dim'], self.in_dim*2)
-
+        self.attn = Attention(opt['deprel_dim'], self.in_dim)
 
         # gcn layer
         self.W = nn.ModuleList()
@@ -108,14 +107,14 @@ class GCNRelationModel(nn.Module):
             print("Finetune all embeddings.")
 
     def forward(self, inputs):
-        words, masks, pos, ner, deprel, d_masks, head, subj_pos, obj_pos, subj_type, obj_type = inputs # unpack
+        words, masks, pos, ner, deprel, head, subj_pos, obj_pos, subj_type, obj_type = inputs # unpack
         l = (masks.data.cpu().numpy() == 0).astype(np.int64).sum(1)
         maxlen = max(l)
 
-        def inputs_to_tree_reps(head, words, l, prune, subj_pos, obj_pos, weights):
-            head, words, subj_pos, obj_pos, weights = head.cpu().numpy(), words.cpu().numpy(), subj_pos.cpu().numpy(), obj_pos.cpu().numpy(), weights.cpu().numpy()
-            trees = [head_to_tree(head[i], words[i], l[i], prune, subj_pos[i], obj_pos[i], weights[i]) for i in range(len(l))]
-            adj = [tree_to_adj(maxlen, tree, directed=False, self_loop=False).reshape(1, maxlen, maxlen) for tree in trees]
+        def inputs_to_tree_reps(head, words, l, prune, subj_pos, obj_pos):
+            head, words, subj_pos, obj_pos = head.cpu().numpy(), words.cpu().numpy(), subj_pos.cpu().numpy(), obj_pos.cpu().numpy()
+            trees = [head_to_tree(head[i], words[i], l[i], prune, subj_pos[i], obj_pos[i]) for i in range(len(l))]
+            adj = [tree_to_adj(maxlen, tree, directed=True, self_loop=False).reshape(1, maxlen, maxlen) for tree in trees]
             adj = np.concatenate(adj, axis=0)
             adj = torch.from_numpy(adj)
             return Variable(adj.cuda()) if self.opt['cuda'] else Variable(adj)
@@ -134,21 +133,24 @@ class GCNRelationModel(nn.Module):
             h = self.rnn_drop(self.encode_with_rnn(embs, masks, words.size()[0]))
         else:
             h = embs
-        
-        pool_type = self.opt['pooling']
-        # pooling
-        subj_mask, obj_mask = subj_pos.eq(0).eq(0).unsqueeze(2), obj_pos.eq(0).eq(0).unsqueeze(2) # invert mask
-        subj_out = pool(h, subj_mask, type=pool_type)
-        obj_out = pool(h, obj_mask, type=pool_type)
-        query = torch.cat([subj_out, obj_out], dim=1)
-        deprel = self.deprel_emb(deprel)
-        weights = self.attn(deprel, d_masks, query)
 
-        adj = inputs_to_tree_reps(head.data, words.data, l, self.opt['prune_k'], subj_pos.data, obj_pos.data, weights)
+        adj = inputs_to_tree_reps(head.data, words.data, l, self.opt['prune_k'], subj_pos.data, obj_pos.data)
         
         # gcn layer
         denom = adj.sum(2).unsqueeze(2) + 1
         pool_mask = (adj.sum(2) + adj.sum(1)).eq(0).unsqueeze(2)
+
+        d_mask  = (adj.sum(1)).eq(0).unsqueeze(2)
+        deprel  = deprel.masked_fill(d_mask, constant.PAD_ID)
+        deprel  = self.deprel_emb(deprel)
+        query   = pool(h, pool_mask, type=pool_type)
+        weights = self.attn(deprel, d_mask, query)
+
+        print (adj.size())
+        print (weights.size())
+        adj = adj * weights
+        adj = adj + adj.transpose(1, 2)
+
         # zero out adj for ablation
         if self.opt.get('no_adj', False):
             adj = torch.zeros_like(adj)
@@ -162,7 +164,9 @@ class GCNRelationModel(nn.Module):
             gAxW = F.relu(AxW)
             h = self.gcn_drop(gAxW) if l < self.layers - 1 else gAxW
         
-        
+        # pooling
+        subj_mask, obj_mask = subj_pos.eq(0).eq(0).unsqueeze(2), obj_pos.eq(0).eq(0).unsqueeze(2) # invert mask
+        pool_type = self.opt['pooling']
         h_out = pool(h, pool_mask, type=pool_type)
         subj_out = pool(h, subj_mask, type=pool_type)
         obj_out = pool(h, obj_mask, type=pool_type)
@@ -170,52 +174,7 @@ class GCNRelationModel(nn.Module):
         outputs = self.out_mlp(outputs)
         return outputs, h_out
 
-class Attention(nn.Module):
-    """
-    A GCN layer with attention on deprel as edge weights.
-    """
-    
-    def __init__(self, input_size, query_size):
-        super(Attention, self).__init__()
-        self.input_size = input_size
-        self.query_size = query_size
-        # self.ulinear = nn.Linear(input_size, attn_size)
-        # self.vlinear = nn.Linear(query_size, attn_size, bias=False)
-        # self.tlinear = nn.Linear(attn_size, 1)
-        self.weight = nn.Parameter(torch.Tensor(input_size, query_size))
-        self.init_weights()
 
-    def init_weights(self):
-        # self.ulinear.weight.data.normal_(std=0.001)
-        # self.vlinear.weight.data.normal_(std=0.001)
-        # self.tlinear.weight.data.zero_() # use zero to give uniform attention at the beginning
-        self.weight.data.normal_(std=0.001)
-
-    def forward(self, x, x_mask, q):
-        """
-        x : batch_size * seq_len * input_size
-        q : batch_size * query_size
-        f : batch_size * seq_len * feature_size
-        """
-        batch_size, seq_len, _ = x.size()
-
-        # x_proj = self.ulinear(x.contiguous().view(-1, self.input_size)).view(
-        #     batch_size, seq_len, self.attn_size)
-        # q_proj = self.vlinear(q.view(-1, self.query_size)).contiguous().view(
-        #     batch_size, self.attn_size).unsqueeze(1).expand(
-        #         batch_size, seq_len, self.attn_size)
-        # projs = [x_proj, q_proj]
-        # scores = self.tlinear(torch.tanh(sum(projs)).view(-1, self.attn_size)).view(
-        #     batch_size, seq_len)
-
-        x_proj = torch.matmul(x, self.weight)
-        scores = torch.bmm(x_proj, q.view(batch_size, self.query_size, 1)).view(batch_size, seq_len)
-
-        # mask padding
-        scores.data.masked_fill_(x_mask.data, -float('inf'))
-        weights = F.softmax(scores, dim=1)
-
-        return weights
 
 def pool(h, mask, type='max'):
     if type == 'max':

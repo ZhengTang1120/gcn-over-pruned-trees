@@ -26,6 +26,7 @@ parser.add_argument('--vocab_dir', type=str, default='dataset/vocab')
 parser.add_argument('--emb_dim', type=int, default=300, help='Word embedding dimension.')
 parser.add_argument('--ner_dim', type=int, default=30, help='NER embedding dimension.')
 parser.add_argument('--pos_dim', type=int, default=30, help='POS embedding dimension.')
+parser.add_argument('--deprel_dim', type=int, default=100, help='Deprel embedding dimension.')
 parser.add_argument('--hidden_dim', type=int, default=200, help='RNN hidden state size.')
 parser.add_argument('--num_layers', type=int, default=2, help='Num of RNN layers.')
 parser.add_argument('--input_dropout', type=float, default=0.5, help='Input dropout rate.')
@@ -47,8 +48,6 @@ parser.add_argument('--no-rnn', dest='rnn', action='store_false', help='Do not u
 parser.add_argument('--rnn_hidden', type=int, default=200, help='RNN hidden state size.')
 parser.add_argument('--rnn_layers', type=int, default=1, help='Number of RNN layers.')
 parser.add_argument('--rnn_dropout', type=float, default=0.5, help='RNN dropout rate.')
-
-parser.add_argument('--deprel_dim', type=int, default=100, help='Deprel embedding dimension.')
 
 parser.add_argument('--lr', type=float, default=1.0, help='Applies to sgd and adagrad.')
 parser.add_argument('--lr_decay', type=float, default=0.9, help='Learning rate decay rate.')
