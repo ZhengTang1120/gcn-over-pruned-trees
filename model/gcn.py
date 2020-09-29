@@ -108,7 +108,7 @@ class GCNRelationModel(nn.Module):
             print("Finetune all embeddings.")
 
     def forward(self, inputs):
-        words, masks, pos, ner, deprel, head, subj_pos, obj_pos, subj_type, obj_type = inputs # unpack
+        words, masks, pos, ner, deprel, d_mask, head, subj_pos, obj_pos, subj_type, obj_type = inputs # unpack
         l = (masks.data.cpu().numpy() == 0).astype(np.int64).sum(1)
         maxlen = max(l)
 
@@ -137,7 +137,8 @@ class GCNRelationModel(nn.Module):
         
         pool_type = self.opt['pooling']
         query = pool(outputs, e_masks.unsqueeze(2), type=pool_type)
-        weights = self.attn(deprel, d_masks, h_out)
+        deprel = self.deprel_emb(deprel)
+        weights = self.attn(deprel, d_masks, query)
 
         adj = inputs_to_tree_reps(head.data, words.data, l, self.opt['prune_k'], subj_pos.data, obj_pos.data, weights)
         
