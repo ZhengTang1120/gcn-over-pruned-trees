@@ -139,6 +139,7 @@ class GCNRelationModel(nn.Module):
         # gcn layer
         pool_type = self.opt['pooling']
         denom = adj.sum(2).unsqueeze(2) + 1
+        pool_mask = (adj.sum(2) + adj.sum(1)).eq(0).unsqueeze(2)
         d_mask  = (adj.sum(1)).eq(0)
         deprel  = self.deprel_emb(deprel)
         deprel  = deprel.masked_fill(d_mask.unsqueeze(2), 0)
@@ -147,7 +148,6 @@ class GCNRelationModel(nn.Module):
 
         adj = adj * weights.unsqueeze(2)
         adj = adj + adj.transpose(1, 2)
-        pool_mask = (adj.sum(2) + adj.sum(1)).eq(0).unsqueeze(2)
 
         # zero out adj for ablation
         if self.opt.get('no_adj', False):
