@@ -136,7 +136,7 @@ class GCNRelationModel(nn.Module):
             h = embs
         
         pool_type = self.opt['pooling']
-        query = pool(outputs, e_masks.unsqueeze(2), type=pool_type)
+        query = pool(h, e_masks.unsqueeze(2), type=pool_type)
         deprel = self.deprel_emb(deprel)
         weights = self.attn(deprel, d_masks, query)
 
