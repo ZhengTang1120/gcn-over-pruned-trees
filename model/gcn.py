@@ -141,7 +141,9 @@ class GCNRelationModel(nn.Module):
         denom = adj.sum(2).unsqueeze(2) + 1
         pool_mask = (adj.sum(2) + adj.sum(1)).eq(0).unsqueeze(2)
         print (adj.sum(1))
-        d_mask  = (adj.sum(1)).eq(0).unsqueeze(2)
+        print ("---------")
+        print (adj.sum(2))
+        d_mask  = (adj.sum(1)).eq(0)
         deprel  = self.deprel_emb(deprel)
         deprel  = deprel.masked_fill(d_mask, 0)
         query   = pool(h, pool_mask, type=pool_type)
