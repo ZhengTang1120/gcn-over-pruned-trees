@@ -38,11 +38,7 @@ class GCNRelationModel(nn.Module):
         self.emb = nn.Embedding(opt['vocab_size'], opt['emb_dim'], padding_idx=constant.PAD_ID)
         self.pos_emb = nn.Embedding(len(constant.POS_TO_ID), opt['pos_dim']) if opt['pos_dim'] > 0 else None
         self.ner_emb = nn.Embedding(len(constant.NER_TO_ID), opt['ner_dim']) if opt['ner_dim'] > 0 else None
-        embeddings = (self.emb, self.pos_emb, self.ner_emb)
         self.init_embeddings()
-
-        # gcn layer
-        self.gcn = GCN(opt, embeddings, opt['hidden_dim'], opt['num_layers'])
 
         # output mlp layers
         in_dim = opt['hidden_dim']*3
@@ -51,60 +47,10 @@ class GCNRelationModel(nn.Module):
             layers += [nn.Linear(opt['hidden_dim'], opt['hidden_dim']), nn.ReLU()]
         self.out_mlp = nn.Sequential(*layers)
 
-    def init_embeddings(self):
-        if self.emb_matrix is None:
-            self.emb.weight.data[1:,:].uniform_(-1.0, 1.0)
-        else:
-            self.emb_matrix = torch.from_numpy(self.emb_matrix)
-            self.emb.weight.data.copy_(self.emb_matrix)
-        # decide finetuning
-        if self.opt['topn'] <= 0:
-            print("Do not finetune word embedding layer.")
-            self.emb.weight.requires_grad = False
-        elif self.opt['topn'] < self.opt['vocab_size']:
-            print("Finetune top {} word embeddings.".format(self.opt['topn']))
-            self.emb.weight.register_hook(lambda x: \
-                    torch_utils.keep_partial_grad(x, self.opt['topn']))
-        else:
-            print("Finetune all embeddings.")
-
-    def forward(self, inputs):
-        words, masks, pos, ner, deprel, head, subj_pos, obj_pos, subj_type, obj_type = inputs # unpack
-        l = (masks.data.cpu().numpy() == 0).astype(np.int64).sum(1)
-        maxlen = max(l)
-
-        def inputs_to_tree_reps(head, words, l, prune, subj_pos, obj_pos):
-            head, words, subj_pos, obj_pos = head.cpu().numpy(), words.cpu().numpy(), subj_pos.cpu().numpy(), obj_pos.cpu().numpy()
-            trees = [head_to_tree(head[i], words[i], l[i], prune, subj_pos[i], obj_pos[i]) for i in range(len(l))]
-            adj = [tree_to_adj(maxlen, tree, directed=False, self_loop=False).reshape(1, maxlen, maxlen) for tree in trees]
-            adj = np.concatenate(adj, axis=0)
-            adj = torch.from_numpy(adj)
-            return Variable(adj.cuda()) if self.opt['cuda'] else Variable(adj)
-
-        adj = inputs_to_tree_reps(head.data, words.data, l, self.opt['prune_k'], subj_pos.data, obj_pos.data)
-        h, pool_mask = self.gcn(adj, inputs)
-        
-        # pooling
-        subj_mask, obj_mask = subj_pos.eq(0).eq(0).unsqueeze(2), obj_pos.eq(0).eq(0).unsqueeze(2) # invert mask
-        pool_type = self.opt['pooling']
-        h_out = pool(h, pool_mask, type=pool_type)
-        subj_out = pool(h, subj_mask, type=pool_type)
-        obj_out = pool(h, obj_mask, type=pool_type)
-        outputs = torch.cat([h_out, subj_out, obj_out], dim=1)
-        outputs = self.out_mlp(outputs)
-        return outputs, h_out
-
-class GCN(nn.Module):
-    """ A GCN/Contextualized GCN module operated on dependency graphs. """
-    def __init__(self, opt, embeddings, mem_dim, num_layers):
-        super(GCN, self).__init__()
-        self.opt = opt
-        self.layers = num_layers
+        self.layers = opt['num_layers']
         self.use_cuda = opt['cuda']
-        self.mem_dim = mem_dim
+        self.mem_dim = opt['hidden_dim']
         self.in_dim = opt['emb_dim'] + opt['pos_dim'] + opt['ner_dim']
-
-        self.emb, self.pos_emb, self.ner_emb = embeddings
 
         # rnn layer
         if self.opt.get('rnn', False):
@@ -138,8 +84,36 @@ class GCN(nn.Module):
         rnn_outputs, _ = nn.utils.rnn.pad_packed_sequence(rnn_outputs, batch_first=True)
         return rnn_outputs
 
-    def forward(self, adj, inputs):
+    def init_embeddings(self):
+        if self.emb_matrix is None:
+            self.emb.weight.data[1:,:].uniform_(-1.0, 1.0)
+        else:
+            self.emb_matrix = torch.from_numpy(self.emb_matrix)
+            self.emb.weight.data.copy_(self.emb_matrix)
+        # decide finetuning
+        if self.opt['topn'] <= 0:
+            print("Do not finetune word embedding layer.")
+            self.emb.weight.requires_grad = False
+        elif self.opt['topn'] < self.opt['vocab_size']:
+            print("Finetune top {} word embeddings.".format(self.opt['topn']))
+            self.emb.weight.register_hook(lambda x: \
+                    torch_utils.keep_partial_grad(x, self.opt['topn']))
+        else:
+            print("Finetune all embeddings.")
+
+    def forward(self, inputs):
         words, masks, pos, ner, deprel, head, subj_pos, obj_pos, subj_type, obj_type = inputs # unpack
+        l = (masks.data.cpu().numpy() == 0).astype(np.int64).sum(1)
+        maxlen = max(l)
+
+        def inputs_to_tree_reps(head, words, l, prune, subj_pos, obj_pos):
+            head, words, subj_pos, obj_pos = head.cpu().numpy(), words.cpu().numpy(), subj_pos.cpu().numpy(), obj_pos.cpu().numpy()
+            trees = [head_to_tree(head[i], words[i], l[i], prune, subj_pos[i], obj_pos[i]) for i in range(len(l))]
+            adj = [tree_to_adj(maxlen, tree, directed=False, self_loop=False).reshape(1, maxlen, maxlen) for tree in trees]
+            adj = np.concatenate(adj, axis=0)
+            adj = torch.from_numpy(adj)
+            return Variable(adj.cuda()) if self.opt['cuda'] else Variable(adj)
+
         word_embs = self.emb(words)
         embs = [word_embs]
         if self.opt['pos_dim'] > 0:
@@ -151,27 +125,39 @@ class GCN(nn.Module):
 
         # rnn layer
         if self.opt.get('rnn', False):
-            gcn_inputs = self.rnn_drop(self.encode_with_rnn(embs, masks, words.size()[0]))
+            h = self.rnn_drop(self.encode_with_rnn(embs, masks, words.size()[0]))
         else:
-            gcn_inputs = embs
+            h = embs
+
+        adj = inputs_to_tree_reps(head.data, words.data, l, self.opt['prune_k'], subj_pos.data, obj_pos.data)
         
         # gcn layer
         denom = adj.sum(2).unsqueeze(2) + 1
-        mask = (adj.sum(2) + adj.sum(1)).eq(0).unsqueeze(2)
+        pool_mask = (adj.sum(2) + adj.sum(1)).eq(0).unsqueeze(2)
         # zero out adj for ablation
         if self.opt.get('no_adj', False):
             adj = torch.zeros_like(adj)
 
         for l in range(self.layers):
-            Ax = adj.bmm(gcn_inputs)
+            Ax = adj.bmm(h)
             AxW = self.W[l](Ax)
-            AxW = AxW + self.W[l](gcn_inputs) # self loop
+            AxW = AxW + self.W[l](h) # self loop
             AxW = AxW / denom
 
             gAxW = F.relu(AxW)
-            gcn_inputs = self.gcn_drop(gAxW) if l < self.layers - 1 else gAxW
+            h = self.gcn_drop(gAxW) if l < self.layers - 1 else gAxW
+        
+        # pooling
+        subj_mask, obj_mask = subj_pos.eq(0).eq(0).unsqueeze(2), obj_pos.eq(0).eq(0).unsqueeze(2) # invert mask
+        pool_type = self.opt['pooling']
+        h_out = pool(h, pool_mask, type=pool_type)
+        subj_out = pool(h, subj_mask, type=pool_type)
+        obj_out = pool(h, obj_mask, type=pool_type)
+        outputs = torch.cat([h_out, subj_out, obj_out], dim=1)
+        outputs = self.out_mlp(outputs)
+        return outputs, h_out
 
-        return gcn_inputs, mask
+
 
 def pool(h, mask, type='max'):
     if type == 'max':
