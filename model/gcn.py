@@ -137,9 +137,10 @@ class GCNRelationModel(nn.Module):
         adj = inputs_to_tree_reps(head.data, words.data, l, self.opt['prune_k'], subj_pos.data, obj_pos.data)
         torch.set_printoptions(profile="full")
         # gcn layer
+        pool_type = self.opt['pooling']
         denom = adj.sum(2).unsqueeze(2) + 1
         pool_mask = (adj.sum(2) + adj.sum(1)).eq(0).unsqueeze(2)
-        print (adj.sum(2))
+        print (adj.sum(1))
         d_mask  = (adj.sum(1)).eq(0).unsqueeze(2)
         deprel  = self.deprel_emb(deprel)
         deprel  = deprel.masked_fill(d_mask, 0)
@@ -171,7 +172,6 @@ class GCNRelationModel(nn.Module):
         
         # pooling
         subj_mask, obj_mask = subj_pos.eq(0).eq(0).unsqueeze(2), obj_pos.eq(0).eq(0).unsqueeze(2) # invert mask
-        pool_type = self.opt['pooling']
         h_out = pool(h, pool_mask, type=pool_type)
         subj_out = pool(h, subj_mask, type=pool_type)
         obj_out = pool(h, obj_mask, type=pool_type)
