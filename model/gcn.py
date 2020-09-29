@@ -136,19 +136,13 @@ class GCNRelationModel(nn.Module):
 
         adj = inputs_to_tree_reps(head.data, words.data, l, self.opt['prune_k'], subj_pos.data, obj_pos.data)
         torch.set_printoptions(profile="full")
-        print (adj.size())
-        print (deprel.size())
-        print (words.size())
         # gcn layer
         denom = adj.sum(2).unsqueeze(2) + 1
         pool_mask = (adj.sum(2) + adj.sum(1)).eq(0).unsqueeze(2)
         print (adj.sum(2))
-        print (h.size())
-        print (pool_mask.size())
         d_mask  = (adj.sum(1)).eq(0).unsqueeze(2)
-        print (d_mask.size())
-        deprel  = deprel.masked_fill(d_mask, constant.PAD_ID)
         deprel  = self.deprel_emb(deprel)
+        deprel  = deprel.masked_fill(d_mask, 0)
         query   = pool(h, pool_mask, type=pool_type)
         weights = self.attn(deprel, d_mask, query)
 
