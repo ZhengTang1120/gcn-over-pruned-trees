@@ -66,7 +66,7 @@ class GCNRelationModel(nn.Module):
         #attention layer
         self.deprel_emb = nn.Embedding(len(constant.DEPREL_TO_ID), opt['deprel_dim'],
                     padding_idx=constant.PAD_ID)
-        self.attn = Attention(opt['deprel_dim'], self.in_dim)
+        self.attn = Attention(opt['deprel_dim'], self.in_dim*2)
 
 
         # gcn layer
@@ -136,7 +136,11 @@ class GCNRelationModel(nn.Module):
             h = embs
         
         pool_type = self.opt['pooling']
-        query = pool(h, masks, type=pool_type)
+        # pooling
+        subj_mask, obj_mask = subj_pos.eq(0).eq(0).unsqueeze(2), obj_pos.eq(0).eq(0).unsqueeze(2) # invert mask
+        subj_out = pool(h, subj_mask, type=pool_type)
+        obj_out = pool(h, obj_mask, type=pool_type)
+        query = torch.cat([subj_out, obj_out], dim=1)
         deprel = self.deprel_emb(deprel)
         weights = self.attn(deprel, d_masks, query)
 
@@ -158,8 +162,7 @@ class GCNRelationModel(nn.Module):
             gAxW = F.relu(AxW)
             h = self.gcn_drop(gAxW) if l < self.layers - 1 else gAxW
         
-        # pooling
-        subj_mask, obj_mask = subj_pos.eq(0).eq(0).unsqueeze(2), obj_pos.eq(0).eq(0).unsqueeze(2) # invert mask
+        
         h_out = pool(h, pool_mask, type=pool_type)
         subj_out = pool(h, subj_mask, type=pool_type)
         obj_out = pool(h, obj_mask, type=pool_type)
