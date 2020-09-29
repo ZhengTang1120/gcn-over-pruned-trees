@@ -135,7 +135,9 @@ class GCNRelationModel(nn.Module):
             h = embs
 
         adj = inputs_to_tree_reps(head.data, words.data, l, self.opt['prune_k'], subj_pos.data, obj_pos.data)
-        
+        print (adj.size())
+        print (deprel.size())
+        print (words.size())
         # gcn layer
         denom = adj.sum(2).unsqueeze(2) + 1
         pool_mask = (adj.sum(2) + adj.sum(1)).eq(0).unsqueeze(2)
