@@ -140,24 +140,22 @@ class GCNRelationModel(nn.Module):
         pool_type = self.opt['pooling']
         denom = adj.sum(2).unsqueeze(2) + 1
         pool_mask = (adj.sum(2) + adj.sum(1)).eq(0).unsqueeze(2)
-        # d_mask  = (adj.sum(1)).eq(0)
-        # print (words[0])
-        # print (d_mask[0])
-        # print (pool_mask[0])
-        # exit()
-        # deprel  = self.deprel_emb(deprel)
-        # query   = pool(h, pool_mask, type=pool_type)
-        # weights = self.attn(deprel, d_mask, query)
-
-        # adj = adj * weights.unsqueeze(2)
-        adj = adj + adj.transpose(1, 2)
+        d_mask  = (adj.sum(1)).eq(0)
+        deprel  = self.deprel_emb(deprel)
+        
 
         # zero out adj for ablation
         if self.opt.get('no_adj', False):
             adj = torch.zeros_like(adj)
 
         for l in range(self.layers):
-            Ax = adj.bmm(h)
+            query   = pool(h, pool_mask, type=pool_type)
+            weights = self.attn(deprel, d_mask, query)
+
+            adj2 = adj * weights.unsqueeze(2)
+            adj2 = adj2 + adj2.transpose(1, 2)
+
+            Ax = adj2.bmm(h)
             AxW = self.W[l](Ax)
             AxW = AxW + self.W[l](h) # self loop
             AxW = AxW / denom
