@@ -72,8 +72,9 @@ class GCNRelationModel(nn.Module):
         self.W = nn.ModuleList()
 
         for layer in range(self.layers):
-            input_dim = self.in_dim if layer == 0 else self.mem_dim
-            self.W.append(nn.Linear(input_dim, self.mem_dim))
+            self.W.append(nn.Linear(self.in_dim, self.in_dim))
+
+        self.final = nn.Linear(self.in_dim, self.mem_dim)
 
     def conv_l2(self):
         conv_weights = []
@@ -162,6 +163,8 @@ class GCNRelationModel(nn.Module):
 
             gAxW = F.relu(AxW)
             h = self.gcn_drop(gAxW) if l < self.layers - 1 else gAxW
+
+        h = self.final(h)
         
         # pooling
         subj_mask, obj_mask = subj_pos.eq(0).eq(0).unsqueeze(2), obj_pos.eq(0).eq(0).unsqueeze(2) # invert mask
