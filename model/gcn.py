@@ -66,15 +66,14 @@ class GCNRelationModel(nn.Module):
         # deprel attention
         self.deprel_emb = nn.Embedding(len(constant.DEPREL_TO_ID), opt['deprel_dim'],
                     padding_idx=constant.PAD_ID)
-        self.attn = Attention(opt['deprel_dim'], self.in_dim)
+        self.attn = Attention(opt['deprel_dim'], self.mem_dim)
 
         # gcn layer
         self.W = nn.ModuleList()
 
-        for layer in range(self.layers):
-            self.W.append(nn.Linear(self.in_dim, self.in_dim))
-
-        self.final = nn.Linear(self.in_dim, self.mem_dim)
+        for layer in range(self.layers+1):
+            input_dim = self.in_dim if layer == 0 else self.mem_dim
+            self.W.append(nn.Linear(input_dim, self.mem_dim))
 
     def conv_l2(self):
         conv_weights = []
@@ -150,11 +149,14 @@ class GCNRelationModel(nn.Module):
             adj = torch.zeros_like(adj)
 
         for l in range(self.layers):
-            query   = pool(h, pool_mask, type=pool_type)
-            weights = self.attn(deprel, d_mask, query)
+            if l == 0:
+                adj2 = adj + adj.transpose(1, 2)
+            else:
+                query   = pool(h, pool_mask, type=pool_type)
+                weights = self.attn(deprel, d_mask, query)
 
-            adj2 = adj * weights.unsqueeze(2)
-            adj2 = adj2 + adj2.transpose(1, 2)
+                adj2 = adj * weights.unsqueeze(2)
+                adj2 = adj2 + adj2.transpose(1, 2)
 
             Ax = adj2.bmm(h)
             AxW = self.W[l](Ax)
@@ -163,8 +165,6 @@ class GCNRelationModel(nn.Module):
 
             gAxW = F.relu(AxW)
             h = self.gcn_drop(gAxW) if l < self.layers - 1 else gAxW
-
-        h = self.final(h)
         
         # pooling
         subj_mask, obj_mask = subj_pos.eq(0).eq(0).unsqueeze(2), obj_pos.eq(0).eq(0).unsqueeze(2) # invert mask
