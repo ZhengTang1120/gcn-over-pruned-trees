@@ -162,7 +162,7 @@ class GCNRelationModel(nn.Module):
         AxW = AxW / denom
 
         gAxW = F.relu(AxW)
-        h = self.gcn_drop(gAxW) if l < self.layers - 1 else gAxW
+        h = self.gcn_drop(gAxW)# if l < self.layers - 1 else gAxW
         
         # pooling
         subj_mask, obj_mask = subj_pos.eq(0).eq(0).unsqueeze(2), obj_pos.eq(0).eq(0).unsqueeze(2) # invert mask
