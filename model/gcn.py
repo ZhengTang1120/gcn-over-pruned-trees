@@ -66,14 +66,15 @@ class GCNRelationModel(nn.Module):
         # deprel attention
         self.deprel_emb = nn.Embedding(len(constant.DEPREL_TO_ID), opt['deprel_dim'],
                     padding_idx=constant.PAD_ID)
-        self.attn = Attention(opt['deprel_dim'], self.mem_dim)
 
         # gcn layer
         self.W = nn.ModuleList()
+        self.attns = nn.ModuleList()
 
-        for layer in range(self.layers+1):
+        for layer in range(self.layers):
             input_dim = self.in_dim if layer == 0 else self.mem_dim
             self.W.append(nn.Linear(input_dim, self.mem_dim))
+            self.attns.append(Attention(opt['deprel_dim'], input_dim))
 
     def conv_l2(self):
         conv_weights = []
@@ -149,16 +150,13 @@ class GCNRelationModel(nn.Module):
             adj = torch.zeros_like(adj)
 
         for l in range(self.layers):
-            if l == 0:
-                adj2 = adj + adj.transpose(1, 2)
-            else:
-                query   = pool(h, pool_mask, type=pool_type)
-                weights = self.attn(deprel, d_mask, query)
+            query   = pool(h, pool_mask, type=pool_type)
+            weights = self.attns[l](deprel, d_mask, query)
 
-                adj2 = adj * weights.unsqueeze(2)
-                adj2 = adj2 + adj2.transpose(1, 2)
+            adj = adj * weights.unsqueeze(2)
+            adj = adj + adj.transpose(1, 2)
 
-            Ax = adj2.bmm(h)
+            Ax = adj.bmm(h)
             AxW = self.W[l](Ax)
             AxW = AxW + self.W[l](h) # self loop
             AxW = AxW / denom
