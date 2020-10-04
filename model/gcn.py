@@ -72,7 +72,7 @@ class GCNRelationModel(nn.Module):
         # self.attns = nn.ModuleList()
 
         # for layer in range(self.layers):
-        input_dim = self.in_dim if layer == 0 else self.mem_dim
+        input_dim = self.in_dim #if layer == 0 else self.mem_dim
         self.W = nn.Linear(input_dim, self.mem_dim)
         self.attn = Attention(opt['deprel_dim'], input_dim)
 
