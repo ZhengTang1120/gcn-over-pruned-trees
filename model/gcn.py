@@ -158,8 +158,8 @@ class GCNRelationModel(nn.Module):
 
         Ax = adj.bmm(h)
         AxW = self.W(Ax)
-        AxW = AxW + self.W(h) # self loop
-        AxW = AxW / denom
+        AxW = AxW + self.W(h) / denom # self loop
+        # AxW = AxW
 
         gAxW = F.relu(AxW)
         h = self.gcn_drop(gAxW)# if l < self.layers - 1 else gAxW
