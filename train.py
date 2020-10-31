@@ -26,7 +26,6 @@ parser.add_argument('--vocab_dir', type=str, default='dataset/vocab')
 parser.add_argument('--emb_dim', type=int, default=300, help='Word embedding dimension.')
 parser.add_argument('--ner_dim', type=int, default=30, help='NER embedding dimension.')
 parser.add_argument('--pos_dim', type=int, default=30, help='POS embedding dimension.')
-parser.add_argument('--deprel_dim', type=int, default=100, help='Deprel embedding dimension.')
 parser.add_argument('--hidden_dim', type=int, default=200, help='RNN hidden state size.')
 parser.add_argument('--num_layers', type=int, default=2, help='Num of RNN layers.')
 parser.add_argument('--input_dropout', type=float, default=0.5, help='Input dropout rate.')
@@ -186,4 +185,3 @@ for epoch in range(1, opt['num_epoch']+1):
     print("")
 
 print("Training ended with {} epochs.".format(epoch))
-
