@@ -151,11 +151,10 @@ class GCN(nn.Module):
 
         # rnn layer
         if self.opt.get('rnn', False):
-            gcn_inputs = self.rnn_drop(self.encode_with_rnn(embs, masks, words.size()[0]))
+            rnn_outputs = self.encode_with_rnn(embs, masks, words.size()[0])
+            gcn_inputs = self.rnn_drop(rnn_outputs)
         else:
             gcn_inputs = embs
-
-        rnn_outputs = gcn_inputs
         
         # gcn layer
         denom = adj.sum(2).unsqueeze(2) + 1
