@@ -82,7 +82,7 @@ class GCNRelationModel(nn.Module):
             return Variable(adj.cuda()) if self.opt['cuda'] else Variable(adj)
 
         adj = inputs_to_tree_reps(head.data, words.data, l, self.opt['prune_k'], subj_pos.data, obj_pos.data)
-        h, pool_mask = self.gcn(adj, inputs)
+        h, pool_mask, rnn_outputs = self.gcn(adj, inputs)
         
         # pooling
         subj_mask, obj_mask = subj_pos.eq(0).eq(0).unsqueeze(2), obj_pos.eq(0).eq(0).unsqueeze(2) # invert mask
@@ -92,7 +92,7 @@ class GCNRelationModel(nn.Module):
         obj_out = pool(h, obj_mask, type=pool_type)
         outputs = torch.cat([h_out, subj_out, obj_out], dim=1)
         outputs = self.out_mlp(outputs)
-        return outputs, h_out
+        return outputs, h_out, rnn_outputs, torch.cat([subj_out, obj_out] , dim=1)
 
 class GCN(nn.Module):
     """ A GCN/Contextualized GCN module operated on dependency graphs. """
@@ -154,6 +154,8 @@ class GCN(nn.Module):
             gcn_inputs = self.rnn_drop(self.encode_with_rnn(embs, masks, words.size()[0]))
         else:
             gcn_inputs = embs
+
+        rnn_outputs = gcn_inputs
         
         # gcn layer
         denom = adj.sum(2).unsqueeze(2) + 1
@@ -171,7 +173,7 @@ class GCN(nn.Module):
             gAxW = F.relu(AxW)
             gcn_inputs = self.gcn_drop(gAxW) if l < self.layers - 1 else gAxW
 
-        return gcn_inputs, mask
+        return gcn_inputs, mask, rnn_outputs
 
 def pool(h, mask, type='max'):
     if type == 'max':
