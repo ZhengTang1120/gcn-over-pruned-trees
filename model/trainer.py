@@ -151,7 +151,7 @@ class GCNTrainer(Trainer):
             masks = inputs[1]
             output = Variable(torch.LongTensor([constant.SOS_ID] * batch_size)) # sos
             output = output.cuda() if self.opt['cuda'] else output
-            decoded = torch.zeros(80, batch_size)
+            decoded = torch.zeros(constant.MAX_RULE_LEN, batch_size)
             decoded[0] = output
             if self.opt['cuda']:
                     decoded = decoded.cuda()
