@@ -161,7 +161,7 @@ for epoch in range(1, opt['num_epoch']+1):
         dev_loss += loss
         if decoded is not None:
             batch_size = len(preds)
-            rules = batch.rule.view(batch_size, -1)
+            rules = batch[-1].view(batch_size, -1)
             for i in range(batch_size):
                 output = decoded.transpose(0, 1)[i]
                 reference = [[vocab.id2rule[int(r)] for r in rules[i].tolist()[1:] if r not in [0,3]]]
