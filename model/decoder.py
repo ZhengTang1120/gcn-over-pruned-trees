@@ -15,10 +15,10 @@ class Decoder(nn.Module):
         self.n_layers = opt['num_layers']
 
         self.embed = nn.Embedding(self.output_size, self.embed_size, padding_idx=constant.PAD_ID)
-        self.dropout = nn.Dropout(opt['dropout'], inplace=True)
+        self.dropout = nn.Dropout(opt['input_dropout'], inplace=True)
         self.attention = Attention(2 * self.hidden_size, self.embed_size + 2 * self.hidden_size)
         self.rnn = nn.LSTM(self.embed_size + 2 * self.hidden_size, self.hidden_size,
-                          self.n_layers, dropout=opt['dropout'])
+                          self.n_layers, dropout=opt['input_dropout'])
         self.out = nn.Linear(self.hidden_size, self.output_size)
 
     def forward(self, input, masks, last_hidden, encoder_outputs):
