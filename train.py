@@ -89,6 +89,7 @@ opt['num_class'] = len(label2id)
 vocab_file = opt['vocab_dir'] + '/vocab.pkl'
 vocab = Vocab(vocab_file, load=True)
 opt['vocab_size'] = vocab.size
+opt['rule_size'] = vocab.rule_size
 emb_file = opt['vocab_dir'] + '/embedding.npy'
 emb_matrix = np.load(emb_file)
 assert emb_matrix.shape[0] == vocab.size
