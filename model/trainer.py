@@ -74,8 +74,7 @@ class GCNTrainer(Trainer):
         self.classifier = GCNClassifier(opt, emb_matrix=emb_matrix)
         self.decoder = Decoder(opt)
         self.criterion = nn.CrossEntropyLoss()
-        self.parameters = [p for p in self.classifier.parameters() if p.requires_grad] 
-                        + [p for p in self.decoder.parameters() if p.requires_grad]
+        self.parameters = [p for p in self.classifier.parameters() if p.requires_grad] + [p for p in self.decoder.parameters() if p.requires_grad]
         if opt['cuda']:
             self.classifier.cuda()
             self.decoder.cuda()
