@@ -166,4 +166,4 @@ class GCNTrainer(Trainer):
                 decoded[t] = output
             return predictions, probs, decoded, loss.item()
         else:
-            return predictions, probs, loss.item()
+            return predictions, probs, None, loss.item()
