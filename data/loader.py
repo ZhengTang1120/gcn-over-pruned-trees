@@ -127,7 +127,7 @@ class DataLoader(object):
         rels = torch.LongTensor(batch[9])
 
         if len(batch) == 11:
-            rule = get_long_tensor(batch[10])
+            rule = get_long_tensor(batch[10], batch_size)
             return (words, masks, pos, ner, deprel, head, subj_positions, obj_positions, subj_type, obj_type, rels, orig_idx, rule)
         else:
             return (words, masks, pos, ner, deprel, head, subj_positions, obj_positions, subj_type, obj_type, rels, orig_idx)
