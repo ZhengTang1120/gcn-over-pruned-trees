@@ -24,9 +24,9 @@ class GCNClassifier(nn.Module):
         return self.gcn_model.gcn.conv_l2()
 
     def forward(self, inputs):
-        outputs, pooling_output = self.gcn_model(inputs)
+        outputs, pooling_output, encode_outputs, hidden = self.gcn_model(inputs)
         logits = self.classifier(outputs)
-        return logits, pooling_output
+        return logits, pooling_output, encode_outputs, hidden
 
 class GCNRelationModel(nn.Module):
     def __init__(self, opt, emb_matrix=None):
