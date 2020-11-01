@@ -52,7 +52,7 @@ class DataLoader(object):
         processed_rule = []
         with open(self.mappings) as f:
             mappings = f.readlines()
-        with open('tacred/rules.json') as f:
+        with open('dataset/tacred/rules.json') as f:
             rules = json.load(f)
         for d in data:
             tokens = list(d['token'])
