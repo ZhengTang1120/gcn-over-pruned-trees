@@ -100,7 +100,6 @@ class GCNTrainer(Trainer):
         # l2 penalty on output representations
         if self.opt.get('pooling_l2', 0) > 0:
             loss += self.opt['pooling_l2'] * (pooling_output ** 2).sum(1).mean()
-        loss_val = loss.item()
 
         # decoder
         if rules is not None:
@@ -123,7 +122,7 @@ class GCNTrainer(Trainer):
                 if self.opt['cuda']:
                     output = output.cuda()
             loss += loss_d
-
+        loss_val = loss.item()
         # backward
         loss.backward()
         torch.nn.utils.clip_grad_norm_(self.classifier.parameters(), self.opt['max_grad_norm'])
