@@ -54,7 +54,7 @@ class DataLoader(object):
             mappings = f.readlines()
         with open('dataset/tacred/rules.json') as f:
             rules = json.load(f)
-        for d in data:
+        for c, d in enumerate(data):
             tokens = list(d['token'])
             if opt['lower']:
                 tokens = [t.lower() for t in tokens]
