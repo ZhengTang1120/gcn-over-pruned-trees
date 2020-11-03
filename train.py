@@ -159,31 +159,31 @@ for epoch in range(1, opt['num_epoch']+1):
         preds, _, decoded, loss = trainer.predict(batch)
         predictions += preds
         dev_loss += loss
-        # if decoded is not None:
-        #     batch_size = len(preds)
-        #     rules = batch[-1].view(batch_size, -1)
-        #     for i in range(batch_size):
-        #         output = decoded.transpose(0, 1)[i]
-        #         reference = [[vocab.id2rule[int(r)] for r in rules[i].tolist()[1:] if r not in [0,3]]]
-        #         candidate = []
-        #         for r in output.tolist()[1:]:
-        #             if int(r) == 3:
-        #                 break
-        #             else:
-        #                 candidate.append(vocab.id2rule[int(r)])
-        #         # print (reference)
-        #         # print (candidate)
-        #         references.append(reference)
-        #         candidates.append(candidate)
+        if decoded is not None:
+            batch_size = len(preds)
+            rules = batch[-1].view(batch_size, -1)
+            for i in range(batch_size):
+                output = decoded.transpose(0, 1)[i]
+                reference = [[vocab.id2rule[int(r)] for r in rules[i].tolist()[1:] if r not in [0,3]]]
+                candidate = []
+                for r in output.tolist()[1:]:
+                    if int(r) == 3:
+                        break
+                    else:
+                        candidate.append(vocab.id2rule[int(r)])
+                # print (reference)
+                # print (candidate)
+                references.append(reference)
+                candidates.append(candidate)
 
     predictions = [id2label[p] for p in predictions]
     train_loss = train_loss / train_batch.num_examples * opt['batch_size'] # avg loss per batch
     dev_loss = dev_loss / dev_batch.num_examples * opt['batch_size']
 
     dev_p, dev_r, dev_f1 = scorer.score(dev_batch.gold(), predictions)
-    # bleu = corpus_bleu(references, candidates)
+    bleu = corpus_bleu(references, candidates)
     print("epoch {}: train_loss = {:.6f}, dev_loss = {:.6f}, dev_f1 = {:.4f}, bleu = {:.4f}".format(epoch,\
-        train_loss, dev_loss, dev_f1, 0))
+        train_loss, dev_loss, dev_f1, bleu))
     dev_score = dev_f1
     file_logger.log("{}\t{:.6f}\t{:.6f}\t{:.4f}\t{:.4f}".format(epoch, train_loss, dev_loss, dev_score, max([dev_score] + dev_score_history)))
 
