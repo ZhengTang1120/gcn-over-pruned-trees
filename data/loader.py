@@ -142,30 +142,3 @@ def word_dropout(tokens, dropout):
     return [constant.UNK_ID if x != constant.UNK_ID and np.random.random() < dropout \
             else x for x in tokens]
 
-cab[t] if t in vocab else constant.UNK_ID for t in tokens]
-    return ids
-
-def get_positions(start_idx, end_idx, length):
-    """ Get subj/obj position sequence. """
-    return list(range(-start_idx, 0)) + [0]*(end_idx - start_idx + 1) + \
-            list(range(1, length-end_idx))
-
-def get_long_tensor(tokens_list, batch_size):
-    """ Convert list of list of tokens to a padded LongTensor. """
-    token_len = max(len(x) for x in tokens_list)
-    tokens = torch.LongTensor(batch_size, token_len).fill_(constant.PAD_ID)
-    for i, s in enumerate(tokens_list):
-        tokens[i, :len(s)] = torch.LongTensor(s)
-    return tokens
-
-def sort_all(batch, lens):
-    """ Sort all fields by descending order of lens, and return the original indices. """
-    unsorted_all = [lens] + [range(len(lens))] + list(batch)
-    sorted_all = [list(t) for t in zip(*sorted(zip(*unsorted_all), reverse=True))]
-    return sorted_all[2:], sorted_all[1]
-
-def word_dropout(tokens, dropout):
-    """ Randomly dropout tokens (IDs) and replace them with <UNK> tokens. """
-    return [constant.UNK_ID if x != constant.UNK_ID and np.random.random() < dropout \
-            else x for x in tokens]
-
