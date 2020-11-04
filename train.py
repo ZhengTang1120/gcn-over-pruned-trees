@@ -96,8 +96,8 @@ assert emb_matrix.shape[1] == opt['emb_dim']
 
 # load data
 print("Loading data from {} with batch size {}...".format(opt['data_dir'], opt['batch_size']))
-train_batch = DataLoader(opt['data_dir'] + '/train.json', opt['batch_size'], opt, vocab, evaluation=False)
-dev_batch = DataLoader(opt['data_dir'] + '/dev.json', opt['batch_size'], opt, vocab, evaluation=True)
+train_batch = DataLoader(opt['data_dir'] + '/train.json', opt['batch_size'], opt, vocab, opt['data_dir'] + '/mappings_train.txt', evaluation=False)
+dev_batch = DataLoader(opt['data_dir'] + '/dev.json', opt['batch_size'], opt, vocab, opt['data_dir'] + '/mappings_dev.txt', evaluation=True)
 
 model_id = opt['id'] if len(opt['id']) > 1 else '0' + opt['id']
 model_save_dir = opt['save_dir'] + '/' + model_id
@@ -157,7 +157,9 @@ for epoch in range(1, opt['num_epoch']+1):
     predictions = [id2label[p] for p in predictions]
     train_loss = train_loss / train_batch.num_examples * opt['batch_size'] # avg loss per batch
     dev_loss = dev_loss / dev_batch.num_examples * opt['batch_size']
-    
+
+    dev_p1, dev_r1, dev_f11 = scorer.score(dev_batch.gold()[:dev_batch.num], predictions[:dev_batch.num])
+    dev_p2, dev_r2, dev_f12 = scorer.score(dev_batch.gold()[dev_batch.num:], predictions[dev_batch.num:])
     dev_p, dev_r, dev_f1 = scorer.score(dev_batch.gold(), predictions)
     print("epoch {}: train_loss = {:.6f}, dev_loss = {:.6f}, dev_f1 = {:.4f}".format(epoch,\
         train_loss, dev_loss, dev_f1))
