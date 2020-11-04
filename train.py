@@ -158,6 +158,8 @@ for epoch in range(1, opt['num_epoch']+1):
     train_loss = train_loss / train_batch.num_examples * opt['batch_size'] # avg loss per batch
     dev_loss = dev_loss / dev_batch.num_examples * opt['batch_size']
 
+    dev_p1, dev_r1, dev_f11 = scorer.score(dev_batch.gold()[:dev_batch.num], predictions[:dev_batch.num])
+    dev_p2, dev_r2, dev_f12 = scorer.score(dev_batch.gold()[dev_batch.num:], predictions[dev_batch.num:])
     dev_p, dev_r, dev_f1 = scorer.score(dev_batch.gold(), predictions)
     print("epoch {}: train_loss = {:.6f}, dev_loss = {:.6f}, dev_f1 = {:.4f}".format(epoch,\
         train_loss, dev_loss, dev_f1))
