@@ -53,16 +53,18 @@ label2id = constant.LABEL_TO_ID
 id2label = dict([(v,k) for k,v in label2id.items()])
 
 predictions = []
+references = []
+candidates = []
 all_probs = []
 batch_iter = tqdm(batch)
-for i, b in enumerate(batch_iter):
+for c, b in enumerate(batch_iter):
     preds, probs, decoded, loss = trainer.predict(b)
     predictions += preds
     all_probs += probs
 
     if decoded is not None:
         batch_size = len(preds)
-        rules = batch[-1].view(batch_size, -1)
+        rules = b[-1].view(batch_size, -1)
         for i in range(batch_size):
             output = decoded.transpose(0, 1)[i]
             reference = [[vocab.id2rule[int(r)] for r in rules[i].tolist()[1:] if r not in [0,3]]]
