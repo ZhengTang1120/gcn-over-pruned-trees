@@ -92,6 +92,7 @@ class GCNTrainer(Trainer):
         self.optimizer.zero_grad()
 
         # classifier
+        loss = 0
         logits, pooling_output, encoder_outputs, hidden = self.classifier(inputs)
         # loss = self.criterion(logits, labels)
         # # l2 decay on all conv layers
