@@ -92,7 +92,7 @@ class GCNRelationModel(nn.Module):
         obj_out = pool(h, obj_mask, type=pool_type)
         outputs = torch.cat([h_out, subj_out, obj_out], dim=1)
         outputs = self.out_mlp(outputs)
-        return outputs, h_out, rnn_outputs, torch.cat([subj_out, obj_out] , dim=1)
+        return outputs, h_out, h, torch.cat([subj_out, obj_out] , dim=1)
 
 class GCN(nn.Module):
     """ A GCN/Contextualized GCN module operated on dependency graphs. """
