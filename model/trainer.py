@@ -94,13 +94,13 @@ class GCNTrainer(Trainer):
         # classifier
         loss = 0
         logits, pooling_output, encoder_outputs, hidden = self.classifier(inputs)
-        # loss = self.criterion(logits, labels)
-        # # l2 decay on all conv layers
-        # if self.opt.get('conv_l2', 0) > 0:
-        #     loss += self.classifier.conv_l2() * self.opt['conv_l2']
-        # # l2 penalty on output representations
-        # if self.opt.get('pooling_l2', 0) > 0:
-        #     loss += self.opt['pooling_l2'] * (pooling_output ** 2).sum(1).mean()
+        loss = self.criterion(logits, labels)
+        # l2 decay on all conv layers
+        if self.opt.get('conv_l2', 0) > 0:
+            loss += self.classifier.conv_l2() * self.opt['conv_l2']
+        # l2 penalty on output representations
+        if self.opt.get('pooling_l2', 0) > 0:
+            loss += self.opt['pooling_l2'] * (pooling_output ** 2).sum(1).mean()
 
         # decoder
         if rules is not None:
