@@ -186,7 +186,7 @@ for epoch in range(1, opt['num_epoch']+1):
     bleu = corpus_bleu(references, candidates)
     print("epoch {}: train_loss = {:.6f}, dev_loss = {:.6f}, dev_f1 = {:.4f}, bleu = {:.4f}".format(epoch,\
         train_loss, dev_loss, dev_f1, bleu))
-    dev_score = dev_f1
+    dev_score = bleu
     file_logger.log("{}\t{:.6f}\t{:.6f}\t{:.4f}\t{:.4f}".format(epoch, train_loss, dev_loss, dev_score, max([dev_score] + dev_score_history)))
 
     # save
