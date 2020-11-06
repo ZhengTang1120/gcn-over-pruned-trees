@@ -80,8 +80,8 @@ class DataLoader(object):
                 rule = map_to_ids(rule, vocab.rule2id) 
                 rule = [constant.SOS_ID] + rule + [constant.EOS_ID]
                 processed_rule += [(tokens, pos, ner, deprel, head, subj_positions, obj_positions, subj_type, obj_type, relation, rule)]
-            else:
-                processed += [(tokens, pos, ner, deprel, head, subj_positions, obj_positions, subj_type, obj_type, relation)]
+            
+            processed += [(tokens, pos, ner, deprel, head, subj_positions, obj_positions, subj_type, obj_type, relation)]
         return processed, processed_rule
 
     def gold(self):
