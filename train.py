@@ -162,18 +162,19 @@ for epoch in range(1, opt['num_epoch']+1):
         batch_size = len(preds)
         rules = batch[-1].view(batch_size, -1)
         for i in range(batch_size):
-            output = decoded.transpose(0, 1)[i]
-            reference = [[vocab.id2rule[int(r)] for r in rules[i].tolist()[1:] if r not in [0,3]]]
-            candidate = []
-            for r in output.tolist()[1:]:
-                if int(r) == 3:
-                    break
-                else:
-                    candidate.append(vocab.id2rule[int(r)])
-            print (reference)
-            print (candidate)
-            references.append(reference)
-            candidates.append(candidate)
+            if id2label[preds[i]] != 'no_relation':
+                output = decoded.transpose(0, 1)[i]
+                reference = [[vocab.id2rule[int(r)] for r in rules[i].tolist()[1:] if r not in [0,3]]]
+                candidate = []
+                for r in output.tolist()[1:]:
+                    if int(r) == 3:
+                        break
+                    else:
+                        candidate.append(vocab.id2rule[int(r)])
+                # print (reference)
+                # print (candidate)
+                references.append(reference)
+                candidates.append(candidate)
 
     predictions = [id2label[p] for p in predictions]
     train_loss = train_loss / train_batch.num_examples * opt['batch_size'] # avg loss per batch
