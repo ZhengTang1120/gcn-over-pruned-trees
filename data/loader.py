@@ -24,7 +24,7 @@ class DataLoader(object):
         with open(filename) as infile:
             data = json.load(infile)
         self.raw_data = data
-        data, data_r = self.preprocess(data, vocab, opt)
+        data = self.preprocess(data, vocab, opt)
 
         # shuffle for training
         if not evaluation:
@@ -32,19 +32,14 @@ class DataLoader(object):
             random.shuffle(indices)
             data = [data[i] for i in indices]
 
-            indices = list(range(len(data_r)))
-            random.shuffle(indices)
-            data_r = [data_r[i] for i in indices]
 
         self.id2label = dict([(v,k) for k,v in self.label2id.items()])
-        self.labels = [self.id2label[d[-2]] for d in data_r] + [self.id2label[d[-1]] for d in data]
-        self.num_examples = len(data_r) + len(data)
-        self.num = len(data_r)
+        self.labels = [self.id2label[d[-1]] for d in data]
+        self.num_examples = len(data)
         
         # chunk into batches
         data = [data[i:i+batch_size] for i in range(0, len(data), batch_size)]
-        data_r = [data_r[i:i+batch_size] for i in range(0, len(data_r), batch_size)]
-        self.data = data_r + data
+        self.data = data
         print("{} batches created for {}".format(len(self.data), filename))
 
     def preprocess(self, data, vocab, opt):
@@ -80,10 +75,11 @@ class DataLoader(object):
                 rule = helper.word_tokenize(rules[eval(mappings[c])[0][1]])
                 rule = map_to_ids(rule, vocab.rule2id) 
                 rule = [constant.SOS_ID] + rule + [constant.EOS_ID]
-                processed_rule += [(tokens, pos, ner, deprel, head, subj_positions, obj_positions, subj_type, obj_type, relation, rule)]
-            
-            processed += [(tokens, pos, ner, deprel, head, subj_positions, obj_positions, subj_type, obj_type, relation)]
-        return processed, processed_rule
+            else:
+                rule = [constant.SOS_ID] + [constant.NIL_ID] + [constant.EOS_ID]
+
+            processed += [(tokens, pos, ner, deprel, head, subj_positions, obj_positions, subj_type, obj_type, relation, rule)]
+        return processed
 
     def gold(self):
         """ Return gold labels as a list. """
@@ -127,11 +123,9 @@ class DataLoader(object):
 
         rels = torch.LongTensor(batch[9])
 
-        if len(batch) == 11:
-            rule = get_long_tensor(batch[10], batch_size)
-            return (words, masks, pos, ner, deprel, head, subj_positions, obj_positions, subj_type, obj_type, rels, orig_idx, rule)
-        else:
-            return (words, masks, pos, ner, deprel, head, subj_positions, obj_positions, subj_type, obj_type, rels, orig_idx)
+        rule = get_long_tensor(batch[10], batch_size)
+        
+        return (words, masks, pos, ner, deprel, head, subj_positions, obj_positions, subj_type, obj_type, rels, orig_idx, rule)
 
     def __iter__(self):
         for i in range(self.__len__()):
