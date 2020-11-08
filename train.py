@@ -171,8 +171,8 @@ for epoch in range(1, opt['num_epoch']+1):
                         break
                     else:
                         candidate.append(vocab.id2rule[int(r)])
-                # print (reference)
-                # print (candidate)
+                print (reference)
+                print (candidate)
                 references.append(reference)
                 candidates.append(candidate)
 
