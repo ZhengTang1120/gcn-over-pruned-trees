@@ -75,7 +75,7 @@ for c, b in enumerate(batch_iter):
                     break
                 else:
                     candidate.append(vocab.id2rule[int(r)])
-            if len(reference[0])!=0
+            if len(reference[0])!=0:
                 print (reference)
                 print (candidate)
                 references.append(reference)
