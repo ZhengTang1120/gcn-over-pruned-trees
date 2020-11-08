@@ -103,6 +103,7 @@ class GCNTrainer(Trainer):
         # decoder
         batch_size = labels.size(0)
         rules = rules.view(batch_size, -1)
+        print (rules)
         masks = inputs[1]
         max_len = rules.size(1)
         rules = rules.transpose(1,0)
