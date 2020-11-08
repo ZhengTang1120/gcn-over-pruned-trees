@@ -75,10 +75,11 @@ for c, b in enumerate(batch_iter):
                     break
                 else:
                     candidate.append(vocab.id2rule[int(r)])
-            print (reference)
-            print (candidate)
-            references.append(reference)
-            candidates.append(candidate)
+            if len(reference[0])!=0
+                print (reference)
+                print (candidate)
+                references.append(reference)
+                candidates.append(candidate)
 
 predictions = [id2label[p] for p in predictions]
 p, r, f1 = scorer.score(batch.gold(), predictions, verbose=True)
