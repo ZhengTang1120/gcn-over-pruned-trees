@@ -62,22 +62,21 @@ for c, b in enumerate(batch_iter):
     predictions += preds
     all_probs += probs
 
-    if decoded is not None:
-        batch_size = len(preds)
-        rules = b[-1].view(batch_size, -1)
-        for i in range(batch_size):
-            output = decoded.transpose(0, 1)[i]
-            reference = [[vocab.id2rule[int(r)] for r in rules[i].tolist()[1:] if r not in [0,3]]]
-            candidate = []
-            for r in output.tolist()[1:]:
-                if int(r) == 3:
-                    break
-                else:
-                    candidate.append(vocab.id2rule[int(r)])
-            # print (reference)
-            # print (candidate)
-            references.append(reference)
-            candidates.append(candidate)
+    batch_size = len(preds)
+    rules = b[-1].view(batch_size, -1)
+    for i in range(batch_size):
+        output = decoded.transpose(0, 1)[i]
+        reference = [[vocab.id2rule[int(r)] for r in rules[i].tolist()[1:] if r not in [0,3]]]
+        candidate = []
+        for r in output.tolist()[1:]:
+            if int(r) == 3:
+                break
+            else:
+                candidate.append(vocab.id2rule[int(r)])
+        print (reference)
+        print (candidate)
+        references.append(reference)
+        candidates.append(candidate)
 
 predictions = [id2label[p] for p in predictions]
 p, r, f1 = scorer.score(batch.gold()[:batch.num], predictions[:batch.num], verbose=True)
