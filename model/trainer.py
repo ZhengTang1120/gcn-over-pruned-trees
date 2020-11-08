@@ -103,7 +103,6 @@ class GCNTrainer(Trainer):
         # decoder
         batch_size = labels.size(0)
         rules = rules.view(batch_size, -1)
-        print (rules)
         masks = inputs[1]
         max_len = rules.size(1)
         rules = rules.transpose(1,0)
@@ -120,7 +119,7 @@ class GCNTrainer(Trainer):
             output = rules.data[t]
             if self.opt['cuda']:
                 output = output.cuda()
-        loss += loss_d #loss_d/max_len if max_len != 0 else loss_d
+        loss += loss_d/max_len if max_len != 0 else loss_d
         loss_val = loss.item()
         # backward
         loss.backward()
