@@ -75,8 +75,8 @@ class DataLoader(object):
                 rule = helper.word_tokenize(rules[eval(mappings[c])[0][1]])
                 rule = map_to_ids(rule, vocab.rule2id) 
                 rule = [constant.SOS_ID] + rule + [constant.EOS_ID]
-            # else:
-            #     rule = []
+            else:
+                rule = []
 
                 processed += [(tokens, pos, ner, deprel, head, subj_positions, obj_positions, subj_type, obj_type, relation, rule)]
         return processed
