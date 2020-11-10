@@ -76,6 +76,8 @@ class DataLoader(object):
                     if eval(mappings[c])[0][0] in self.label2id:
                         relation = self.label2id[eval(mappings[c])[0][0]]
                         rule = helper.word_tokenize(rules[eval(mappings[c])[0][1]])
+                        print (tokens)
+                        print (rule)
                         for token in rule:
                             if token in tokens:
                                 print (token)
