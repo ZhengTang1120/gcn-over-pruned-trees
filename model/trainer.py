@@ -107,6 +107,7 @@ class GCNTrainer(Trainer):
         rules = rules.transpose(1,0)
         output = Variable(torch.LongTensor([constant.SOS_ID] * batch_size)) # sos
         output = output.cuda() if self.opt['cuda'] else output
+        loss_d = 0
         h0 = hidden.view(self.opt['num_layers'], batch_size, -1)
         c0 = hidden.view(self.opt['num_layers'], batch_size, -1)
         decoder_hidden = (h0, c0)
