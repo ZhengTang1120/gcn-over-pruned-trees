@@ -76,10 +76,8 @@ class DataLoader(object):
                     if eval(mappings[c])[0][0] in self.label2id:
                         relation = self.label2id[eval(mappings[c])[0][0]]
                         rule = helper.word_tokenize(rules[eval(mappings[c])[0][1]])
-                        print (tokens)
-                        print (rule)
                         for token in rule:
-                            if token in tokens:
+                            if token in list(d['token']):
                                 print (token)
                         rule = map_to_ids(rule, vocab.rule2id) 
                         rule = [constant.SOS_ID] + rule + [constant.EOS_ID]
