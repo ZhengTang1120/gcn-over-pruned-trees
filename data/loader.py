@@ -72,15 +72,24 @@ class DataLoader(object):
             obj_type = [constant.OBJ_NER_TO_ID[d['obj_type']]]
             relation = self.label2id[d['relation']]
             if 't_' in mappings[c] or 's_' in mappings[c]:
-                rule = helper.word_tokenize(rules[eval(mappings[c])[0][1]])
-                rule = map_to_ids(rule, vocab.rule2id) 
-                rule = [constant.SOS_ID] + rule + [constant.EOS_ID]
                 if not self.eval:
-                    relation = self.label2id[eval(mappings[c])[0][0]]
+                    if eval(mappings[c])[0][0] in self.label2id:
+                        relation = self.label2id[eval(mappings[c])[0][0]]
+                        rule = helper.word_tokenize(rules[eval(mappings[c])[0][1]])
+                        rule = map_to_ids(rule, vocab.rule2id) 
+                        rule = [constant.SOS_ID] + rule + [constant.EOS_ID]
+                    else:
+                        print (eval(mappings[c])[0][0])
+                        rule = []
+                else:
+                    rule = helper.word_tokenize(rules[eval(mappings[c])[0][1]])
+                    rule = map_to_ids(rule, vocab.rule2id) 
+                    rule = [constant.SOS_ID] + rule + [constant.EOS_ID]
             else:
                 rule = []
 
             processed += [(tokens, pos, ner, deprel, head, subj_positions, obj_positions, subj_type, obj_type, relation, rule)]
+        exit()
         return processed
 
     def gold(self):
