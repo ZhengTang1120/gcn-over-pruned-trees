@@ -90,15 +90,14 @@ class GCNTrainer(Trainer):
         self.optimizer.zero_grad()
 
         # classifier
-        loss = 0
         logits, pooling_output, encoder_outputs, hidden = self.classifier(inputs)
-        # loss = self.criterion(logits, labels)
-        # # l2 decay on all conv layers
-        # if self.opt.get('conv_l2', 0) > 0:
-        #     loss += self.classifier.conv_l2() * self.opt['conv_l2']
-        # # l2 penalty on output representations
-        # if self.opt.get('pooling_l2', 0) > 0:
-        #     loss += self.opt['pooling_l2'] * (pooling_output ** 2).sum(1).mean()
+        loss = self.criterion(logits, labels)
+        # l2 decay on all conv layers
+        if self.opt.get('conv_l2', 0) > 0:
+            loss += self.classifier.conv_l2() * self.opt['conv_l2']
+        # l2 penalty on output representations
+        if self.opt.get('pooling_l2', 0) > 0:
+            loss += self.opt['pooling_l2'] * (pooling_output ** 2).sum(1).mean()
 
         # decoder
         batch_size = labels.size(0)
@@ -108,7 +107,6 @@ class GCNTrainer(Trainer):
         rules = rules.transpose(1,0)
         output = Variable(torch.LongTensor([constant.SOS_ID] * batch_size)) # sos
         output = output.cuda() if self.opt['cuda'] else output
-        loss_d = 0
         h0 = hidden.view(self.opt['num_layers'], batch_size, -1)
         c0 = hidden.view(self.opt['num_layers'], batch_size, -1)
         decoder_hidden = (h0, c0)
