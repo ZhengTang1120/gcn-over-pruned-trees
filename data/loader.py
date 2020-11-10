@@ -76,6 +76,9 @@ class DataLoader(object):
                     if eval(mappings[c])[0][0] in self.label2id:
                         relation = self.label2id[eval(mappings[c])[0][0]]
                         rule = helper.word_tokenize(rules[eval(mappings[c])[0][1]])
+                        for token in rule:
+                            if token in tokens:
+                                print (token)
                         rule = map_to_ids(rule, vocab.rule2id) 
                         rule = [constant.SOS_ID] + rule + [constant.EOS_ID]
                     else:
@@ -88,6 +91,7 @@ class DataLoader(object):
                 rule = []
 
             processed += [(tokens, pos, ner, deprel, head, subj_positions, obj_positions, subj_type, obj_type, relation, rule)]
+        exit()
         return processed
 
     def gold(self):
