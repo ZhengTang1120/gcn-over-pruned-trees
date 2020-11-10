@@ -119,16 +119,13 @@ class GCNTrainer(Trainer):
             output = rules.data[t]
             if self.opt['cuda']:
                 output = output.cuda()
-        loss += loss_d
-        if loss != 0:
-            loss_val = loss.item()
-            # backward
-            loss.backward()
-            torch.nn.utils.clip_grad_norm_(self.classifier.parameters(), self.opt['max_grad_norm'])
-            torch.nn.utils.clip_grad_norm_(self.decoder.parameters(), self.opt['max_grad_norm'])
-            self.optimizer.step()
-        else:
-            loss_val = 0
+        loss += loss_d/50
+        loss_val = loss.item()
+        # backward
+        loss.backward()
+        torch.nn.utils.clip_grad_norm_(self.classifier.parameters(), self.opt['max_grad_norm'])
+        torch.nn.utils.clip_grad_norm_(self.decoder.parameters(), self.opt['max_grad_norm'])
+        self.optimizer.step()
         return loss_val
 
     def predict(self, batch, unsort=True):
