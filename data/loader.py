@@ -80,7 +80,21 @@ class DataLoader(object):
                 rule = map_to_ids_rule(rule, vocab, list(d['token'])) 
                 rule = [constant.SOS_ID] + rule + [constant.EOS_ID]                
 
+                print (helper.word_tokenize(rules[eval(mappings[c])[0][1]]))
+                temp = []
+                for r in rule[1:]:
+                    if int(r) == 3:
+                        break
+                    else:
+                        if int(r) < vocab.rule_size:
+                            rule.append(vocab.id2rule[int(r)])
+                        else:
+                            i = int(r) - vocab.rule_size
+                            rule.append(vocab.id2word[words[i]])
+                print (temp)
+                print ()
             processed += [(tokens, pos, ner, deprel, head, subj_positions, obj_positions, subj_type, obj_type, relation, rule, input_extend_vocab)]
+        exit()
         return processed
 
     def gold(self):
