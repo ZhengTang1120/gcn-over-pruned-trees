@@ -145,7 +145,7 @@ def map_to_ids(tokens, vocab):
 def map_to_ids_rule(tokens, vocab, input):
     ids = []
     for t in tokens:
-        if t in input:
+        if t in input and t.isalpha():
             ids += [vocab.rule_size + input.index(t)]
         elif t in vocab.rule2id:
             ids += [vocab.rule2id[t]]
