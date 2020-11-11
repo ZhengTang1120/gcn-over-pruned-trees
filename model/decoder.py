@@ -67,7 +67,7 @@ class Decoder(nn.Module):
                           self.n_layers, dropout=opt['input_dropout'])
         self.out = nn.Linear(self.hidden_size, self.output_size)
 
-        self.p_gen_linear = nn.Linear(self.embed_size + 3 * self.hidden_size, 1)
+        self.p_gen_linear = nn.Linear(self.embed_size + 2 * self.hidden_size, 1)
 
     def forward(self, input, masks, last_hidden, encoder_outputs, extend_vocab):
 
@@ -89,10 +89,6 @@ class Decoder(nn.Module):
         output = F.softmax(output, dim=1)
 
         #pointer generator
-        print (self.hidden_size, self.embed_size)
-        print (rnn_output.size())
-        print (context.squeeze(0).size())
-        print (embedded.squeeze(0).size())
         p_gen_input = torch.cat((rnn_output, context.squeeze(0), embedded.squeeze(0)), 1)
         p_gen = F.sigmoid(self.p_gen_linear(p_gen_input))
 
