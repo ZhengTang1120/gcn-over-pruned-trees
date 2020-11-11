@@ -94,6 +94,8 @@ class Decoder(nn.Module):
 
         output = p_gen * output
         attn_weights = (1 - p_gen) * attn_weights
+        print (attn_weights.size())
+        print (extend_vocab.size())
         final_output = output.scatter_add(1, extend_vocab, attn_weights)
 
         return final_output, hidden, attn_weights
