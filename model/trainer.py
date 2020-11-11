@@ -53,17 +53,19 @@ def unpack_batch(batch, cuda):
     if cuda:
         inputs = [Variable(b.cuda()) for b in batch[:10]]
         labels = Variable(batch[10].cuda())
-        rules  = Variable(batch[12]).cuda()
+        rules  = Variable(batch[12].cuda())
+        input_extend_vocab = Variable(batch[13].cuda())
     else:
         inputs = [Variable(b) for b in batch[:10]]
         labels = Variable(batch[10])
         rules  = Variable(batch[12])
+        input_extend_vocab = Variable(batch[13])
     tokens = batch[0]
     head = batch[5]
     subj_pos = batch[6]
     obj_pos = batch[7]
     lens = batch[1].eq(0).long().sum(1).squeeze()
-    return inputs, labels, rules, tokens, head, subj_pos, obj_pos, lens
+    return inputs, labels, rules, input_extend_vocab, tokens, head, subj_pos, obj_pos, lens
 
 class GCNTrainer(Trainer):
     def __init__(self, opt, emb_matrix=None):
@@ -82,7 +84,7 @@ class GCNTrainer(Trainer):
         self.optimizer = torch_utils.get_optimizer(opt['optim'], self.parameters, opt['lr'])
 
     def update(self, batch):
-        inputs, labels, rules, tokens, head, subj_pos, obj_pos, lens = unpack_batch(batch, self.opt['cuda'])
+        inputs, labels, rules, input_extend_vocab, tokens, head, subj_pos, obj_pos, lens = unpack_batch(batch, self.opt['cuda'])
 
         # step forward
         self.classifier.train()
@@ -113,7 +115,7 @@ class GCNTrainer(Trainer):
         decoder_hidden = (h0, c0)
         for t in range(1, max_len):
             output, decoder_hidden, attn_weights = self.decoder(
-                    output, masks, decoder_hidden, encoder_outputs)
+                    output, masks, decoder_hidden, encoder_outputs, input_extend_vocab)
             loss_d += self.criterion_d(output, rules[t])
             output = rules.data[t]
             if self.opt['cuda']:
@@ -128,7 +130,7 @@ class GCNTrainer(Trainer):
         return loss_val
 
     def predict(self, batch, unsort=True):
-        inputs, labels, rules, tokens, head, subj_pos, obj_pos, lens = unpack_batch(batch, self.opt['cuda'])
+        inputs, labels, rules, input_extend_vocab, tokens, head, subj_pos, obj_pos, lens = unpack_batch(batch, self.opt['cuda'])
         orig_idx = batch[11]
         # forward
         self.classifier.eval()
@@ -155,7 +157,7 @@ class GCNTrainer(Trainer):
         decoder_hidden = (h0, c0)
         for t in range(1, constant.MAX_RULE_LEN):
             output, decoder_hidden, attn_weights = self.decoder(
-                    output, masks, decoder_hidden, encoder_outputs)
+                    output, masks, decoder_hidden, encoder_outputs, input_extend_vocab)
             topv, topi = output.data.topk(1)
             output = topi.view(-1)
             decoded[t] = output

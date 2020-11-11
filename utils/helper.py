@@ -8,6 +8,19 @@ import json
 import argparse
 import re
 
+def parse_rule(ids, vocab, words):
+    rule = []
+    for r in ids.tolist()[1:]:
+        if int(r) == 3:
+            break
+        else:
+            if int(r) < vocab.rule_size:
+                rule.append(vocab.id2rule[int(r)])
+            else:
+                i = int(r) - vocab.rule_size
+                rule.append(vocab.id2word[words[i]])
+    return rule
+
 def word_tokenize(text):
     return re.findall(r"[\w]+|[^\w\s,]",text)
 

@@ -60,22 +60,24 @@ class Decoder(nn.Module):
         self.output_size = opt['rule_size']
         self.n_layers = opt['num_layers']
 
-        self.embed = nn.Embedding(self.output_size, self.embed_size, padding_idx=constant.PAD_ID)
+        self.embed = nn.Embedding(self.output_size+constant.MAX_SEN_LEN, self.embed_size, padding_idx=constant.PAD_ID)
         self.dropout = nn.Dropout(opt['input_dropout'], inplace=True)
         self.attention = Attention(self.hidden_size, self.embed_size + 2 * self.hidden_size)
         self.rnn = nn.LSTM(self.embed_size + self.hidden_size, self.hidden_size,
                           self.n_layers, dropout=opt['input_dropout'])
         self.out = nn.Linear(self.hidden_size, self.output_size)
 
-    def forward(self, input, masks, last_hidden, encoder_outputs):
+        self.p_gen_linear = nn.Linear(self.embed_size + 3 * self.hidden_size, 1)
+
+    def forward(self, input, masks, last_hidden, encoder_outputs, extend_vocab):
 
         # Get the embedding of the current input word (last output word)
-        embedded = self.embed(input).unsqueeze(0)  # (1,B,N)
+        embedded = self.embed(input)  # (B,N)
         embedded = self.dropout(embedded)
 
         batch_size = encoder_outputs.size(0)
         # Calculate attention weights and apply to encoder outputs
-        query = torch.cat((last_hidden[0].view(batch_size, -1), embedded.squeeze(0)), 1)
+        query = torch.cat((last_hidden[0].view(batch_size, -1), embedded), 1)
         attn_weights = self.attention(encoder_outputs, masks, query).view(batch_size, 1, -1)
         context = attn_weights.bmm(encoder_outputs)  # (B,1,N)
         context = context.transpose(0, 1)  # (1,B,N)
@@ -83,7 +85,19 @@ class Decoder(nn.Module):
         rnn_input = torch.cat([embedded, context], 2)
         output, hidden = self.rnn(rnn_input, last_hidden)
         output = output.squeeze(0)  # (1,B,N) -> (B,N)
-        # context = context.squeeze(0)
+        context = context.squeeze(0)
         output = self.out(output) #torch.cat([output, context], 1))
-        output = F.log_softmax(output, dim=1)
-        return output, hidden, attn_weights
+        output = F.softmax(output, dim=1)
+
+        #pointer generator
+        p_gen_input = torch.cat((output, context, embedded), 1)
+        p_gen = F.sigmoid(self.p_gen_linear(p_gen_input))
+
+        final_output = output.scatter_add(1, extend_vocab, attn_weights)
+
+        return final_output, hidden, attn_weights
+
+
+
+
+

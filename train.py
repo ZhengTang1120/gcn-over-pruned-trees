@@ -160,17 +160,12 @@ for epoch in range(1, opt['num_epoch']+1):
         predictions += preds
         dev_loss += loss
         batch_size = len(preds)
-        rules = batch[-1].view(batch_size, -1)
+        rules = batch[-2].view(batch_size, -1)
         for i in range(batch_size):
             if id2label[preds[i]] != 'no_relation':
                 output = decoded.transpose(0, 1)[i]
-                reference = [[vocab.id2rule[int(r)] for r in rules[i].tolist()[1:] if r not in [0,3]]]
-                candidate = []
-                for r in output.tolist()[1:]:
-                    if int(r) == 3:
-                        break
-                    else:
-                        candidate.append(vocab.id2rule[int(r)])
+                reference = helper.parse_rule(rules[i], vocab, batch[0].view(batch_size, -1)[i])
+                candidate = helper.parse_rule(output, vocab, batch[0].view(batch_size, -1)[i])
                 # print (reference)
                 # print (candidate)
                 references.append(reference)

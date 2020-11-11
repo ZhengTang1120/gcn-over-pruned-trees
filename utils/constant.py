@@ -33,3 +33,4 @@ LABEL_TO_ID = {'no_relation': 0, 'per:title': 1, 'org:top_members/employees': 2,
 
 INFINITY_NUMBER = 1e12
 MAX_RULE_LEN = 100
+MAX_SEN_LEN = 100

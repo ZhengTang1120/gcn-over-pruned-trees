@@ -71,27 +71,16 @@ class DataLoader(object):
             subj_type = [constant.SUBJ_NER_TO_ID[d['subj_type']]]
             obj_type = [constant.OBJ_NER_TO_ID[d['obj_type']]]
             relation = self.label2id[d['relation']]
+            input_extend_vocab = []
+            rule = []
             if 't_' in mappings[c] or 's_' in mappings[c]:
-                if not self.eval:
-                    if eval(mappings[c])[0][0] in self.label2id:
-                        relation = self.label2id[eval(mappings[c])[0][0]]
-                        rule = helper.word_tokenize(rules[eval(mappings[c])[0][1]])
-                        # for token in rule:
-                        #     if token in list(d['token']) and token.isalpha():
-                        #         print (token)
-                        rule = map_to_ids(rule, vocab.rule2id) 
-                        rule = [constant.SOS_ID] + rule + [constant.EOS_ID]
-                    else:
-                        rule = []
-                else:
-                    rule = helper.word_tokenize(rules[eval(mappings[c])[0][1]])
-                    rule = map_to_ids(rule, vocab.rule2id) 
-                    rule = [constant.SOS_ID] + rule + [constant.EOS_ID]
-            else:
-                rule = []
+                rule = helper.word_tokenize(rules[eval(mappings[c])[0][1]])
+                for token in list(d['token']):
+                    input_extend_vocab += [vocab.rule_size+list(d['token']).index(token)]
+                rule = map_to_ids_rule(rule, vocab, list(d['token'])) 
+                rule = [constant.SOS_ID] + rule + [constant.EOS_ID]                
 
-            processed += [(tokens, pos, ner, deprel, head, subj_positions, obj_positions, subj_type, obj_type, relation, rule)]
-        # exit()
+            processed += [(tokens, pos, ner, deprel, head, subj_positions, obj_positions, subj_type, obj_type, relation, rule, input_extend_vocab)]
         return processed
 
     def gold(self):
@@ -137,8 +126,10 @@ class DataLoader(object):
         rels = torch.LongTensor(batch[9])
 
         rule = get_long_tensor(batch[10], batch_size)
+
+        input_extend_vocab = get_long_tensor(batch[11], batch_size)
         
-        return (words, masks, pos, ner, deprel, head, subj_positions, obj_positions, subj_type, obj_type, rels, orig_idx, rule)
+        return (words, masks, pos, ner, deprel, head, subj_positions, obj_positions, subj_type, obj_type, rels, orig_idx, rule, input_extend_vocab)
 
     def __iter__(self):
         for i in range(self.__len__()):
@@ -146,6 +137,17 @@ class DataLoader(object):
 
 def map_to_ids(tokens, vocab):
     ids = [vocab[t] if t in vocab else constant.UNK_ID for t in tokens]
+    return ids
+
+def map_to_ids_rule(tokens, vocab, input):
+    ids = []
+    for t in tokens:
+        if t in input:
+            ids += [vocab.rule_size + input.index(t)]
+        elif t in vocab.rule2id:
+            ids += [vocab.rule2id[t]]
+        else:
+            ids += [constant.UNK_ID]
     return ids
 
 def get_positions(start_idx, end_idx, length):
