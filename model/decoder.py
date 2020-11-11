@@ -91,9 +91,11 @@ class Decoder(nn.Module):
         #pointer generator
         p_gen_input = torch.cat((rnn_output, context.squeeze(0), embedded.squeeze(0)), 1)
         p_gen = F.sigmoid(self.p_gen_linear(p_gen_input))
-
+        print (output.size())
+        print (attn_weights.size())
         output = p_gen * output
         attn_weights = (1 - p_gen) * attn_weights
+        print (output.size())
         print (attn_weights.size())
         print (extend_vocab.size())
         final_output = output.scatter_add(1, extend_vocab, attn_weights)
