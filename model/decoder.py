@@ -89,12 +89,15 @@ class Decoder(nn.Module):
         output = F.softmax(output, dim=1)
 
         #pointer generator
+        print (self.hidden_size, self.embed_size)
         print (rnn_output.size())
         print (context.squeeze(0).size())
         print (embedded.squeeze(0).size())
         p_gen_input = torch.cat((rnn_output, context.squeeze(0), embedded.squeeze(0)), 1)
         p_gen = F.sigmoid(self.p_gen_linear(p_gen_input))
 
+        output = p_gen * output
+        attn_weights = (1 - p_gen) * attn_weights
         final_output = output.scatter_add(1, extend_vocab, attn_weights)
 
         return final_output, hidden, attn_weights
