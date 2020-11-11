@@ -167,6 +167,8 @@ for epoch in range(1, opt['num_epoch']+1):
                 reference = [helper.parse_rule(rules[i], vocab, batch[0].view(batch_size, -1)[i])]
                 candidate = helper.parse_rule(output, vocab, batch[0].view(batch_size, -1)[i])
                 if len(reference[0])!=0:
+                    print(reference[0])
+                    print (candidate)
                     references.append(reference)
                     candidates.append(candidate)
 
@@ -178,7 +180,7 @@ for epoch in range(1, opt['num_epoch']+1):
     bleu = corpus_bleu(references, candidates) if len(candidates)!=0 else 0
     print("epoch {}: train_loss = {:.6f}, dev_loss = {:.6f}, dev_f1 = {:.4f}, bleu = {:.4f}".format(epoch,\
         train_loss, dev_loss, dev_f1, bleu))
-    dev_score = bleu
+    dev_score = dev_f1
     file_logger.log("{}\t{:.6f}\t{:.6f}\t{:.4f}\t{:.4f}".format(epoch, train_loss, dev_loss, dev_score, max([dev_score] + dev_score_history)))
 
     # save
