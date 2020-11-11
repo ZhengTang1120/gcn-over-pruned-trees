@@ -83,14 +83,14 @@ class Decoder(nn.Module):
         context = context.transpose(0, 1)  # (1,B,N)
         # Combine embedded input word and attended context, run through RNN
         rnn_input = torch.cat([embedded, context], 2)
-        output, hidden = self.rnn(rnn_input, last_hidden)
-        output = output.squeeze(0)  # (1,B,N) -> (B,N)
+        rnn_output, hidden = self.rnn(rnn_input, last_hidden)
+        rnn_output = rnn_output.squeeze(0)  # (1,B,N) -> (B,N)
         context = context.squeeze(0)
-        output = self.out(output) #torch.cat([output, context], 1))
+        output = self.out(rnn_output) #torch.cat([output, context], 1))
         output = F.softmax(output, dim=1)
 
         #pointer generator
-        p_gen_input = torch.cat((output, context, embedded.squeeze(0)), 1)
+        p_gen_input = torch.cat((rnn_output, context, embedded.squeeze(0)), 1)
         p_gen = F.sigmoid(self.p_gen_linear(p_gen_input))
 
         final_output = output.scatter_add(1, extend_vocab, attn_weights)
