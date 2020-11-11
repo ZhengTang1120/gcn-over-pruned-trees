@@ -87,10 +87,10 @@ class DataLoader(object):
                         break
                     else:
                         if int(r) < vocab.rule_size:
-                            rule.append(vocab.id2rule[int(r)])
+                            temp.append(vocab.id2rule[int(r)])
                         else:
                             i = int(r) - vocab.rule_size
-                            rule.append(vocab.id2word[tokens[i]])
+                            temp.append(vocab.id2word[tokens[i]])
                 print (temp)
                 print ()
             processed += [(tokens, pos, ner, deprel, head, subj_positions, obj_positions, subj_type, obj_type, relation, rule, input_extend_vocab)]
