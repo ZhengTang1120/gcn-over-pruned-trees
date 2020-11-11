@@ -13,7 +13,7 @@ def parse_rule(ids, vocab, words):
     for r in ids.tolist()[1:]:
         if int(r) == 3:
             break
-        else:
+        elif int(r) not in [0,2]:
             if int(r) < vocab.rule_size:
                 rule.append(vocab.id2rule[int(r)])
             else:

@@ -166,10 +166,9 @@ for epoch in range(1, opt['num_epoch']+1):
                 output = decoded.transpose(0, 1)[i]
                 reference = helper.parse_rule(rules[i], vocab, batch[0].view(batch_size, -1)[i])
                 candidate = helper.parse_rule(output, vocab, batch[0].view(batch_size, -1)[i])
-                print (reference)
-                print (candidate)
-                references.append(reference)
-                candidates.append(candidate)
+                if len(reference[0])!=0:
+                    references.append(reference)
+                    candidates.append(candidate)
 
     predictions = [id2label[p] for p in predictions]
     train_loss = train_loss / train_batch.num_examples * opt['batch_size'] # avg loss per batch
