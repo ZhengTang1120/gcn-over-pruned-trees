@@ -114,7 +114,7 @@ class GCNTrainer(Trainer):
         c0 = hidden.view(self.opt['num_layers'], batch_size, -1)
         decoder_hidden = (h0, c0)
         for t in range(1, max_len):
-            output, decoder_hidden, attn_weights = self.decoder(
+            output, decoder_hidden = self.decoder(
                     output, masks, decoder_hidden, encoder_outputs, input_extend_vocab)
             loss_d += self.criterion_d(output, rules[t])
             output = rules.data[t]
@@ -156,7 +156,7 @@ class GCNTrainer(Trainer):
         c0 = hidden.view(self.opt['num_layers'], batch_size, -1)
         decoder_hidden = (h0, c0)
         for t in range(1, constant.MAX_RULE_LEN):
-            output, decoder_hidden, attn_weights = self.decoder(
+            output, decoder_hidden = self.decoder(
                     output, masks, decoder_hidden, encoder_outputs, input_extend_vocab)
             topv, topi = output.data.topk(1)
             output = topi.view(-1)
