@@ -72,12 +72,12 @@ class Decoder(nn.Module):
     def forward(self, input, masks, last_hidden, encoder_outputs, extend_vocab):
 
         # Get the embedding of the current input word (last output word)
-        embedded = self.embed(input)  # (B,N)
+        embedded = self.embed(input).unsqueeze(0)  # (1,B,N)
         embedded = self.dropout(embedded)
 
         batch_size = encoder_outputs.size(0)
         # Calculate attention weights and apply to encoder outputs
-        query = torch.cat((last_hidden[0].view(batch_size, -1), embedded), 1)
+        query = torch.cat((last_hidden[0].view(batch_size, -1), embedded.squeeze(0)), 1)
         attn_weights = self.attention(encoder_outputs, masks, query).view(batch_size, 1, -1)
         context = attn_weights.bmm(encoder_outputs)  # (B,1,N)
         context = context.transpose(0, 1)  # (1,B,N)
@@ -90,7 +90,7 @@ class Decoder(nn.Module):
         output = F.softmax(output, dim=1)
 
         #pointer generator
-        p_gen_input = torch.cat((output, context, embedded), 1)
+        p_gen_input = torch.cat((output, context, embedded.squeeze(0)), 1)
         p_gen = F.sigmoid(self.p_gen_linear(p_gen_input))
 
         final_output = output.scatter_add(1, extend_vocab, attn_weights)
