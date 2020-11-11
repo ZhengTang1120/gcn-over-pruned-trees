@@ -78,7 +78,10 @@ class DataLoader(object):
                 for token in list(d['token']):
                     input_extend_vocab += [vocab.rule_size+list(d['token']).index(token)]
                 rule = map_to_ids_rule(rule, vocab, list(d['token'])) 
-                rule = [constant.SOS_ID] + rule + [constant.EOS_ID]                
+                rule = [constant.SOS_ID] + rule + [constant.EOS_ID]
+            else:
+                for token in list(d['token']):
+                    input_extend_vocab += [constant.PAD_ID]            
 
             processed += [(tokens, pos, ner, deprel, head, subj_positions, obj_positions, subj_type, obj_type, relation, rule, input_extend_vocab)]
         return processed
