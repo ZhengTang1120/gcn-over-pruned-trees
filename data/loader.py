@@ -77,8 +77,8 @@ class DataLoader(object):
                 rule = [constant.SOS_ID] + rule + [constant.EOS_ID]
             else:
                 rule = []
-            # if 't_' in mappings[c] or 's_' in mappings[c] or relation == 0:
-            processed += [(tokens, pos, ner, deprel, head, subj_positions, obj_positions, subj_type, obj_type, relation, rule)]
+            if 't_' in mappings[c] or 's_' in mappings[c] or relation == 0:
+                processed += [(tokens, pos, ner, deprel, head, subj_positions, obj_positions, subj_type, obj_type, relation, rule)]
         # exit()
         return processed
 
