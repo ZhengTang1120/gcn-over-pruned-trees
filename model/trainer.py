@@ -91,40 +91,44 @@ class GCNTrainer(Trainer):
 
         # classifier
         logits, pooling_output, encoder_outputs, hidden = self.classifier(inputs)
-        loss = self.criterion(logits, labels)
-        # l2 decay on all conv layers
-        if self.opt.get('conv_l2', 0) > 0:
-            loss += self.classifier.conv_l2() * self.opt['conv_l2']
-        # l2 penalty on output representations
-        if self.opt.get('pooling_l2', 0) > 0:
-            loss += self.opt['pooling_l2'] * (pooling_output ** 2).sum(1).mean()
+        loss = 0
+        # loss = self.criterion(logits, labels)
+        # # l2 decay on all conv layers
+        # if self.opt.get('conv_l2', 0) > 0:
+        #     loss += self.classifier.conv_l2() * self.opt['conv_l2']
+        # # l2 penalty on output representations
+        # if self.opt.get('pooling_l2', 0) > 0:
+        #     loss += self.opt['pooling_l2'] * (pooling_output ** 2).sum(1).mean()
 
         # decoder
-        # batch_size = labels.size(0)
-        # rules = rules.view(batch_size, -1)
-        # masks = inputs[1]
-        # max_len = rules.size(1)
-        # rules = rules.transpose(1,0)
-        # output = Variable(torch.LongTensor([constant.SOS_ID] * batch_size)) # sos
-        # output = output.cuda() if self.opt['cuda'] else output
-        # loss_d = 0
-        # h0 = hidden.view(self.opt['num_layers'], batch_size, -1)
-        # c0 = hidden.view(self.opt['num_layers'], batch_size, -1)
-        # decoder_hidden = (h0, c0)
-        # for t in range(1, max_len):
-        #     output, decoder_hidden, attn_weights = self.decoder(
-        #             output, masks, decoder_hidden, encoder_outputs)
-        #     loss_d += self.criterion_d(output, rules[t])
-        #     output = rules.data[t]
-        #     if self.opt['cuda']:
-        #         output = output.cuda()
-        # loss += loss_d/max_len if max_len!=0 else loss_d
-        loss_val = loss.item()
-        # backward
-        loss.backward()
-        torch.nn.utils.clip_grad_norm_(self.classifier.parameters(), self.opt['max_grad_norm'])
-        torch.nn.utils.clip_grad_norm_(self.decoder.parameters(), self.opt['max_grad_norm'])
-        self.optimizer.step()
+        batch_size = labels.size(0)
+        rules = rules.view(batch_size, -1)
+        masks = inputs[1]
+        max_len = rules.size(1)
+        rules = rules.transpose(1,0)
+        output = Variable(torch.LongTensor([constant.SOS_ID] * batch_size)) # sos
+        output = output.cuda() if self.opt['cuda'] else output
+        loss_d = 0
+        h0 = hidden.view(self.opt['num_layers'], batch_size, -1)
+        c0 = hidden.view(self.opt['num_layers'], batch_size, -1)
+        decoder_hidden = (h0, c0)
+        for t in range(1, max_len):
+            output, decoder_hidden, attn_weights = self.decoder(
+                    output, masks, decoder_hidden, encoder_outputs)
+            loss_d += self.criterion_d(output, rules[t])
+            output = rules.data[t]
+            if self.opt['cuda']:
+                output = output.cuda()
+        loss += loss_d/max_len if max_len!=0 else loss_d
+        if loss != 0
+            loss_val = loss.item()
+            # backward
+            loss.backward()
+            torch.nn.utils.clip_grad_norm_(self.classifier.parameters(), self.opt['max_grad_norm'])
+            torch.nn.utils.clip_grad_norm_(self.decoder.parameters(), self.opt['max_grad_norm'])
+            self.optimizer.step()
+        else:
+            loss_val = 0
         return loss_val
 
     def predict(self, batch, unsort=True):
