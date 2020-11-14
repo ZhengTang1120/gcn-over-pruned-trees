@@ -69,6 +69,7 @@ def unpack_batch(batch, cuda):
 
 class GCNTrainer(Trainer):
     def __init__(self, opt, emb_matrix=None):
+        self.lr = opt['lr']
         self.opt = opt
         self.emb_matrix = emb_matrix
         self.classifier = GCNClassifier(opt, emb_matrix=emb_matrix)
