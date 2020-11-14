@@ -66,7 +66,7 @@ for c, b in enumerate(batch_iter):
     rules = b[-1].view(batch_size, -1)
     for i in range(batch_size):
         if id2label[preds[i]] != 'no_relation':
-            print (id2label[preds[i]])
+            # print (id2label[preds[i]])
             output = decoded.transpose(0, 1)[i]
             reference = [[vocab.id2rule[int(r)] for r in rules[i].tolist()[1:] if r not in [0,3]]]
             candidate = []
@@ -76,8 +76,8 @@ for c, b in enumerate(batch_iter):
                 else:
                     candidate.append(vocab.id2rule[int(r)])
             if len(reference[0])!=0:
-                print (reference)
-                print (candidate)
+                # print (reference)
+                # print (candidate)
                 references.append(reference)
                 candidates.append(candidate)
 
