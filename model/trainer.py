@@ -14,7 +14,6 @@ from utils import constant, torch_utils
 
 class Trainer(object):
     def __init__(self, opt, emb_matrix=None):
-        self.lr = opt['lr']
         raise NotImplementedError
 
     def update(self, batch):
@@ -25,7 +24,6 @@ class Trainer(object):
 
     def update_lr(self, new_lr):
         torch_utils.change_lr(self.optimizer, new_lr)
-        self.lr = new_lr
 
     def load(self, filename):
         try:
@@ -69,7 +67,6 @@ def unpack_batch(batch, cuda):
 
 class GCNTrainer(Trainer):
     def __init__(self, opt, emb_matrix=None):
-        self.lr = opt['lr']
         self.opt = opt
         self.emb_matrix = emb_matrix
         self.classifier = GCNClassifier(opt, emb_matrix=emb_matrix)
@@ -121,7 +118,7 @@ class GCNTrainer(Trainer):
             output = rules.data[t]
             if self.opt['cuda']:
                 output = output.cuda()
-        loss += loss_d/20
+        loss += 10 * loss_d/max_len if max_len!=0 else loss_d
         loss_val = loss.item()
         # backward
         loss.backward()
