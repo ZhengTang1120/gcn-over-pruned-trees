@@ -99,7 +99,7 @@ assert emb_matrix.shape[1] == opt['emb_dim']
 
 # load data
 print("Loading data from {} with batch size {}...".format(opt['data_dir'], opt['batch_size']))
-train_batch = DataLoader(opt['data_dir'] + '/train_ssl2.json', opt['batch_size'], opt, vocab, opt['data_dir'] + '/mappings_train_ssl2.txt', evaluation=False)
+train_batch = DataLoader(opt['data_dir'] + '/train_ssl.json', opt['batch_size'], opt, vocab, opt['data_dir'] + '/mappings_train_ssl.txt', evaluation=False)
 dev_batch = DataLoader(opt['data_dir'] + '/dev.json', opt['batch_size'], opt, vocab, opt['data_dir'] + '/mappings_dev.txt', evaluation=True)
 
 model_id = opt['id'] if len(opt['id']) > 1 else '0' + opt['id']
