@@ -121,7 +121,7 @@ class GCNTrainer(Trainer):
             output = rules.data[t]
             if self.opt['cuda']:
                 output = output.cuda()
-        loss += loss_d*self.lr
+        loss += loss_d/20
         loss_val = loss.item()
         # backward
         loss.backward()
