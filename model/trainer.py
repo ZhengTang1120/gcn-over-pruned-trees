@@ -120,7 +120,7 @@ class GCNTrainer(Trainer):
             if self.opt['cuda']:
                 output = output.cuda()
         loss += loss_d/max_len if max_len!=0 else loss_d
-        if loss == 0:
+        if loss != 0:
             loss_val = loss.item()
             # backward
             loss.backward()
