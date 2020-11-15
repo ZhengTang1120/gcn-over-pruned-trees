@@ -146,7 +146,7 @@ for epoch in range(1, opt['num_epoch']+1):
         start_time = time.time()
         global_step += 1
         loss1, loss2 = trainer.update(batch)
-        train_loss += loss
+        train_loss += loss1 + loss2
         if global_step % opt['log_step'] == 0:
             duration = time.time() - start_time
             print(format_str.format(datetime.now(), global_step, max_steps, epoch,\
