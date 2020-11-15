@@ -136,7 +136,7 @@ current_lr = opt['lr']
 
 global_step = 0
 global_start_time = time.time()
-format_str = '{}: step {}/{} (epoch {}/{}), loss = {:.6f} ({:.3f} sec/batch), lr: {:.6f}'
+format_str = '{}: step {}/{} (epoch {}/{}), loss1 = {:.6f}, loss2 = {:.6f} ({:.3f} sec/batch), lr: {:.6f}'
 max_steps = len(train_batch) * opt['num_epoch']
 
 # start training
@@ -145,12 +145,12 @@ for epoch in range(1, opt['num_epoch']+1):
     for i, batch in enumerate(train_batch):
         start_time = time.time()
         global_step += 1
-        loss = trainer.update(batch)
+        loss1, loss2 = trainer.update(batch)
         train_loss += loss
         if global_step % opt['log_step'] == 0:
             duration = time.time() - start_time
             print(format_str.format(datetime.now(), global_step, max_steps, epoch,\
-                    opt['num_epoch'], loss, duration, current_lr))
+                    opt['num_epoch'], loss1, loss2, duration, current_lr))
 
     # eval on dev
     print("Evaluating on dev set...")

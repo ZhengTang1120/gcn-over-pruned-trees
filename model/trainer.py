@@ -90,9 +90,9 @@ class GCNTrainer(Trainer):
         self.optimizer.zero_grad()
 
         loss = 0
-        # classifier
-        logits, pooling_output, encoder_outputs, hidden = self.classifier(inputs)
         if self.opt['classifier']:
+            # classifier
+            logits, pooling_output, encoder_outputs, hidden = self.classifier(inputs)
             loss = self.criterion(logits, labels)
             # l2 decay on all conv layers
             if self.opt.get('conv_l2', 0) > 0:
@@ -100,7 +100,14 @@ class GCNTrainer(Trainer):
             # l2 penalty on output representations
             if self.opt.get('pooling_l2', 0) > 0:
                 loss += self.opt['pooling_l2'] * (pooling_output ** 2).sum(1).mean()
+            loss_val1 = loss.item()
+            # backward
+            loss.backward()
+            torch.nn.utils.clip_grad_norm_(self.classifier.parameters(), self.opt['max_grad_norm'])
+            self.optimizer.step()
+        loss = 0
         if self.opt['decoder']:
+            logits, pooling_output, encoder_outputs, hidden = self.classifier(inputs)
             # decoder
             batch_size = labels.size(0)
             rules = rules.view(batch_size, -1)
@@ -116,18 +123,17 @@ class GCNTrainer(Trainer):
             for t in range(1, max_len):
                 output, decoder_hidden, attn_weights = self.decoder(
                         output, masks, decoder_hidden, encoder_outputs)
-                loss_d += self.criterion_d(output, rules[t])
+                loss += self.criterion_d(output, rules[t])
                 output = rules.data[t]
                 if self.opt['cuda']:
                     output = output.cuda()
-            loss += loss_d/max_len if self.opt['classifier'] else loss_d
-        loss_val = loss.item()
-        # backward
-        loss.backward()
-        torch.nn.utils.clip_grad_norm_(self.classifier.parameters(), self.opt['max_grad_norm'])
-        torch.nn.utils.clip_grad_norm_(self.decoder.parameters(), self.opt['max_grad_norm'])
-        self.optimizer.step()
-        return loss_val
+            loss_val2 = loss.item()
+            # backward
+            loss.backward()
+            torch.nn.utils.clip_grad_norm_(self.decoder.parameters(), self.opt['max_grad_norm'])
+            self.optimizer.step()
+            
+        return loss_val1, loss_val2
 
     def predict(self, batch, unsort=True):
         inputs, labels, rules, tokens, head, subj_pos, obj_pos, lens = unpack_batch(batch, self.opt['cuda'])
