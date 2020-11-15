@@ -38,6 +38,11 @@ parser.add_argument('--lower', dest='lower', action='store_true', help='Lowercas
 parser.add_argument('--no-lower', dest='lower', action='store_false')
 parser.set_defaults(lower=False)
 
+parser.add_argument('--classifier', dest='lower', action='store_false')
+parser.set_defaults(lower=True)
+parser.add_argument('--decoder', dest='lower', action='store_false')
+parser.set_defaults(lower=True)
+
 parser.add_argument('--prune_k', default=-1, type=int, help='Prune the dependency tree to <= K distance off the dependency path; set to -1 for no pruning.')
 parser.add_argument('--conv_l2', type=float, default=0, help='L2-weight decay on conv layers only.')
 parser.add_argument('--pooling', choices=['max', 'avg', 'sum'], default='max', help='Pooling function type. Default max.')
@@ -201,7 +206,7 @@ for epoch in range(1, opt['num_epoch']+1):
 
     # lr schedule
     if len(dev_score_history) > opt['decay_epoch'] and dev_score <= dev_score_history[-1] and \
-            opt['optim'] in ['sgd', 'adagrad', 'adadelta', 'adam']:
+            opt['optim'] in ['sgd', 'adagrad', 'adadelta']:
         current_lr *= opt['lr_decay']
         trainer.update_lr(current_lr)
 
