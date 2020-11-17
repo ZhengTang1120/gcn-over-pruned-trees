@@ -82,8 +82,8 @@ for c, b in enumerate(batch_iter):
                 candidates.append(candidate)
 
 predictions = [id2label[p] for p in predictions]
-# for pred in predictions:
-#     print (pred)
+for pred in predictions:
+    print (pred)
 p, r, f1 = scorer.score(batch.gold(), predictions, verbose=True)
 bleu = corpus_bleu(references, candidates)
 print("{} set evaluate result: {:.2f}\t{:.2f}\t{:.2f}\t{:.2f}".format(args.dataset,p,r,f1,bleu))
