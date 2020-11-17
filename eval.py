@@ -81,7 +81,7 @@ for c, b in enumerate(batch_iter):
                 references.append(reference)
                 candidates.append(candidate)
 
-# predictions = [id2label[p] for p in predictions]
+predictions = [id2label[p] for p in predictions]
 # for pred in predictions:
 #     print (pred)
 p, r, f1 = scorer.score(batch.gold(), predictions, verbose=True)
