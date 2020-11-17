@@ -68,6 +68,7 @@ parser.add_argument('--id', type=str, default='00', help='Model ID under which t
 parser.add_argument('--info', type=str, default='', help='Optional info for the experiment.')
 
 parser.add_argument('--seed', type=int, default=1234)
+parser.add_argument('--curve', type=str)
 parser.add_argument('--cuda', type=bool, default=torch.cuda.is_available())
 parser.add_argument('--cpu', action='store_true', help='Ignore CUDA.')
 
@@ -102,7 +103,7 @@ assert emb_matrix.shape[1] == opt['emb_dim']
 
 # load data
 print("Loading data from {} with batch size {}...".format(opt['data_dir'], opt['batch_size']))
-train_batch = DataLoader(opt['data_dir'] + '/train.json', opt['batch_size'], opt, vocab, opt['data_dir'] + '/mappings_train.txt', evaluation=False)
+train_batch = DataLoader(opt['data_dir'] + '/train_ssl_{}.json'.format(opt['curve']), opt['batch_size'], opt, vocab, opt['data_dir'] + '/mappings_train_ssl_{}.txt'.format(opt['curve']), evaluation=False)
 dev_batch = DataLoader(opt['data_dir'] + '/dev.json', opt['batch_size'], opt, vocab, opt['data_dir'] + '/mappings_dev.txt', evaluation=True)
 
 model_id = opt['id'] if len(opt['id']) > 1 else '0' + opt['id']
