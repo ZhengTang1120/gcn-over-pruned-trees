@@ -32,6 +32,12 @@ class DataLoader(object):
             random.shuffle(indices)
             data = [data[i] for i in indices]
 
+        self.refs = list()
+        for d in data:
+            temp = []
+            for rule in data[10]:
+                temp += [[vocab.id2rule[r] for r in rule[1:] if r not in [0,3]]]
+            self.refs.append(temp)
 
         self.id2label = dict([(v,k) for k,v in self.label2id.items()])
         self.labels = [self.id2label[d[-2]] for d in data]
@@ -72,12 +78,15 @@ class DataLoader(object):
             obj_type = [constant.OBJ_NER_TO_ID[d['obj_type']]]
             relation = self.label2id[d['relation']]
             if 't_' in mappings[c] or 's_' in mappings[c]:
-                rule = helper.word_tokenize(rules[eval(mappings[c])[0][1]])
-                rule = map_to_ids(rule, vocab.rule2id) 
-                rule = [constant.SOS_ID] + rule + [constant.EOS_ID]
+                rules = []
+                for m in eval(mappings[c]):
+                    rule = helper.word_tokenize(rules[m[1]])
+                    rule = map_to_ids(rule, vocab.rule2id) 
+                    rule = [constant.SOS_ID] + rule + [constant.EOS_ID]
+                    rules.append(rule)
             else:
-                rule = []
-            processed += [(tokens, pos, ner, deprel, head, subj_positions, obj_positions, subj_type, obj_type, relation, rule)]
+                rules = [[]]
+            processed += [(tokens, pos, ner, deprel, head, subj_positions, obj_positions, subj_type, obj_type, relation, rules)]
         # exit()
         return processed
 
@@ -123,7 +132,7 @@ class DataLoader(object):
 
         rels = torch.LongTensor(batch[9])
 
-        rule = get_long_tensor(batch[10], batch_size)
+        rule = get_long_tensor(batch[10][0], batch_size)
         
         return (words, masks, pos, ner, deprel, head, subj_positions, obj_positions, subj_type, obj_type, rels, orig_idx, rule)
 
