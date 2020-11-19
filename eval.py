@@ -70,20 +70,18 @@ for c, b in enumerate(batch_iter):
         output = decoded.transpose(0, 1)[i]
         reference = [[vocab.id2rule[int(r)] for r in rules[i].tolist()[1:] if r not in [0,3]]]
         candidate = []
-        if id2label[preds[i]] != 'no_relation':
-            for r in output.tolist()[1:]:
-                if int(r) == 3:
-                    break
-                else:
-                    candidate.append(vocab.id2rule[int(r)])
-        if len(reference[0])!=0:
-            if reference[0] != candidate:
-                print (id2label[preds[i]], id2label[int(b[10][i])])
-                print (reference[0])
-                print (candidate)
-                print ()
-            references.append(reference)
-            candidates.append(candidate)
+        for r in output.tolist()[1:]:
+            if int(r) == 3:
+                break
+            else:
+                candidate.append(vocab.id2rule[int(r)])
+        if reference[0] != candidate:
+            print (id2label[preds[i]], id2label[int(b[10][i])])
+            print (reference[0])
+            print (candidate)
+            print ()
+        references.append(reference)
+        candidates.append(candidate)
 
 predictions = [id2label[p] for p in predictions]
 # for pred in predictions:
