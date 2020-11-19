@@ -31,12 +31,10 @@ class DataLoader(object):
             indices = list(range(len(data)))
             random.shuffle(indices)
             data = [data[i] for i in indices]
-        print (self.vocab.rule2id, self.vocab.id2rule)
         self.refs = list()
         for d in data:
             temp = []
-            for rule in data[10]:
-                print ([r for r in rule])
+            for rule in d[10]:
                 temp += [[vocab.id2rule[r] for r in rule if r not in [0,2,3]]]
             self.refs.append(temp)
 
