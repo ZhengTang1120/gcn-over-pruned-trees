@@ -65,22 +65,21 @@ for c, b in enumerate(batch_iter):
     all_probs += probs
 
     batch_size = len(preds)
-    rules = b[-1].view(batch_size, -1)
+    # rules = b[-1].view(batch_size, -1)
     for i in range(batch_size):
         if id2label[preds[i]] != 'no_relation':
             # print (id2label[preds[i]])
             output = decoded[i]
-            reference = [[vocab.id2rule[int(r)] for r in rules[i].tolist()[1:] if r not in [0,3]]]
+            # reference = [[vocab.id2rule[int(r)] for r in rules[i].tolist()[1:] if r not in [0,3]]]
             candidate = []
             for r in output[1:]:
                 if int(r) == 3:
                     break
                 else:
                     candidate.append(vocab.id2rule[int(r)])
-            if len(reference[0])!=0:
+            if len(batch.refs[x][0])!=0:
                 if reference[0] != candidate:
-                    print (id2label[preds[i]], id2label[int(b[10][i])], batch.gold()[x])
-                    print (reference[0])
+                    print (id2label[preds[i]], batch.gold()[x])
                     print (batch.refs[x])
                     print (candidate)
                     print ()
@@ -88,7 +87,7 @@ for c, b in enumerate(batch_iter):
                 references.append(batch.refs[x])
                 candidates.append(candidate)
         x += 1
-print (em, nm)
+
 predictions = [id2label[p] for p in predictions]
 # for pred in predictions:
 #     print (pred)
