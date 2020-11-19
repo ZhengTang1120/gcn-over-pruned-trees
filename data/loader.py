@@ -38,6 +38,7 @@ class DataLoader(object):
         for d in data:
             print (self.id2label[d[-2]])
             print (d[-1])
+        exit()
         self.num_examples = len(data)
         
         # chunk into batches
