@@ -65,33 +65,29 @@ for c, b in enumerate(batch_iter):
     all_probs += probs
 
     batch_size = len(preds)
-    # rules = b[-1].view(batch_size, -1)
     for i in range(batch_size):
-        if id2label[preds[i]] != 'no_relation':
-            # print (id2label[preds[i]])
-            output = decoded[i]
-            # reference = [[vocab.id2rule[int(r)] for r in rules[i].tolist()[1:] if r not in [0,3]]]
-            candidate = []
-            for r in output[1:]:
-                if int(r) == 3:
-                    break
-                else:
-                    candidate.append(vocab.id2rule[int(r)])
-            if len(batch.refs[x][0])!=0:
-                print (id2label[preds[i]], batch.gold()[x])
-                print ([batch.refs[x][0]])
-                print (candidate)
-                print ()
+        output = decoded[i]
+        candidate = []
+        for r in output[1:]:
+            if int(r) == 3:
+                break
+            else:
+                candidate.append(vocab.id2rule[int(r)])
+        if len(batch.refs[x][0])!=0:
+            print (id2label[preds[i]], batch.gold()[x])
+            print ([batch.refs[x][0]])
+            print (candidate)
+            print ()
 
-                references.append(batch.refs[x])
-                candidates.append(candidate)
+            references.append(batch.refs[x])
+            candidates.append(candidate)
         x += 1
 
 predictions = [id2label[p] for p in predictions]
 # for pred in predictions:
 #     print (pred)
 p, r, f1 = scorer.score(batch.gold(), predictions, verbose=True)
-bleu = corpus_bleu(references, candidates)
+bleu = corpus_bleu(batch.refs, candidates)
 print("{} set evaluate result: {:.2f}\t{:.2f}\t{:.2f}\t{:.4f}".format(args.dataset,p,r,f1,bleu))
 
 print("Evaluation ended.")
