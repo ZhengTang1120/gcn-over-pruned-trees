@@ -59,6 +59,7 @@ all_probs = []
 batch_iter = tqdm(batch)
 em = 0
 nm = 0
+x = 0
 for c, b in enumerate(batch_iter):
     preds, probs, decoded, loss = trainer.predict(b)
     predictions += preds
@@ -79,21 +80,23 @@ for c, b in enumerate(batch_iter):
                     candidate.append(vocab.id2rule[int(r)])
             if len(reference[0])!=0:
                 if reference[0] != candidate:
-                    print (id2label[preds[i]], id2label[int(b[10][i])])
+                    print (id2label[preds[i]], id2label[int(b[10][i])], batch.gold[x])
                     print (reference[0])
+                    print (batch.refs[x])
                     print (candidate)
                     print ()
                     nm += 1
                 else:
                     em += 1
-                references.append(reference)
+                references.append(batch.refs[x])
                 candidates.append(candidate)
+        x += 1
 print (em, nm)
 predictions = [id2label[p] for p in predictions]
 # for pred in predictions:
 #     print (pred)
 p, r, f1 = scorer.score(batch.gold(), predictions, verbose=True)
-bleu = corpus_bleu(batch.refs, candidates)
+bleu = corpus_bleu(references, candidates)
 print("{} set evaluate result: {:.2f}\t{:.2f}\t{:.2f}\t{:.4f}".format(args.dataset,p,r,f1,bleu))
 
 print("Evaluation ended.")
