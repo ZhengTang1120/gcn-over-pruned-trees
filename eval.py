@@ -78,11 +78,10 @@ for c, b in enumerate(batch_iter):
                 else:
                     candidate.append(vocab.id2rule[int(r)])
             if len(batch.refs[x][0])!=0:
-                if reference[0] != candidate:
-                    print (id2label[preds[i]], batch.gold()[x])
-                    print (batch.refs[x])
-                    print (candidate)
-                    print ()
+                print (id2label[preds[i]], batch.gold()[x])
+                print (batch.refs[x])
+                print (candidate)
+                print ()
 
                 references.append(batch.refs[x])
                 candidates.append(candidate)
