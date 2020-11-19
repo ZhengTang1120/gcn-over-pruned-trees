@@ -34,7 +34,7 @@ class DataLoader(object):
         self.refs = list()
         for d in data:
             temp = []
-            for rule in d[10]:
+            for rule in d[11]:
                 temp += [[vocab.id2rule[r] for r in rule if r not in [0,2,3]]]
             self.refs.append(temp)
 
@@ -85,7 +85,7 @@ class DataLoader(object):
                     rule.append(r)
             else:
                 rule = [[]]
-            processed += [(tokens, pos, ner, deprel, head, subj_positions, obj_positions, subj_type, obj_type, relation, rule)]
+            processed += [(tokens, pos, ner, deprel, head, subj_positions, obj_positions, subj_type, obj_type, relation, rule[0], rule)]
         # exit()
         return processed
 
@@ -131,7 +131,7 @@ class DataLoader(object):
 
         rels = torch.LongTensor(batch[9])
 
-        rule = get_long_tensor(batch[10][0], batch_size)
+        rule = get_long_tensor(batch[10], batch_size)
         
         return (words, masks, pos, ner, deprel, head, subj_positions, obj_positions, subj_type, obj_type, rels, orig_idx, rule)
 
