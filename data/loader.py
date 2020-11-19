@@ -36,7 +36,7 @@ class DataLoader(object):
         for d in data:
             temp = []
             for rule in data[10]:
-                temp += [[vocab.id2rule[r] for r in rule[1:] if r not in [0,3]]]
+                temp += [[vocab.id2rule[r] for r in rule if r not in [0,2,3]]]
             self.refs.append(temp)
 
         self.id2label = dict([(v,k) for k,v in self.label2id.items()])
