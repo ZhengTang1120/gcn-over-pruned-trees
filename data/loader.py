@@ -36,7 +36,7 @@ class DataLoader(object):
         self.id2label = dict([(v,k) for k,v in self.label2id.items()])
         self.labels = [self.id2label[d[-2]] for d in data]
         for d in data:
-            if self.id2label[d[-2]] == 'no_relation' and len(d[-1])!=0:
+            if self.id2label[d[-2]] == 'no_relation':
                 print (self.id2label[d[-2]])
                 print (d[-1])
         exit()
