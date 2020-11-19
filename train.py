@@ -167,7 +167,7 @@ for epoch in range(1, opt['num_epoch']+1):
         batch_size = len(preds)
         for i in range(batch_size):
             if id2label[preds[i]] != 'no_relation':
-                output = decoded.transpose(0, 1)[i]
+                output = decoded[i]
                 candidate = []
                 for r in output.tolist()[1:]:
                     if int(r) == 3:
