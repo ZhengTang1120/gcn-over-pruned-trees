@@ -86,7 +86,7 @@ class DataLoader(object):
                     rule.append(r)
             else:
                 rule = [[]]
-            processed += [(tokens, pos, ner, deprel, head, subj_positions, obj_positions, subj_type, obj_type, relation, rules)]
+            processed += [(tokens, pos, ner, deprel, head, subj_positions, obj_positions, subj_type, obj_type, relation, rule)]
         # exit()
         return processed
 
