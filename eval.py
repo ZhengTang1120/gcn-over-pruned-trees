@@ -69,10 +69,10 @@ for c, b in enumerate(batch_iter):
     for i in range(batch_size):
         if id2label[preds[i]] != 'no_relation':
             # print (id2label[preds[i]])
-            output = decoded.transpose(0, 1)[i]
+            output = decoded[i]
             reference = [[vocab.id2rule[int(r)] for r in rules[i].tolist()[1:] if r not in [0,3]]]
             candidate = []
-            for r in output.tolist()[1:]:
+            for r in output[1:]:
                 if int(r) == 3:
                     break
                 else:
