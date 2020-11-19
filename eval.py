@@ -79,8 +79,9 @@ for c, b in enumerate(batch_iter):
             if len(batch.refs[x][0])!=0:
                 if candidate not in batch.refs[x]:
                     print (id2label[preds[i]], batch.gold()[x])
-                    print (batch.refs[x])
-                    print (candidate)
+                    for t in batch.refs[x]:
+                        print (' '.join(t))
+                    print (' '.join(candidate))
                     print ()
                     other += 1
                 else:
