@@ -31,7 +31,7 @@ class DataLoader(object):
             indices = list(range(len(data)))
             random.shuffle(indices)
             data = [data[i] for i in indices]
-
+        print (vocab.rule2id, vocab.id2rule)
         self.refs = list()
         for d in data:
             temp = []
