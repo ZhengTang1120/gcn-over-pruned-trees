@@ -57,8 +57,7 @@ references = []
 candidates = []
 all_probs = []
 batch_iter = tqdm(batch)
-em = 0
-nm = 0
+
 x = 0
 for c, b in enumerate(batch_iter):
     preds, probs, decoded, loss = trainer.predict(b)
@@ -85,9 +84,7 @@ for c, b in enumerate(batch_iter):
                     print (batch.refs[x])
                     print (candidate)
                     print ()
-                    nm += 1
-                else:
-                    em += 1
+
                 references.append(batch.refs[x])
                 candidates.append(candidate)
         x += 1

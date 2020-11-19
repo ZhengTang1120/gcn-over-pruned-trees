@@ -164,4 +164,7 @@ class GCNTrainer(Trainer):
             topv, topi = output.data.topk(1)
             output = topi.view(-1)
             decoded[t] = output
+        if unsort:
+            _, decoded, probs = [list(t) for t in zip(*sorted(zip(orig_idx,\
+                    decoded, probs)))]
         return predictions, probs, decoded, loss.item()
