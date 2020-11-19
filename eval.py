@@ -59,6 +59,8 @@ all_probs = []
 batch_iter = tqdm(batch)
 
 x = 0
+exact_match = 0
+other = 0
 for c, b in enumerate(batch_iter):
     preds, probs, decoded, loss = trainer.predict(b)
     predictions += preds
@@ -80,11 +82,14 @@ for c, b in enumerate(batch_iter):
                     print (batch.refs[x])
                     print (candidate)
                     print ()
+                    other += 1
+                else:
+                    exact_match += 1
 
                 references.append(batch.refs[x])
                 candidates.append(candidate)
         x += 1
-
+print (exact_match, other)
 predictions = [id2label[p] for p in predictions]
 # for pred in predictions:
 #     print (pred)
