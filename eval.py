@@ -57,6 +57,8 @@ references = []
 candidates = []
 all_probs = []
 batch_iter = tqdm(batch)
+em = 0
+nm = 0
 for c, b in enumerate(batch_iter):
     preds, probs, decoded, loss = trainer.predict(b)
     predictions += preds
@@ -75,15 +77,18 @@ for c, b in enumerate(batch_iter):
                     break
                 else:
                     candidate.append(vocab.id2rule[int(r)])
-            # if len(reference[0])!=0:
-            #     if reference[0] != candidate:
-            #         print (id2label[preds[i]], id2label[int(b[10][i])])
-            #         print (reference[0])
-            #         print (candidate)
-            #         print ()
-            references.append(reference)
-            candidates.append(candidate)
-
+            if len(reference[0])!=0:
+                if reference[0] != candidate:
+                    print (id2label[preds[i]], id2label[int(b[10][i])])
+                    print (reference[0])
+                    print (candidate)
+                    print ()
+                    nm += 1
+                else:
+                    em += 1
+                references.append(reference)
+                candidates.append(candidate)
+print (em, nm)
 predictions = [id2label[p] for p in predictions]
 # for pred in predictions:
 #     print (pred)
