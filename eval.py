@@ -79,7 +79,7 @@ for c, b in enumerate(batch_iter):
                     candidate.append(vocab.id2rule[int(r)])
             if len(batch.refs[x][0])!=0:
                 if candidate not in batch.refs[x]:
-                    rule_set.add(candidate)
+                    rule_set.add(''.join(candidate))
                     # print (id2label[preds[i]], batch.gold()[x])
                     # for t in batch.refs[x]:
                     #     print (' '.join(t))
