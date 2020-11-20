@@ -61,6 +61,7 @@ batch_iter = tqdm(batch)
 x = 0
 exact_match = 0
 other = 0
+rule_set = set()
 for c, b in enumerate(batch_iter):
     preds, probs, decoded, loss = trainer.predict(b)
     predictions += preds
@@ -78,6 +79,7 @@ for c, b in enumerate(batch_iter):
                     candidate.append(vocab.id2rule[int(r)])
             if len(batch.refs[x][0])!=0:
                 if candidate not in batch.refs[x]:
+                    rule_set.add(candidate)
                     # print (id2label[preds[i]], batch.gold()[x])
                     # for t in batch.refs[x]:
                     #     print (' '.join(t))
@@ -90,7 +92,7 @@ for c, b in enumerate(batch_iter):
                 references.append(batch.refs[x])
                 candidates.append(candidate)
         x += 1
-print (exact_match, other)
+print (exact_match, other, len(rule_set))
 predictions = [id2label[p] for p in predictions]
 # for pred in predictions:
 #     print (pred)
