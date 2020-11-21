@@ -103,7 +103,7 @@ assert emb_matrix.shape[1] == opt['emb_dim']
 
 # load data
 print("Loading data from {} with batch size {}...".format(opt['data_dir'], opt['batch_size']))
-train_batch = DataLoader(opt['data_dir'] + '/train_ssl_{}.json'.format(opt['curve']), opt['batch_size'], opt, vocab, opt['data_dir'] + '/mappings_train_ssl_{}.txt'.format(opt['curve']), evaluation=False)
+train_batch = DataLoader(opt['data_dir'] + '/train_ssl.json'.format(opt['curve']), opt['batch_size'], opt, vocab, opt['data_dir'] + '/mappings_train_ssl.txt'.format(opt['curve']), evaluation=False)
 dev_batch = DataLoader(opt['data_dir'] + '/dev.json', opt['batch_size'], opt, vocab, opt['data_dir'] + '/mappings_dev.txt', evaluation=True)
 
 model_id = opt['id'] if len(opt['id']) > 1 else '0' + opt['id']
@@ -143,6 +143,7 @@ max_steps = len(train_batch) * opt['num_epoch']
 # start training
 for epoch in range(1, opt['num_epoch']+1):
     train_loss = 0
+    epoch_start_time = time.time()
     for i, batch in enumerate(train_batch):
         start_time = time.time()
         global_step += 1
@@ -152,7 +153,7 @@ for epoch in range(1, opt['num_epoch']+1):
             duration = time.time() - start_time
             print(format_str.format(datetime.now(), global_step, max_steps, epoch,\
                     opt['num_epoch'], loss, duration, current_lr))
-
+    epoch_duration = time.time() - epoch_start_time
     # eval on dev
     print("Evaluating on dev set...")
     predictions = []
@@ -185,8 +186,8 @@ for epoch in range(1, opt['num_epoch']+1):
 
     dev_p, dev_r, dev_f1 = scorer.score(dev_batch.gold(), predictions)
     bleu = corpus_bleu(references, candidates) if len(candidates)!=0 else 0
-    print("epoch {}: train_loss = {:.6f}, dev_loss = {:.6f}, dev_f1 = {:.4f}, bleu = {:.4f}".format(epoch,\
-        train_loss, dev_loss, dev_f1, bleu))
+    print("epoch {}: train_loss = {:.6f}, dev_loss = {:.6f}, dev_f1 = {:.4f}, bleu = {:.4f}, time = {:.4f}}".format(epoch,\
+        train_loss, dev_loss, dev_f1, bleu, epoch_duration))
     if opt['classifier']:
         dev_score = dev_f1 + bleu
     else:
