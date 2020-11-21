@@ -175,8 +175,8 @@ for epoch in range(1, opt['num_epoch']+1):
                         break
                     else:
                         candidate.append(vocab.id2rule[int(r)])
-                if len(dev_batch.refs[x][0])!=0:
-                    references.append(dev_batch.refs[x])
+                if len(dev_batch.refs[count][0])!=0:
+                    references.append(dev_batch.refs[count])
                     candidates.append(candidate)
             count += 1
 
