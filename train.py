@@ -170,7 +170,7 @@ for epoch in range(1, opt['num_epoch']+1):
             if id2label[preds[i]] != 'no_relation':
                 output = decoded[i]
                 candidate = []
-                for r in output.tolist()[1:]:
+                for r in output[1:]:
                     if int(r) == 3:
                         break
                     else:
