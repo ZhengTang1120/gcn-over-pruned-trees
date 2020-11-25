@@ -95,7 +95,13 @@ for c, b in enumerate(batch_iter):
                 candidates.append(candidate)
         x += 1
 print (exact_match, other, len(rule_set), len(rule_set2))
+for line in rule_set.intersection(rule_set2):
+    print (line)
+print ()
 for line in rule_set.difference(rule_set2):
+    print (line)
+print ()
+for line in rule_set2.difference(rule_set):
     print (line)
 predictions = [id2label[p] for p in predictions]
 # for pred in predictions:
