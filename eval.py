@@ -94,7 +94,9 @@ for c, b in enumerate(batch_iter):
                 references.append(batch.refs[x])
                 candidates.append(candidate)
         x += 1
-print (exact_match, other, len(rule_set), len(rule_set2), len(rule_set2.intersection(rule_set)))
+print (exact_match, other, len(rule_set), len(rule_set2))
+for line in rule_set.difference(rule_set2):
+    print (line)
 predictions = [id2label[p] for p in predictions]
 # for pred in predictions:
 #     print (pred)
