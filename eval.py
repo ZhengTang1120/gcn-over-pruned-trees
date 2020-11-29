@@ -58,6 +58,19 @@ candidates = []
 all_probs = []
 batch_iter = tqdm(batch)
 
+
+with open('dataset/tacred/mappings_train.txt') as f:
+    mappings = f.readlines()
+
+with open('dataset/tacred/rules.json') as f:
+    rules = json.load(f)
+whole = set()
+for m in mappings:
+    if 't_' in m or 's_' in m:
+        for l, r in eval(m):
+            r = ''.join(helper.word_tokenize(rules[r]))
+            whole.add(r)
+
 x = 0
 exact_match = 0
 other = 0
@@ -102,6 +115,8 @@ for line in rule_set.difference(rule_set2):
     print (line)
 print ()
 for line in rule_set2.difference(rule_set):
+    print (line)
+for line in rule_set.difference(whole):
     print (line)
 predictions = [id2label[p] for p in predictions]
 # for pred in predictions:
