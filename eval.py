@@ -58,7 +58,7 @@ candidates = []
 all_probs = []
 batch_iter = tqdm(batch)
 
-
+import json
 with open('dataset/tacred/mappings_train.txt') as f:
     mappings = f.readlines()
 
