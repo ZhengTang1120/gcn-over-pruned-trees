@@ -110,14 +110,16 @@ for c, b in enumerate(batch_iter):
 print (exact_match, other, len(rule_set), len(rule_set2))
 for line in rule_set.intersection(rule_set2):
     print (line)
-print ()
+print (1)
 for line in rule_set.difference(rule_set2):
     print (line)
-print ()
+print (2)
 for line in rule_set2.difference(rule_set):
     print (line)
+print (3)
 for line in rule_set.difference(whole):
     print (line)
+print (4)
 predictions = [id2label[p] for p in predictions]
 # for pred in predictions:
 #     print (pred)
