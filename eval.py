@@ -59,6 +59,7 @@ all_probs = []
 batch_iter = tqdm(batch)
 
 import json
+from collections import defaultdict
 with open('dataset/tacred/mappings_train.txt') as f:
     mappings = f.readlines()
 
