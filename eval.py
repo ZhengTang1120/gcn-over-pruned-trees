@@ -69,7 +69,7 @@ rule_dict = defaultdict(dict)
 for m in mappings:
     if 't_' in m or 's_' in m:
         for l, r in eval(m):
-            r = ''.join(word_tokenize(rules[r]))
+            r = ''.join(helper.word_tokenize(rules[r]))
             if r not in rule_dict[l]:
                 rule_dict[l][r] = 1
             else:
