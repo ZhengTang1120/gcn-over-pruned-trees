@@ -97,6 +97,8 @@ class Decoder(nn.Module):
         output_ = torch.cat((output_, extra_zeros), 1)
         final_output = output_.scatter_add(1, extend_vocab, attn_weights_)
 
+        final_output = torch.log(final_output)
+
         return final_output, hidden
 
 
