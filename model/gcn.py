@@ -25,6 +25,9 @@ class GCNClassifier(nn.Module):
 
     def forward(self, inputs):
         outputs, pooling_output, encode_outputs, hidden = self.gcn_model(inputs)
+        print (outputs.size())
+        print (encode_outputs.size())
+        print (hidden.size())
         logits = self.classifier(outputs)
         return logits, pooling_output, encode_outputs, hidden
 
