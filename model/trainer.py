@@ -93,6 +93,7 @@ class GCNTrainer(Trainer):
 
         # classifier
         logits, pooling_output, encoder_outputs, hidden = self.classifier(inputs)
+        print (logits.size())
         loss = self.criterion(logits, labels)
         # l2 decay on all conv layers
         if self.opt.get('conv_l2', 0) > 0:
