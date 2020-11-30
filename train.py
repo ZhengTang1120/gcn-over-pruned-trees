@@ -167,8 +167,6 @@ for epoch in range(1, opt['num_epoch']+1):
                 reference = [helper.parse_rule(rules[i], vocab, batch[0].view(batch_size, -1)[i])]
                 candidate = helper.parse_rule(output, vocab, batch[0].view(batch_size, -1)[i])
                 if len(reference[0])!=0:
-                    print(reference[0])
-                    print (candidate)
                     references.append(reference)
                     candidates.append(candidate)
 
