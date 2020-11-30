@@ -85,6 +85,7 @@ class GCNTrainer(Trainer):
 
     def update(self, batch):
         inputs, labels, rules, input_extend_vocab, tokens, head, subj_pos, obj_pos, lens = unpack_batch(batch, self.opt['cuda'])
+
         # step forward
         self.classifier.train()
         self.decoder.train()
@@ -119,7 +120,7 @@ class GCNTrainer(Trainer):
             output = rules.data[t]
             if self.opt['cuda']:
                 output = output.cuda()
-        loss += loss_d/max_len if max_len != 0 else loss_d
+        loss += loss_d/50
         loss_val = loss.item()
         # backward
         loss.backward()

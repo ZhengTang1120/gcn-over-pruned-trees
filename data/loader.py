@@ -32,15 +32,9 @@ class DataLoader(object):
             random.shuffle(indices)
             data = [data[i] for i in indices]
 
-        self.refs = list()
-        for d in data:
-            temp = []
-            for rule in d[11]:
-                temp += [[vocab.id2rule[r] for r in rule if r not in [0,2,3]]]
-            self.refs.append(temp)
 
         self.id2label = dict([(v,k) for k,v in self.label2id.items()])
-        self.labels = [self.id2label[d[9]] for d in data]
+        self.labels = [self.id2label[d[-3]] for d in data]
         self.num_examples = len(data)
         
         # chunk into batches
@@ -78,20 +72,18 @@ class DataLoader(object):
             obj_type = [constant.OBJ_NER_TO_ID[d['obj_type']]]
             relation = self.label2id[d['relation']]
             input_extend_vocab = []
+            rule = []
             if 't_' in mappings[c] or 's_' in mappings[c]:
+                rule = helper.word_tokenize(rules[eval(mappings[c])[0][1]])
                 for token in list(d['token']):
                     input_extend_vocab += [vocab.rule_size+list(d['token']).index(token)]
-                rule = []
-                for m in eval(mappings[c]):
-                    r = helper.word_tokenize(rules[m[1]])
-                    r = map_to_ids(r, vocab.rule2id) 
-                    r = [constant.SOS_ID] + r + [constant.EOS_ID]
-                    rule.append(r)
+                rule = map_to_ids_rule(rule, vocab, list(d['token'])) 
+                rule = [constant.SOS_ID] + rule + [constant.EOS_ID]
             else:
-                rule = [[]]   
-                input_extend_vocab += [constant.PAD_ID]         
+                for token in list(d['token']):
+                    input_extend_vocab += [constant.PAD_ID]            
 
-            processed += [(tokens, pos, ner, deprel, head, subj_positions, obj_positions, subj_type, obj_type, relation, rule[0], rule, input_extend_vocab)]
+            processed += [(tokens, pos, ner, deprel, head, subj_positions, obj_positions, subj_type, obj_type, relation, rule, input_extend_vocab)]
         return processed
 
     def gold(self):
@@ -138,7 +130,7 @@ class DataLoader(object):
 
         rule = get_long_tensor(batch[10], batch_size)
 
-        input_extend_vocab = get_long_tensor(batch[12], batch_size)
+        input_extend_vocab = get_long_tensor(batch[11], batch_size)
         
         return (words, masks, pos, ner, deprel, head, subj_positions, obj_positions, subj_type, obj_type, rels, orig_idx, rule, input_extend_vocab)
 
