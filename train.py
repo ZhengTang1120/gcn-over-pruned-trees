@@ -38,6 +38,9 @@ parser.add_argument('--lower', dest='lower', action='store_true', help='Lowercas
 parser.add_argument('--no-lower', dest='lower', action='store_false')
 parser.set_defaults(lower=False)
 
+parser.add_argument('--no-classifier', dest='classifier', action='store_false', help='Do not train classifier.')
+parser.add_argument('--no-decoder', dest='decoder', action='store_false', help='Do not train decoder.')
+
 parser.add_argument('--prune_k', default=-1, type=int, help='Prune the dependency tree to <= K distance off the dependency path; set to -1 for no pruning.')
 parser.add_argument('--conv_l2', type=float, default=0, help='L2-weight decay on conv layers only.')
 parser.add_argument('--pooling', choices=['max', 'avg', 'sum'], default='max', help='Pooling function type. Default max.')
@@ -65,6 +68,7 @@ parser.add_argument('--id', type=str, default='00', help='Model ID under which t
 parser.add_argument('--info', type=str, default='', help='Optional info for the experiment.')
 
 parser.add_argument('--seed', type=int, default=1234)
+parser.add_argument('--curve', type=str)
 parser.add_argument('--cuda', type=bool, default=torch.cuda.is_available())
 parser.add_argument('--cpu', action='store_true', help='Ignore CUDA.')
 
@@ -99,7 +103,7 @@ assert emb_matrix.shape[1] == opt['emb_dim']
 
 # load data
 print("Loading data from {} with batch size {}...".format(opt['data_dir'], opt['batch_size']))
-train_batch = DataLoader(opt['data_dir'] + '/train.json', opt['batch_size'], opt, vocab, opt['data_dir'] + '/mappings_train.txt', evaluation=False)
+train_batch = DataLoader(opt['data_dir'] + '/train_ssl_{}.json'.format(opt['curve']), opt['batch_size'], opt, vocab, opt['data_dir'] + '/mappings_train_ssl_{}.txt'.format(opt['curve']), evaluation=False)
 dev_batch = DataLoader(opt['data_dir'] + '/dev.json', opt['batch_size'], opt, vocab, opt['data_dir'] + '/mappings_dev.txt', evaluation=True)
 
 model_id = opt['id'] if len(opt['id']) > 1 else '0' + opt['id']
@@ -155,22 +159,25 @@ for epoch in range(1, opt['num_epoch']+1):
     dev_loss = 0
     references = []
     candidates = []
+    count = 0
     for i, batch in enumerate(dev_batch):
         preds, _, decoded, loss = trainer.predict(batch)
         predictions += preds
         dev_loss += loss
         batch_size = len(preds)
-        rules = batch[-2].view(batch_size, -1)
         for i in range(batch_size):
             if id2label[preds[i]] != 'no_relation':
                 output = decoded.transpose(0, 1)[i]
-                reference = [helper.parse_rule(rules[i], vocab, batch[0].view(batch_size, -1)[i])]
-                candidate = helper.parse_rule(output, vocab, batch[0].view(batch_size, -1)[i])
-                if len(reference[0])!=0:
-                    print(reference[0])
-                    print (candidate)
-                    references.append(reference)
+                candidate = []
+                for r in output.tolist()[1:]:
+                    if int(r) == 3:
+                        break
+                    else:
+                        candidate.append(vocab.id2rule[int(r)])
+                if len(batch.refs[x][0])!=0:
+                    references.append(batch.refs[x])
                     candidates.append(candidate)
+            count += 1
 
     predictions = [id2label[p] for p in predictions]
     train_loss = train_loss / train_batch.num_examples * opt['batch_size'] # avg loss per batch
@@ -180,7 +187,10 @@ for epoch in range(1, opt['num_epoch']+1):
     bleu = corpus_bleu(references, candidates) if len(candidates)!=0 else 0
     print("epoch {}: train_loss = {:.6f}, dev_loss = {:.6f}, dev_f1 = {:.4f}, bleu = {:.4f}".format(epoch,\
         train_loss, dev_loss, dev_f1, bleu))
-    dev_score = dev_f1
+    if opt['classifier']:
+        dev_score = dev_f1 + bleu
+    else:
+        dev_score = bleu
     file_logger.log("{}\t{:.6f}\t{:.6f}\t{:.4f}\t{:.4f}".format(epoch, train_loss, dev_loss, dev_score, max([dev_score] + dev_score_history)))
 
     # save
@@ -196,7 +206,7 @@ for epoch in range(1, opt['num_epoch']+1):
 
     # lr schedule
     if len(dev_score_history) > opt['decay_epoch'] and dev_score <= dev_score_history[-1] and \
-            opt['optim'] in ['sgd', 'adagrad', 'adadelta', 'adam']:
+            opt['optim'] in ['sgd', 'adagrad', 'adadelta']:
         current_lr *= opt['lr_decay']
         trainer.update_lr(current_lr)
 
