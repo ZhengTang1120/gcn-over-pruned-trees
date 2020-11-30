@@ -116,8 +116,6 @@ class GCNTrainer(Trainer):
             output, decoder_hidden = self.decoder(
                     output, masks, decoder_hidden, encoder_outputs, input_extend_vocab)
             loss_d += self.criterion_d(output, rules[t])
-            print (output.size())
-            print (rules[t])
             output = rules.data[t]
             if self.opt['cuda']:
                 output = output.cuda()
