@@ -64,12 +64,17 @@ with open('dataset/tacred/mappings_train.txt') as f:
 
 with open('dataset/tacred/rules.json') as f:
     rules = json.load(f)
-whole = set()
+rule_dict = defaultdict(dict)
 for m in mappings:
     if 't_' in m or 's_' in m:
         for l, r in eval(m):
-            r = ''.join(helper.word_tokenize(rules[r]))
-            whole.add(r)
+            r = ''.join(word_tokenize(rules[r]))
+            if r not in rule_dict[l]:
+                rule_dict[l][r] = 1
+            else:
+                rule_dict[l][r] += 1
+
+whole = set(rule_dict.keys())
 
 x = 0
 exact_match = 0
@@ -109,16 +114,16 @@ for c, b in enumerate(batch_iter):
         x += 1
 print (exact_match, other, len(rule_set), len(rule_set2))
 for line in rule_set.intersection(rule_set2):
-    print (line)
+    print (line, rule_dict[line])
 print (1)
 for line in rule_set.difference(rule_set2):
-    print (line)
+    print (line, rule_dict[line])
 print (2)
 for line in rule_set2.difference(rule_set):
-    print (line)
+    print (line, rule_dict[line])
 print (3)
 for line in rule_set.difference(whole):
-    print (line)
+    print (line, rule_dict[line])
 print (4)
 predictions = [id2label[p] for p in predictions]
 # for pred in predictions:
