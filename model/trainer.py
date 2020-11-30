@@ -85,7 +85,6 @@ class GCNTrainer(Trainer):
 
     def update(self, batch):
         inputs, labels, rules, input_extend_vocab, tokens, head, subj_pos, obj_pos, lens = unpack_batch(batch, self.opt['cuda'])
-        print (labels)
         # step forward
         self.classifier.train()
         self.decoder.train()
@@ -93,7 +92,6 @@ class GCNTrainer(Trainer):
 
         # classifier
         logits, pooling_output, encoder_outputs, hidden = self.classifier(inputs)
-        print (logits.size())
         loss = self.criterion(logits, labels)
         # l2 decay on all conv layers
         if self.opt.get('conv_l2', 0) > 0:
@@ -118,6 +116,8 @@ class GCNTrainer(Trainer):
             output, decoder_hidden = self.decoder(
                     output, masks, decoder_hidden, encoder_outputs, input_extend_vocab)
             loss_d += self.criterion_d(output, rules[t])
+            print (output.size())
+            print (rules[t])
             output = rules.data[t]
             if self.opt['cuda']:
                 output = output.cuda()
