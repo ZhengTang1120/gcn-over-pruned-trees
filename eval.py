@@ -57,29 +57,46 @@ references = []
 candidates = []
 all_probs = []
 batch_iter = tqdm(batch)
+
+x = 0
+exact_match = 0
+other = 0
 for c, b in enumerate(batch_iter):
     preds, probs, decoded, loss = trainer.predict(b)
     predictions += preds
     all_probs += probs
 
     batch_size = len(preds)
-    rules = b[-1].view(batch_size, -1)
     for i in range(batch_size):
         if id2label[preds[i]] != 'no_relation':
-            print (id2label[preds[i]])
-            output = decoded.transpose(0, 1)[i]
-            reference = [helper.parse_rule(rules[i], vocab, b[0].view(batch_size, -1)[i])]
-            candidate = helper.parse_rule(output, vocab, b[0].view(batch_size, -1)[i])
-            if len(reference[0])!=0:
-                # print (reference)
-                # print (candidate)
-                references.append(reference)
-                candidates.append(candidate)
+            output = decoded[i]
+            candidate = []
+            for r in output[1:]:
+                if int(r) == 3:
+                    break
+                else:
+                    candidate.append(vocab.id2rule[int(r)])
+            if len(batch.refs[x][0])!=0:
+                if candidate not in batch.refs[x]:
+                    print (id2label[preds[i]], batch.gold()[x])
+                    for t in batch.refs[x]:
+                        print (' '.join(t))
+                    print (' '.join(candidate))
+                    print ()
+                    other += 1
+                else:
+                    exact_match += 1
 
+                references.append(batch.refs[x])
+                candidates.append(candidate)
+        x += 1
+print (exact_match, other)
 predictions = [id2label[p] for p in predictions]
+# for pred in predictions:
+#     print (pred)
 p, r, f1 = scorer.score(batch.gold(), predictions, verbose=True)
 bleu = corpus_bleu(references, candidates)
-print("{} set evaluate result: {:.2f}\t{:.2f}\t{:.2f}\t{:.2f}".format(args.dataset,p,r,f1,bleu))
+print("{} set evaluate result: {:.2f}\t{:.2f}\t{:.2f}\t{:.4f}".format(args.dataset,p,r,f1,bleu))
 
 print("Evaluation ended.")
 
