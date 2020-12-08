@@ -122,9 +122,9 @@ class GCNTrainer(Trainer):
             if self.opt['cuda']:
                 output = output.cuda()
         loss += loss_d/max_len if max_len!=0 else loss_d
-        loss_val = loss.item()
         # backward
         if loss != 0:
+            loss_val = loss.item()
             loss.backward()
             torch.nn.utils.clip_grad_norm_(self.classifier.parameters(), self.opt['max_grad_norm'])
             torch.nn.utils.clip_grad_norm_(self.decoder.parameters(), self.opt['max_grad_norm'])

@@ -11,6 +11,7 @@ import numpy as np
 from model.tree import Tree, head_to_tree, tree_to_adj
 from utils import constant, torch_utils
 
+
 class GCNClassifier(nn.Module):
     """ A wrapper classifier for GCNRelationModel. """
     def __init__(self, opt, emb_matrix=None):
@@ -25,9 +26,6 @@ class GCNClassifier(nn.Module):
 
     def forward(self, inputs):
         outputs, pooling_output, encode_outputs, hidden = self.gcn_model(inputs)
-        print (outputs.size())
-        print (encode_outputs.size())
-        print (hidden.size())
         logits = self.classifier(outputs)
         return logits, pooling_output, encode_outputs, hidden
 
