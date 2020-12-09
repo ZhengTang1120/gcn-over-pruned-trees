@@ -93,10 +93,10 @@ class Decoder(nn.Module):
         p_gen = F.sigmoid(self.p_gen_linear(p_gen_input))
         output_ = p_gen * output
         attn_weights_ = (1 - p_gen) * attn_weights.view(batch_size, -1)
-        extra_zeros = torch.ones(attn_weights_.size()).cuda()
-        extra_zeros = extra_zeros * 1e-10
+        extra_zeros = torch.zeros(attn_weights_.size()).cuda()
         print (output_)
         output_ = torch.cat((output_, extra_zeros), 1)
+        output_ += 1e-10
         final_output = output_.scatter_add(1, extend_vocab, attn_weights_)
         print (attn_weights_)
         print (final_output)
