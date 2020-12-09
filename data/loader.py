@@ -79,7 +79,7 @@ class DataLoader(object):
                     input_extend_vocab += [vocab.rule_size+list(d['token']).index(token)]
                 print ([(i,t) for i, t in enumerate(list(d['token']))])
                 print (rule)
-                rule = map_to_ids_rule(rule, vocab, list(d['token'])) 
+                rule = map_to_ids_rule(rule, vocab, [t.lower() for t in list(d['token'])]) 
                 rule = [constant.SOS_ID] + rule + [constant.EOS_ID]
                 print (rule)
                 print (input_extend_vocab)
