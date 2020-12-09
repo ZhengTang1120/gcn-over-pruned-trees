@@ -18,7 +18,7 @@ def parse_rule(ids, vocab, words):
                 rule.append(vocab.id2rule[int(r)])
             else:
                 i = int(r) - vocab.rule_size
-                rule.append(vocab.id2word[words[i]])
+                rule.append(vocab.id2word[words[i]].lower())
     return rule
 
 def word_tokenize(text):
