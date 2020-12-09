@@ -77,13 +77,8 @@ class DataLoader(object):
                 rule = helper.word_tokenize(rules[eval(mappings[c])[0][1]])
                 for token in list(d['token']):
                     input_extend_vocab += [vocab.rule_size+list(d['token']).index(token)]
-                print ([(i,t) for i, t in enumerate(list(d['token']))])
-                print (rule)
                 rule = map_to_ids_rule(rule, vocab, [t.lower() for t in list(d['token'])]) 
                 rule = [constant.SOS_ID] + rule + [constant.EOS_ID]
-                print (rule)
-                print (input_extend_vocab)
-                print ()
             else:
                 for token in list(d['token']):
                     input_extend_vocab += [constant.PAD_ID]            

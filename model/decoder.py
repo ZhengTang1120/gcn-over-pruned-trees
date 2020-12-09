@@ -94,13 +94,13 @@ class Decoder(nn.Module):
         output_ = p_gen * output
         attn_weights_ = (1 - p_gen) * attn_weights.view(batch_size, -1)
         extra_zeros = torch.ones(attn_weights_.size()).cuda()
+        extra_zeros = extra_zeros * 1e-10
+        print (output_)
         output_ = torch.cat((output_, extra_zeros), 1)
         final_output = output_.scatter_add(1, extend_vocab, attn_weights_)
-        # print ("-----------------")
-        # print (p_gen)
-        # print (output_)
-        # print (attn_weights_)
-        # print (final_output)
+        print (attn_weights_)
+        print (final_output)
+        print ("-----------------")
         final_output = torch.log(final_output+1e-7)
 
         return final_output, hidden
