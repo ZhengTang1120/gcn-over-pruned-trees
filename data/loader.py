@@ -82,7 +82,7 @@ class DataLoader(object):
             else:
                 for token in list(d['token']):
                     input_extend_vocab += [constant.PAD_ID]            
-
+            print (input_extend_vocab)
             processed += [(tokens, pos, ner, deprel, head, subj_positions, obj_positions, subj_type, obj_type, relation, rule, input_extend_vocab)]
         return processed
 
@@ -129,9 +129,9 @@ class DataLoader(object):
         rels = torch.LongTensor(batch[9])
 
         rule = get_long_tensor(batch[10], batch_size)
-        print (batch[11])
+        # print (batch[11])
         input_extend_vocab = get_long_tensor(batch[11], batch_size)
-        print (input_extend_vocab)
+        # print (input_extend_vocab)
         return (words, masks, pos, ner, deprel, head, subj_positions, obj_positions, subj_type, obj_type, rels, orig_idx, rule, input_extend_vocab)
 
     def __iter__(self):
