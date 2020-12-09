@@ -95,6 +95,7 @@ class Decoder(nn.Module):
         attn_weights_ = (1 - p_gen) * attn_weights.view(batch_size, -1)
         extra_zeros = torch.zeros(attn_weights_.size()).cuda()
         if torch.sum(extend_vocab) != 0:
+            print (torch.sum(extend_vocab))
             print (output_)
             print (extend_vocab)
         output_ = torch.cat((output_, extra_zeros), 1)
