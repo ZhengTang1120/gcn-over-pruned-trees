@@ -79,7 +79,7 @@ exact_match = 0
 other = 0
 rule_set = set()
 rule_set2 = set()
-for b in batch:#enumerate(batch_iter):
+for c, b in enumerate(batch_iter):
     preds, probs, decoded, loss = trainer.predict(b)
     predictions += preds
     all_probs += probs
