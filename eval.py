@@ -79,7 +79,7 @@ exact_match = 0
 other = 0
 rule_set = set()
 rule_set2 = set()
-for c, b in enumerate(batch_iter):
+for b in batch:#enumerate(batch_iter):
     preds, probs, decoded, loss = trainer.predict(b)
     predictions += preds
     all_probs += probs
@@ -92,7 +92,7 @@ for c, b in enumerate(batch_iter):
             reference = [helper.parse_rule(rules[i], vocab, b[0].view(batch_size, -1)[i])]
             candidate = helper.parse_rule(output, vocab, b[0].view(batch_size, -1)[i])
             if len(batch.refs[x])!=0:
-                print (1,reference)
+                print (1,rules[i],reference)
                 print (2,candidate)
                 print (3,batch.refs[x],helper.parse_rule(batch.refs[x], vocab, b[0].view(batch_size, -1)[i]))
                 print ()
