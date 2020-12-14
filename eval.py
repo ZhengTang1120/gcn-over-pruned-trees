@@ -90,15 +90,16 @@ for c, b in enumerate(batch_iter):
             output = decoded[i]
             candidate = []
             candidate = helper.parse_rule(output, vocab, batch[0].view(batch_size, -1)[i])
-            if len(batch.refs[x][0])!=0:
-                if candidate not in batch.refs[x]:
+            reference = [helper.parse_rule(batch.refs[x], vocab, batch[0].view(batch_size, -1)[i])]
+            if len(reference)!=0:
+                if candidate not in reference:
                     rule_set.add(''.join(candidate))
-                    rule_set2.add(''.join(batch.refs[x][0]))
+                    rule_set2.add(''.join(reference[0]))
                     other += 1
                 else:
                     exact_match += 1
 
-                references.append(batch.refs[x])
+                references.append(reference)
                 candidates.append(candidate)
         x += 1
 print (exact_match, other, len(rule_set), len(rule_set2))

@@ -33,10 +33,7 @@ class DataLoader(object):
             data = [data[i] for i in indices]
         self.refs = list()
         for d in data:
-            temp = []
-            for rule in d[-1]:
-                temp += [helper.parse_rule(rules[i], vocab, batch[0].view(batch_size, -1)[i])]
-            self.refs.append(temp)
+            self.refs.append(d[-1])
 
 
         self.id2label = dict([(v,k) for k,v in self.label2id.items()])
