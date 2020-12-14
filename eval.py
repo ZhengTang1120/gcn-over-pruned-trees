@@ -92,6 +92,9 @@ for c, b in enumerate(batch_iter):
             reference = [helper.parse_rule(rules[i], vocab, b[0].view(batch_size, -1)[i])]
             candidate = helper.parse_rule(output, vocab, b[0].view(batch_size, -1)[i])
             if len(reference[0])!=0:
+                print (reference)
+                print (candidate)
+                print ()
                 references.append(reference)
                 candidates.append(candidate)
     # for i in range(batch_size):
