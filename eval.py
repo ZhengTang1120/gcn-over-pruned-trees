@@ -93,8 +93,8 @@ for c, b in enumerate(batch_iter):
             reference = [helper.parse_rule(batch.refs[x], vocab, b[0].view(batch_size, -1)[i])]
             if len(reference[0])!=0:
                 if candidate not in reference:
-                    rule_set.add(''.join(candidate))
-                    rule_set2.add(''.join(reference[0]))
+                    rule_set.add(''.join(candidate)+id2label[preds[i]])
+                    rule_set2.add(''.join(reference[0])+id2label[preds[i]])
                     other += 1
                 else:
                     exact_match += 1
