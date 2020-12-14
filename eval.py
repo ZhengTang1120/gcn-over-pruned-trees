@@ -101,20 +101,23 @@ for c, b in enumerate(batch_iter):
 
                 references.append(reference)
                 candidates.append(candidate)
+            else:
+                print (id2label[preds[i]])
+                print (candidate)
         x += 1
-print (exact_match, other, len(rule_set), len(rule_set2))
-for line in rule_set.intersection(rule_set2):
-    print (line, rule_dict[line])
-print (1)
-for line in rule_set.difference(rule_set2):
-    print (line, rule_dict[line])
-print (2)
-for line in rule_set2.difference(rule_set):
-    print (line, rule_dict[line])
-print (3)
-for line in rule_set.difference(whole):
-    print (line, rule_dict[line])
-print (4)
+# print (exact_match, other, len(rule_set), len(rule_set2))
+# for line in rule_set.intersection(rule_set2):
+#     print (line, rule_dict[line])
+# print (1)
+# for line in rule_set.difference(rule_set2):
+#     print (line, rule_dict[line])
+# print (2)
+# for line in rule_set2.difference(rule_set):
+#     print (line, rule_dict[line])
+# print (3)
+# for line in rule_set.difference(whole):
+#     print (line, rule_dict[line])
+# print (4)
 predictions = [id2label[p] for p in predictions]
 # for pred in predictions:
 #     print (pred)
