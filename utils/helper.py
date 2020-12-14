@@ -10,8 +10,10 @@ import re
 
 def parse_rule(ids, vocab, words):
     rule = []
-    if ids is not list:
+    try:
         ids = ids.tolist()
+    except:
+        ids = ids
     for r in ids[1:]:
         if int(r) == 3:
             break
