@@ -91,7 +91,7 @@ for c, b in enumerate(batch_iter):
             candidate = []
             candidate = helper.parse_rule(output, vocab, b[0].view(batch_size, -1)[i])
             reference = [helper.parse_rule(batch.refs[x], vocab, b[0].view(batch_size, -1)[i])]
-            if len(reference)!=0:
+            if len(reference[0])!=0:
                 if candidate not in reference:
                     rule_set.add(''.join(candidate))
                     rule_set2.add(''.join(reference[0]))
