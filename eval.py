@@ -89,8 +89,8 @@ for c, b in enumerate(batch_iter):
         if id2label[preds[i]] != 'no_relation':
             output = decoded[i]
             candidate = []
-            candidate = helper.parse_rule(output, vocab, batch[0].view(batch_size, -1)[i])
-            reference = [helper.parse_rule(batch.refs[x], vocab, batch[0].view(batch_size, -1)[i])]
+            candidate = helper.parse_rule(output, vocab, b[0].view(batch_size, -1)[i])
+            reference = [helper.parse_rule(batch.refs[x], vocab, b[0].view(batch_size, -1)[i])]
             if len(reference)!=0:
                 if candidate not in reference:
                     rule_set.add(''.join(candidate))
