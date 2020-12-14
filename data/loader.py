@@ -31,10 +31,16 @@ class DataLoader(object):
             indices = list(range(len(data)))
             random.shuffle(indices)
             data = [data[i] for i in indices]
+        self.refs = list()
+        for d in data:
+            temp = []
+            for rule in d[-1]:
+                temp += [[vocab.id2rule[r] for r in rule if r not in [0,2,3]]]
+            self.refs.append(temp)
 
 
         self.id2label = dict([(v,k) for k,v in self.label2id.items()])
-        self.labels = [self.id2label[d[-3]] for d in data]
+        self.labels = [self.id2label[d[-4]] for d in data]
         self.num_examples = len(data)
         
         # chunk into batches
@@ -79,10 +85,12 @@ class DataLoader(object):
                     input_extend_vocab += [vocab.rule_size+list(d['token']).index(token)]
                 rule = map_to_ids_rule(rule, vocab, [t.lower() for t in list(d['token'])]) 
                 rule = [constant.SOS_ID] + rule + [constant.EOS_ID]
+                ref  = [rule]
             else:
                 for token in list(d['token']):
-                    input_extend_vocab += [constant.PAD_ID]            
-            processed += [(tokens, pos, ner, deprel, head, subj_positions, obj_positions, subj_type, obj_type, relation, rule, input_extend_vocab)]
+                    input_extend_vocab += [constant.PAD_ID]  
+                ref = [[]]          
+            processed += [(tokens, pos, ner, deprel, head, subj_positions, obj_positions, subj_type, obj_type, relation, rule, input_extend_vocab, ref)]
         return processed
 
     def gold(self):
