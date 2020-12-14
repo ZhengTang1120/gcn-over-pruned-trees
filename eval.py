@@ -91,7 +91,7 @@ for c, b in enumerate(batch_iter):
             output = decoded.transpose(0, 1)[i]
             reference = [helper.parse_rule(rules[i], vocab, b[0].view(batch_size, -1)[i])]
             candidate = helper.parse_rule(output, vocab, b[0].view(batch_size, -1)[i])
-            if len(reference[0])!=0:
+            if len(batch.refs[x])!=0:
                 print (1,reference)
                 print (2,candidate)
                 print (3,batch.refs[x],helper.parse_rule(batch.refs[x], vocab, b[0].view(batch_size, -1)[i]))
