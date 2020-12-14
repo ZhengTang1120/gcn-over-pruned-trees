@@ -85,35 +85,22 @@ for b in batch:#enumerate(batch_iter):
     all_probs += probs
 
     batch_size = len(preds)
-    rules = b[-2].view(batch_size, -1)
     for i in range(batch_size):
         if id2label[preds[i]] != 'no_relation':
-            output = decoded.transpose(0, 1)[i]
-            reference = [helper.parse_rule(rules[i], vocab, b[0].view(batch_size, -1)[i])]
+            output = decoded[i]
+            candidate = []
             candidate = helper.parse_rule(output, vocab, b[0].view(batch_size, -1)[i])
-            if len(batch.refs[x])!=0:
-                print (1,rules[i],reference)
-                print (2,candidate)
-                print (3,batch.refs[x],helper.parse_rule(batch.refs[x], vocab, b[0].view(batch_size, -1)[i]))
-                print ()
+            reference = [helper.parse_rule(batch.refs[x], vocab, b[0].view(batch_size, -1)[i])]
+            if len(reference)!=0:
+                if candidate not in reference:
+                    rule_set.add(''.join(candidate))
+                    rule_set2.add(''.join(reference[0]))
+                    other += 1
+                else:
+                    exact_match += 1
+
                 references.append(reference)
                 candidates.append(candidate)
-    # for i in range(batch_size):
-    #     if id2label[preds[i]] != 'no_relation':
-    #         output = decoded[i]
-    #         candidate = []
-    #         candidate = helper.parse_rule(output, vocab, b[0].view(batch_size, -1)[i])
-    #         reference = [helper.parse_rule(batch.refs[x], vocab, b[0].view(batch_size, -1)[i])]
-    #         if len(reference)!=0:
-    #             if candidate not in reference:
-    #                 rule_set.add(''.join(candidate))
-    #                 rule_set2.add(''.join(reference[0]))
-    #                 other += 1
-    #             else:
-    #                 exact_match += 1
-
-    #             references.append(reference)
-    #             candidates.append(candidate)
         x += 1
 print (exact_match, other, len(rule_set), len(rule_set2))
 for line in rule_set.intersection(rule_set2):
