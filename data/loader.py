@@ -35,7 +35,7 @@ class DataLoader(object):
         for d in data:
             temp = []
             for rule in d[-1]:
-                temp += [[vocab.id2rule[r] for r in rule if r not in [0,2,3]]]
+                temp += [helper.parse_rule(rules[i], vocab, batch[0].view(batch_size, -1)[i])]
             self.refs.append(temp)
 
 

@@ -89,20 +89,11 @@ for c, b in enumerate(batch_iter):
         if id2label[preds[i]] != 'no_relation':
             output = decoded[i]
             candidate = []
-            for r in output[1:]:
-                if int(r) == 3:
-                    break
-                else:
-                    candidate.append(vocab.id2rule[int(r)])
+            candidate = helper.parse_rule(output, vocab, batch[0].view(batch_size, -1)[i])
             if len(batch.refs[x][0])!=0:
                 if candidate not in batch.refs[x]:
                     rule_set.add(''.join(candidate))
                     rule_set2.add(''.join(batch.refs[x][0]))
-                    # print (id2label[preds[i]], batch.gold()[x])
-                    # for t in batch.refs[x]:
-                    #     print (' '.join(t))
-                    # print (' '.join(candidate))
-                    # print ()
                     other += 1
                 else:
                     exact_match += 1
