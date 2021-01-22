@@ -98,14 +98,14 @@ for c, b in enumerate(batch_iter):
     batch_size = len(preds)
     for i in range(batch_size):
         if len(batch.refs[x][0])!=0:
-            if preds[i]!=batch.gold[x]:
+            if preds[i]!=batch.gold()[x]:
                 d_wrong.append(''.join(candidate))
                 r_wrong.append(''.join(batch.refs[x][0]))
             else:
                 d_correct.append(''.join(candidate))
                 r_correct.append(''.join(batch.refs[x][0]))
         elif id2label[preds[i]] != 'no_relation':
-            if preds[i]!=batch.gold[x]:
+            if preds[i]!=batch.gold()[x]:
                 d_wrong_no.append(''.join(candidate))
                 r_wrong_no.append(''.join(batch.refs[x][0]))
             else:
