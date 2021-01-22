@@ -119,7 +119,7 @@ for c, b in enumerate(batch_iter):
                 d_correct_no.append(''.join(candidate))
                 r_correct_no.append(''.join(batch.refs[x][0]))
         x += 1
-
+print (len(d_wrong))
 l = random.sample(range(len(d_wrong)), 50)
 for i in l:
     print (d_wrong[i])
@@ -128,7 +128,7 @@ for i in l:
 print ()
 print ()
 print ()
-print ()
+print (len(d_correct))
 l = random.sample(range(len(d_correct)), 50)
 for i in l:
     print (d_correct[i])
@@ -137,7 +137,7 @@ for i in l:
 print ()
 print ()
 print ()
-print ()
+print (len(d_wrong_no))
 l = random.sample(range(len(d_wrong_no)), 50)
 for i in l:
     print (d_wrong_no[i])
@@ -146,7 +146,7 @@ for i in l:
 print ()
 print ()
 print ()
-print ()
+print (len(d_correct_no))
 l = random.sample(range(len(d_correct_no)), 50)
 for i in l:
     print (d_correct_no[i])
