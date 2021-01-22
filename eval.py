@@ -110,20 +110,20 @@ for c, b in enumerate(batch_iter):
                 candidate.append(vocab.id2rule[int(r)])
         if len(batch.refs[x][0])!=0:
             if id2label[preds[i]]!=batch.gold()[x]:
-                s_wrong.append(' '.join([vocab.id2word[w] for w in words]))
+                s_wrong.append(' '.join([vocab.id2word[w] for w in words[i]]))
                 d_wrong.append((''.join(candidate), id2label[preds[i]]))
                 r_wrong.append((''.join(batch.refs[x][0]), batch.gold()[x]))
             else:
-                s_correct.append(' '.join([vocab.id2word[w] for w in words]))
+                s_correct.append(' '.join([vocab.id2word[w] for w in words[i]]))
                 d_correct.append((''.join(candidate), id2label[preds[i]]))
                 r_correct.append((''.join(batch.refs[x][0]), batch.gold()[x]))
         elif id2label[preds[i]] != 'no_relation':
             if id2label[preds[i]]!=batch.gold()[x]:
-                s_wrong_no.append(' '.join([vocab.id2word[w] for w in words]))
+                s_wrong_no.append(' '.join([vocab.id2word[w] for w in words[i]]))
                 d_wrong_no.append((''.join(candidate), id2label[preds[i]]))
                 r_wrong_no.append((''.join(batch.refs[x][0]), batch.gold()[x]))
             else:
-                s_correct_no.append(' '.join([vocab.id2word[w] for w in words]))
+                s_correct_no.append(' '.join([vocab.id2word[w] for w in words[i]]))
                 d_correct_no.append((''.join(candidate), id2label[preds[i]]))
                 r_correct_no.append((''.join(batch.refs[x][0]), batch.gold()[x]))
         x += 1
