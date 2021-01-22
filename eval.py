@@ -77,8 +77,19 @@ whole = set(rule_dict.keys())
 x = 0
 exact_match = 0
 other = 0
-rule_set = set()
-rule_set2 = set()
+
+d_wrong = list()
+r_wrong = list()
+
+d_correct = list()
+r_correct = list()
+
+d_wrong_no = list()
+r_wrong_no = list()
+
+d_correct_no = list()
+r_correct_no = list()
+
 for c, b in enumerate(batch_iter):
     preds, probs, decoded, loss = trainer.predict(b)
     predictions += preds
@@ -86,43 +97,55 @@ for c, b in enumerate(batch_iter):
 
     batch_size = len(preds)
     for i in range(batch_size):
-        if id2label[preds[i]] != 'no_relation':
-            output = decoded[i]
-            candidate = []
-            for r in output[1:]:
-                if int(r) == 3:
-                    break
-                else:
-                    candidate.append(vocab.id2rule[int(r)])
-            if len(batch.refs[x][0])!=0:
-                if candidate not in batch.refs[x]:
-                    rule_set.add(''.join(candidate))
-                    rule_set2.add(''.join(batch.refs[x][0]))
-                    # print (id2label[preds[i]], batch.gold()[x])
-                    # for t in batch.refs[x]:
-                    #     print (' '.join(t))
-                    # print (' '.join(candidate))
-                    # print ()
-                    other += 1
-                else:
-                    exact_match += 1
-
-                references.append(batch.refs[x])
-                candidates.append(candidate)
+        if len(batch.refs[x][0])!=0:
+            if preds[i]!=batch.gold[x]:
+                d_wrong.append(''.join(candidate))
+                r_wrong.append(''.join(batch.refs[x][0]))
+            else:
+                d_correct.append(''.join(candidate))
+                r_correct.append(''.join(batch.refs[x][0]))
+        elif id2label[preds[i]] != 'no_relation':
+            if preds[i]!=batch.gold[x]:
+                d_wrong_no.append(''.join(candidate))
+                r_wrong_no.append(''.join(batch.refs[x][0]))
+            else:
+                d_correct_no.append(''.join(candidate))
+                r_correct_no.append(''.join(batch.refs[x][0]))
         x += 1
-print (exact_match, other, len(rule_set), len(rule_set2))
-for line in rule_set.intersection(rule_set2):
-    print (line, rule_dict[line])
-print (1)
-for line in rule_set.difference(rule_set2):
-    print (line, rule_dict[line])
-print (2)
-for line in rule_set2.difference(rule_set):
-    print (line, rule_dict[line])
-print (3)
-for line in rule_set.difference(whole):
-    print (line, rule_dict[line])
-print (4)
+
+l = random.sample(range(len(d_wrong)), 50)
+for i in l:
+    print (d_wrong[i])
+    print (r_wrong[i])
+    print ()
+print ()
+print ()
+print ()
+print ()
+l = random.sample(range(len(d_correct)), 50)
+for i in l:
+    print (d_correct[i])
+    print (r_correct[i])
+    print ()
+print ()
+print ()
+print ()
+print ()
+l = random.sample(range(len(d_wrong_no)), 50)
+for i in l:
+    print (d_wrong_no[i])
+    print (r_wrong_no[i])
+    print ()
+print ()
+print ()
+print ()
+print ()
+l = random.sample(range(len(d_correct_no)), 50)
+for i in l:
+    print (d_correct_no[i])
+    print (r_correct_no[i])
+    print ()
+
 predictions = [id2label[p] for p in predictions]
 # for pred in predictions:
 #     print (pred)
