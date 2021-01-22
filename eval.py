@@ -97,6 +97,13 @@ for c, b in enumerate(batch_iter):
 
     batch_size = len(preds)
     for i in range(batch_size):
+        output = decoded[i]
+        candidate = []
+        for r in output[1:]:
+            if int(r) == 3:
+                break
+            else:
+                candidate.append(vocab.id2rule[int(r)])
         if len(batch.refs[x][0])!=0:
             if preds[i]!=batch.gold()[x]:
                 d_wrong.append(''.join(candidate))
