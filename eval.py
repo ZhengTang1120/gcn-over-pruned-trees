@@ -119,7 +119,7 @@ for c, b in enumerate(batch_iter):
                 d_correct_no.append(''.join(candidate))
                 r_correct_no.append(''.join(batch.refs[x][0]))
         x += 1
-print (len(d_wrong))
+print ('wrong pred', len(d_wrong))
 l = random.sample(range(len(d_wrong)), min(50, len(d_wrong)))
 for i in l:
     print (d_wrong[i])
@@ -128,7 +128,7 @@ for i in l:
 print ()
 print ()
 print ()
-print (len(d_correct))
+print ('correct pred', len(d_correct))
 l = random.sample(range(len(d_correct)), min(50, len(d_correct)))
 for i in l:
     print (d_correct[i])
@@ -137,7 +137,7 @@ for i in l:
 print ()
 print ()
 print ()
-print (len(d_wrong_no))
+print ('wrong pred no ref',len(d_wrong_no))
 l = random.sample(range(len(d_wrong_no)), min(50, len(d_wrong_no)))
 for i in l:
     print (d_wrong_no[i])
@@ -146,7 +146,7 @@ for i in l:
 print ()
 print ()
 print ()
-print (len(d_correct_no))
+print ('correct pred no ref', len(d_correct_no))
 l = random.sample(range(len(d_correct_no)), min(50, len(d_correct_no)))
 for i in l:
     print (d_correct_no[i])
@@ -157,7 +157,7 @@ predictions = [id2label[p] for p in predictions]
 # for pred in predictions:
 #     print (pred)
 p, r, f1 = scorer.score(batch.gold(), predictions, verbose=True)
-bleu = corpus_bleu(references, candidates)
+bleu = 0#corpus_bleu(references, candidates)
 print("{} set evaluate result: {:.2f}\t{:.2f}\t{:.2f}\t{:.4f}".format(args.dataset,p,r,f1,bleu))
 
 print("Evaluation ended.")
