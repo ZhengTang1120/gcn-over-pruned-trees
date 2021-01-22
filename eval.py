@@ -98,7 +98,6 @@ s_correct_no = list()
 for c, b in enumerate(batch_iter):
     preds, words, decoded, loss = trainer.predict(b)
     predictions += preds
-    all_probs += probs
 
     batch_size = len(preds)
     for i in range(batch_size):
