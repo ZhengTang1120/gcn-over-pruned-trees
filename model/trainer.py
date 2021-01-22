@@ -166,6 +166,6 @@ class GCNTrainer(Trainer):
             decoded[t] = output
         decoded = decoded.transpose(0, 1).tolist()
         if unsort:
-            _, decoded, probs = [list(t) for t in zip(*sorted(zip(orig_idx,\
-                    decoded, probs)))]
-        return predictions, probs, decoded, loss.item()
+            _, decoded, words = [list(t) for t in zip(*sorted(zip(orig_idx,\
+                    decoded, inputs[0])))]
+        return predictions, words, decoded, loss.item()
