@@ -143,7 +143,7 @@ class DataLoader(object):
             yield self.__getitem__(i)
 
 def get_rule_mask(rule, tokens, ss, se, os, oe):
-    masks = []
+    mask = []
     for i, t in enumerate(tokens):
         if i in range(ss, se+1) or i in range(os, oe+1):
             mask.append(1)
