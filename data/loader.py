@@ -119,6 +119,8 @@ class DataLoader(object):
             words = batch[0]
 
         # convert to tensors
+        print (len(words))
+        print (len(batch[10]))
         words = get_long_tensor(words, batch_size)
         masks = torch.eq(words, 0)
         pos = get_long_tensor(batch[1], batch_size)
