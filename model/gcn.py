@@ -88,7 +88,7 @@ class GCNRelationModel(nn.Module):
         subj_mask, obj_mask = subj_pos.eq(0).eq(0).unsqueeze(2), obj_pos.eq(0).eq(0).unsqueeze(2) # invert mask
         pool_type = self.opt['pooling']
         h_out = pool(h, pool_mask, type=pool_type)
-        # h_out = pool(h_out, rule_mask, type=pool_type)
+        h_out = pool(h_out, rule_mask, type=pool_type)
         subj_out = pool(h, subj_mask, type=pool_type)
         obj_out = pool(h, obj_mask, type=pool_type)
         outputs = torch.cat([h_out, subj_out, obj_out], dim=1)
