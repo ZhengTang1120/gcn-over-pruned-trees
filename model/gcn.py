@@ -83,12 +83,11 @@ class GCNRelationModel(nn.Module):
 
         adj = inputs_to_tree_reps(head.data, words.data, l, self.opt['prune_k'], subj_pos.data, obj_pos.data)
         h, pool_mask, rnn_outputs = self.gcn(adj, inputs)
-        print (rule_mask.unsqueeze(2).size(), words.size(), h.size(), pool_mask.size())
         # pooling
         subj_mask, obj_mask = subj_pos.eq(0).eq(0).unsqueeze(2), obj_pos.eq(0).eq(0).unsqueeze(2) # invert mask
         pool_type = self.opt['pooling']
-        h_out = pool(h, pool_mask, type=pool_type)
-        h_out = pool(h_out, rule_mask.unsqueeze(2), type=pool_type)
+        # h_out = pool(h, pool_mask, type=pool_type)
+        h_out = pool(h, rule_mask.unsqueeze(2), type=pool_type)
         subj_out = pool(h, subj_mask, type=pool_type)
         obj_out = pool(h, obj_mask, type=pool_type)
         outputs = torch.cat([h_out, subj_out, obj_out], dim=1)
