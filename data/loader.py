@@ -84,10 +84,11 @@ class DataLoader(object):
                     r = [constant.SOS_ID] + r + [constant.EOS_ID]
                     rule.append(r)
                 rule_mask = get_rule_mask(rule, tokens, ss, se, os, oe)
+                processed += [(token_ids, pos, ner, deprel, head, subj_positions, obj_positions, subj_type, obj_type, relation, rule[0], rule, rule_mask)]
             elif relation == 0:
                 rule = [[]]
                 rule_mask = [1 for t in tokens]
-            processed += [(token_ids, pos, ner, deprel, head, subj_positions, obj_positions, subj_type, obj_type, relation, rule[0], rule, rule_mask)]
+                processed += [(token_ids, pos, ner, deprel, head, subj_positions, obj_positions, subj_type, obj_type, relation, rule[0], rule, rule_mask)]
         # exit()
         return processed
 
