@@ -139,7 +139,7 @@ class DataLoader(object):
 
         rule_mask = get_long_tensor(batch[12], batch_size)
         
-        return (words, masks, pos, ner, deprel, head, subj_positions, obj_positions, subj_type, obj_type, rels, orig_idx, rule)
+        return (words, masks, pos, ner, deprel, head, subj_positions, obj_positions, subj_type, obj_type, rels, orig_idx, rule, rule_mask)
 
     def __iter__(self):
         for i in range(self.__len__()):
