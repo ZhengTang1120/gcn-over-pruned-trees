@@ -120,7 +120,6 @@ class DataLoader(object):
 
         # convert to tensors
         words = get_long_tensor(words, batch_size)
-        print (words.size())
         masks = torch.eq(words, 0)
         pos = get_long_tensor(batch[1], batch_size)
         ner = get_long_tensor(batch[2], batch_size)
@@ -135,7 +134,7 @@ class DataLoader(object):
 
         rule = get_long_tensor(batch[10], batch_size)
 
-        rule_mask = get_long_tensor(batch[11], batch_size)
+        rule_mask = get_long_tensor(batch[12], batch_size)
         
         return (words, masks, pos, ner, deprel, head, subj_positions, obj_positions, subj_type, obj_type, rels, orig_idx, rule)
 
@@ -166,7 +165,6 @@ def get_positions(start_idx, end_idx, length):
 def get_long_tensor(tokens_list, batch_size):
     """ Convert list of list of tokens to a padded LongTensor. """
     token_len = max(len(x) for x in tokens_list)
-    print (token_len)
     tokens = torch.LongTensor(batch_size, token_len).fill_(constant.PAD_ID)
     for i, s in enumerate(tokens_list):
         tokens[i, :len(s)] = torch.LongTensor(s)
