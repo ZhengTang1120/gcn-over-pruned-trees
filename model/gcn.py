@@ -140,7 +140,7 @@ class GCN(nn.Module):
         return rnn_outputs
 
     def forward(self, adj, inputs):
-        words, masks, pos, ner, deprel, head, subj_pos, obj_pos, subj_type, obj_type = inputs # unpack
+        words, masks, pos, ner, deprel, head, subj_pos, obj_pos, subj_type, obj_type, rule_mask = inputs # unpack
         word_embs = self.emb(words)
         embs = [word_embs]
         if self.opt['pos_dim'] > 0:
