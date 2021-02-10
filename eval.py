@@ -115,8 +115,8 @@ for c, b in enumerate(batch_iter):
             else:
                 candidate.append(vocab.id2rule[int(r)])
         if len(batch.refs[x][0])!=0:
-            gold_no_rule.append(batch.gold()[x])
-            pred_no_rule.append(id2label[preds[i]])
+            gold_w_rule.append(batch.gold()[x])
+            pred_w_rule.append(id2label[preds[i]])
             # if id2label[preds[i]]!=batch.gold()[x]:
             #     s_wrong.append(' '.join([vocab.id2word[w] for w in words[i] if w!=0]))
             #     d_wrong.append((''.join(candidate), id2label[preds[i]]))
@@ -126,8 +126,8 @@ for c, b in enumerate(batch_iter):
             #     d_correct.append((''.join(candidate), id2label[preds[i]]))
             #     r_correct.append((''.join(batch.refs[x][0]), batch.gold()[x]))
         elif id2label[preds[i]] != 'no_relation':
-            gold_w_rule.append(batch.gold()[x])
-            pred_w_rule.append(id2label[preds[i]])
+            gold_no_rule.append(batch.gold()[x])
+            pred_no_rule.append(id2label[preds[i]])
             # if id2label[preds[i]]!=batch.gold()[x]:
             #     s_wrong_no.append(' '.join([vocab.id2word[w] for w in words[i] if w!=0]))
             #     d_wrong_no.append((''.join(candidate), id2label[preds[i]]))
