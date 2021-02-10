@@ -100,7 +100,8 @@ pred_no_rule = list()
 gold_w_rule = list()
 pred_w_rule = list()
 
-
+x_no = 0
+x_w  = 0
 for c, b in enumerate(batch_iter):
     preds, words, decoded, loss = trainer.predict(b)
     predictions += preds
@@ -117,6 +118,7 @@ for c, b in enumerate(batch_iter):
         if len(batch.refs[x][0])!=0:
             gold_w_rule.append(batch.gold()[x])
             pred_w_rule.append(id2label[preds[i]])
+            x_no += 1
             # if id2label[preds[i]]!=batch.gold()[x]:
             #     s_wrong.append(' '.join([vocab.id2word[w] for w in words[i] if w!=0]))
             #     d_wrong.append((''.join(candidate), id2label[preds[i]]))
@@ -125,9 +127,10 @@ for c, b in enumerate(batch_iter):
             #     s_correct.append(' '.join([vocab.id2word[w] for w in words[i] if w!=0]))
             #     d_correct.append((''.join(candidate), id2label[preds[i]]))
             #     r_correct.append((''.join(batch.refs[x][0]), batch.gold()[x]))
-        elif id2label[preds[i]] != 'no_relation':
+        else#if id2label[preds[i]] != 'no_relation':
             gold_no_rule.append(batch.gold()[x])
             pred_no_rule.append(id2label[preds[i]])
+            x_w += 1
             # if id2label[preds[i]]!=batch.gold()[x]:
             #     s_wrong_no.append(' '.join([vocab.id2word[w] for w in words[i] if w!=0]))
             #     d_wrong_no.append((''.join(candidate), id2label[preds[i]]))
@@ -183,8 +186,8 @@ p2, r2, f12 = scorer.score(gold_no_rule, pred_no_rule, verbose=True)
 p3, r3, f13 = scorer.score(gold_w_rule, pred_w_rule, verbose=True)
 bleu = 0#corpus_bleu(references, candidates)
 print("{} set evaluate result: {:.2f}\t{:.2f}\t{:.2f}\t{:.4f}".format(args.dataset,p,r,f1,bleu))
-print("{} set evaluate result: {:.2f}\t{:.2f}\t{:.2f}\t{:.4f}".format("no rule",p2,r2,f12,bleu))
-print("{} set evaluate result: {:.2f}\t{:.2f}\t{:.2f}\t{:.4f}".format("rule",p3,r3,f13,bleu))
+print("{} set evaluate result: {:.2f}\t{:.2f}\t{:.2f}\t{:.4f}".format("no rule",p2,r2,f12,x_no))
+print("{} set evaluate result: {:.2f}\t{:.2f}\t{:.2f}\t{:.4f}".format("rule",p3,r3,f13,x_w))
 
 print("Evaluation ended.")
 
