@@ -94,6 +94,12 @@ d_correct_no = list()
 r_correct_no = list()
 s_correct_no = list()
 
+gold_no_rule = list()
+pred_no_rule = list()
+
+gold_w_rule = list()
+pred_w_rule = list()
+
 
 for c, b in enumerate(batch_iter):
     preds, words, decoded, loss = trainer.predict(b)
@@ -109,68 +115,76 @@ for c, b in enumerate(batch_iter):
             else:
                 candidate.append(vocab.id2rule[int(r)])
         if len(batch.refs[x][0])!=0:
-            if id2label[preds[i]]!=batch.gold()[x]:
-                s_wrong.append(' '.join([vocab.id2word[w] for w in words[i] if w!=0]))
-                d_wrong.append((''.join(candidate), id2label[preds[i]]))
-                r_wrong.append((''.join(batch.refs[x][0]), batch.gold()[x]))
-            else:
-                s_correct.append(' '.join([vocab.id2word[w] for w in words[i] if w!=0]))
-                d_correct.append((''.join(candidate), id2label[preds[i]]))
-                r_correct.append((''.join(batch.refs[x][0]), batch.gold()[x]))
+            gold_no_rule.append(batch.gold()[x])
+            pred_no_rule.append(id2label[preds[i]])
+            # if id2label[preds[i]]!=batch.gold()[x]:
+            #     s_wrong.append(' '.join([vocab.id2word[w] for w in words[i] if w!=0]))
+            #     d_wrong.append((''.join(candidate), id2label[preds[i]]))
+            #     r_wrong.append((''.join(batch.refs[x][0]), batch.gold()[x]))
+            # else:
+            #     s_correct.append(' '.join([vocab.id2word[w] for w in words[i] if w!=0]))
+            #     d_correct.append((''.join(candidate), id2label[preds[i]]))
+            #     r_correct.append((''.join(batch.refs[x][0]), batch.gold()[x]))
         elif id2label[preds[i]] != 'no_relation':
-            if id2label[preds[i]]!=batch.gold()[x]:
-                s_wrong_no.append(' '.join([vocab.id2word[w] for w in words[i] if w!=0]))
-                d_wrong_no.append((''.join(candidate), id2label[preds[i]]))
-                r_wrong_no.append((''.join(batch.refs[x][0]), batch.gold()[x]))
-            else:
-                s_correct_no.append(' '.join([vocab.id2word[w] for w in words[i] if w!=0]))
-                d_correct_no.append((''.join(candidate), id2label[preds[i]]))
-                r_correct_no.append((''.join(batch.refs[x][0]), batch.gold()[x]))
+            gold_w_rule.append(batch.gold()[x])
+            pred_w_rule.append(id2label[preds[i]])
+            # if id2label[preds[i]]!=batch.gold()[x]:
+            #     s_wrong_no.append(' '.join([vocab.id2word[w] for w in words[i] if w!=0]))
+            #     d_wrong_no.append((''.join(candidate), id2label[preds[i]]))
+            #     r_wrong_no.append((''.join(batch.refs[x][0]), batch.gold()[x]))
+            # else:
+            #     s_correct_no.append(' '.join([vocab.id2word[w] for w in words[i] if w!=0]))
+            #     d_correct_no.append((''.join(candidate), id2label[preds[i]]))
+            #     r_correct_no.append((''.join(batch.refs[x][0]), batch.gold()[x]))
         x += 1
-print ('wrong pred', len(d_wrong))
-l = random.sample(range(len(d_wrong)), min(50, len(d_wrong)))
-for i in l:
-    print (s_wrong[i])
-    print (d_wrong[i])
-    print (r_wrong[i])
-    print ()
-print ()
-print ()
-print ()
-print ('correct pred', len(d_correct))
-l = random.sample(range(len(d_correct)), min(50, len(d_correct)))
-for i in l:
-    print (s_correct[i])
-    print (d_correct[i])
-    print (r_correct[i])
-    print ()
-print ()
-print ()
-print ()
-print ('wrong pred no ref',len(d_wrong_no))
-l = random.sample(range(len(d_wrong_no)), min(50, len(d_wrong_no)))
-for i in l:
-    print (s_wrong_no[i])
-    print (d_wrong_no[i])
-    print (r_wrong_no[i])
-    print ()
-print ()
-print ()
-print ()
-print ('correct pred no ref', len(d_correct_no))
-l = random.sample(range(len(d_correct_no)), min(50, len(d_correct_no)))
-for i in l:
-    print (s_correct_no[i])
-    print (d_correct_no[i])
-    print (r_correct_no[i])
-    print ()
+# print ('wrong pred', len(d_wrong))
+# l = random.sample(range(len(d_wrong)), min(50, len(d_wrong)))
+# for i in l:
+#     print (s_wrong[i])
+#     print (d_wrong[i])
+#     print (r_wrong[i])
+#     print ()
+# print ()
+# print ()
+# print ()
+# print ('correct pred', len(d_correct))
+# l = random.sample(range(len(d_correct)), min(50, len(d_correct)))
+# for i in l:
+#     print (s_correct[i])
+#     print (d_correct[i])
+#     print (r_correct[i])
+#     print ()
+# print ()
+# print ()
+# print ()
+# print ('wrong pred no ref',len(d_wrong_no))
+# l = random.sample(range(len(d_wrong_no)), min(50, len(d_wrong_no)))
+# for i in l:
+#     print (s_wrong_no[i])
+#     print (d_wrong_no[i])
+#     print (r_wrong_no[i])
+#     print ()
+# print ()
+# print ()
+# print ()
+# print ('correct pred no ref', len(d_correct_no))
+# l = random.sample(range(len(d_correct_no)), min(50, len(d_correct_no)))
+# for i in l:
+#     print (s_correct_no[i])
+#     print (d_correct_no[i])
+#     print (r_correct_no[i])
+#     print ()
 
 predictions = [id2label[p] for p in predictions]
 # for pred in predictions:
 #     print (pred)
 p, r, f1 = scorer.score(batch.gold(), predictions, verbose=True)
+p2, r2, f12 = scorer.score(gold_no_rule, pred_no_rule, verbose=True)
+p3, r3, f13 = scorer.score(gold_w_rule, pred_w_rule, verbose=True)
 bleu = 0#corpus_bleu(references, candidates)
 print("{} set evaluate result: {:.2f}\t{:.2f}\t{:.2f}\t{:.4f}".format(args.dataset,p,r,f1,bleu))
+print("{} set evaluate result: {:.2f}\t{:.2f}\t{:.2f}\t{:.4f}".format("no rule",p2,r2,f12,bleu))
+print("{} set evaluate result: {:.2f}\t{:.2f}\t{:.2f}\t{:.4f}".format("rule",p3,r3,f13,bleu))
 
 print("Evaluation ended.")
 
