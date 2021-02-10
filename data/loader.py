@@ -79,15 +79,14 @@ class DataLoader(object):
             subj_type = [constant.SUBJ_NER_TO_ID[d['subj_type']]]
             obj_type = [constant.OBJ_NER_TO_ID[d['obj_type']]]
             relation = self.label2id[d['relation']]
-            if 't_' in mappings[c]: # or 's_' in mappings[c]:
+            if 'None' not in mappings2[c]: # or 's_' in mappings[c]:
                 rule = []
-                print (c, eval(mappings2[c].split()[1]))
                 rs, re = eval(mappings2[c].split()[1])
-                for m in eval(mappings[c]):
-                    r = helper.word_tokenize(rules[m[1]])
-                    r = map_to_ids(r, vocab.rule2id) 
-                    r = [constant.SOS_ID] + r + [constant.EOS_ID]
-                    rule.append(r)
+                # for m in eval(mappings[c]):
+                #     r = helper.word_tokenize(rules[m[1]])
+                #     r = map_to_ids(r, vocab.rule2id) 
+                #     r = [constant.SOS_ID] + r + [constant.EOS_ID]
+                #     rule.append(r)
                 rule_mask = [1 if i in range(rs, re) else 0 for i in range(len(tokens))]
                 # rule_mask = [1 for t in tokens]
                 processed += [(tokens, pos, ner, deprel, head, subj_positions, obj_positions, subj_type, obj_type, relation, rule[0], rule, rule_mask)]
