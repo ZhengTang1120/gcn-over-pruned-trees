@@ -93,7 +93,9 @@ class DataLoader(object):
             else:
                 rule = [[]]
                 rule_mask = [1 for t in tokens]
-                processed += [(tokens, pos, ner, deprel, head, subj_positions, obj_positions, subj_type, obj_type, 0, rule[0], rule, rule_mask)]
+                if 'train' in self.mappings:
+                    relation = 0
+                processed += [(tokens, pos, ner, deprel, head, subj_positions, obj_positions, subj_type, obj_type, relation, rule[0], rule, rule_mask)]
         # exit()
         return processed
 
