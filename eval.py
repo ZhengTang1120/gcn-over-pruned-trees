@@ -127,7 +127,7 @@ for c, b in enumerate(batch_iter):
             #     s_correct.append(' '.join([vocab.id2word[w] for w in words[i] if w!=0]))
             #     d_correct.append((''.join(candidate), id2label[preds[i]]))
             #     r_correct.append((''.join(batch.refs[x][0]), batch.gold()[x]))
-        else#if id2label[preds[i]] != 'no_relation':
+        else:#if id2label[preds[i]] != 'no_relation':
             gold_no_rule.append(batch.gold()[x])
             pred_no_rule.append(id2label[preds[i]])
             x_w += 1
