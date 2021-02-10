@@ -80,7 +80,7 @@ class DataLoader(object):
             obj_type = [constant.OBJ_NER_TO_ID[d['obj_type']]]
             relation = self.label2id[d['relation']]
             if 'None' not in mappings2[c]: # or 's_' in mappings[c]:
-                rule = []
+                rule = [[]]
                 rs, re = eval(mappings2[c].split()[1])
                 # for m in eval(mappings[c]):
                 #     r = helper.word_tokenize(rules[m[1]])
