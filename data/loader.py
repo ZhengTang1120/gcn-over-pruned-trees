@@ -13,13 +13,14 @@ class DataLoader(object):
     """
     Load data from json files, preprocess and prepare batches.
     """
-    def __init__(self, filename, batch_size, opt, vocab, mappings, evaluation=False):
+    def __init__(self, filename, batch_size, opt, vocab, mappings, mappings2, evaluation=False):
         self.batch_size = batch_size
         self.opt = opt
         self.vocab = vocab
         self.eval = evaluation
         self.label2id = constant.LABEL_TO_ID
         self.mappings = mappings
+        self.mappings2 = mappings2
 
         with open(filename) as infile:
             data = json.load(infile)
@@ -53,6 +54,8 @@ class DataLoader(object):
         processed_rule = []
         with open(self.mappings) as f:
             mappings = f.readlines()
+        with open(self.mappings2) as f:
+            mappings2 = f.readlines()
         with open('dataset/tacred/rules.json') as f:
             rules = json.load(f)
         for c, d in enumerate(data):
@@ -64,7 +67,7 @@ class DataLoader(object):
             os, oe = d['obj_start'], d['obj_end']
             tokens[ss:se+1] = ['SUBJ-'+d['subj_type']] * (se-ss+1)
             tokens[os:oe+1] = ['OBJ-'+d['obj_type']] * (oe-os+1)
-            token_ids = map_to_ids(tokens, vocab.word2id)
+            tokens = map_to_ids(tokens, vocab.word2id)
             pos = map_to_ids(d['stanford_pos'], constant.POS_TO_ID)
             ner = map_to_ids(d['stanford_ner'], constant.NER_TO_ID)
             deprel = map_to_ids(d['stanford_deprel'], constant.DEPREL_TO_ID)
@@ -78,18 +81,19 @@ class DataLoader(object):
             relation = self.label2id[d['relation']]
             if 't_' in mappings[c]: # or 's_' in mappings[c]:
                 rule = []
+                rs, re = eval(mappings2[c].split()[1])
                 for m in eval(mappings[c]):
                     r = helper.word_tokenize(rules[m[1]])
                     r = map_to_ids(r, vocab.rule2id) 
                     r = [constant.SOS_ID] + r + [constant.EOS_ID]
                     rule.append(r)
-                rule_mask = get_rule_mask(rule, tokens, ss, se, os, oe)
+                rule_mask = [1 if i in range(rs, re) else 0 for i in range(len(tokens))]
                 # rule_mask = [1 for t in tokens]
-                processed += [(token_ids, pos, ner, deprel, head, subj_positions, obj_positions, subj_type, obj_type, relation, rule[0], rule, rule_mask)]
+                processed += [(tokens, pos, ner, deprel, head, subj_positions, obj_positions, subj_type, obj_type, relation, rule[0], rule, rule_mask)]
             else:
                 rule = [[]]
                 rule_mask = [1 for t in tokens]
-                processed += [(token_ids, pos, ner, deprel, head, subj_positions, obj_positions, subj_type, obj_type, relation, rule[0], rule, rule_mask)]
+                processed += [(tokens, pos, ner, deprel, head, subj_positions, obj_positions, subj_type, obj_type, relation, rule[0], rule, rule_mask)]
         # exit()
         return processed
 
@@ -145,17 +149,6 @@ class DataLoader(object):
     def __iter__(self):
         for i in range(self.__len__()):
             yield self.__getitem__(i)
-
-def get_rule_mask(rule, tokens, ss, se, os, oe):
-    mask = []
-    for i, t in enumerate(tokens):
-        if i in range(ss, se+1) or i in range(os, oe+1):
-            mask.append(1)
-        elif i in range(min(ss, os)-1, max(se, oe)+2) and t in rule:
-            mask.append(1)
-        else:
-            mask.append(0)
-    return mask
 
 def map_to_ids(tokens, vocab):
     ids = [vocab[t] if t in vocab else constant.UNK_ID for t in tokens]
