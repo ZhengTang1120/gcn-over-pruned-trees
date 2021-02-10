@@ -86,7 +86,7 @@ class DataLoader(object):
                 rule_mask = get_rule_mask(rule, tokens, ss, se, os, oe)
                 # rule_mask = [1 for t in tokens]
                 processed += [(token_ids, pos, ner, deprel, head, subj_positions, obj_positions, subj_type, obj_type, relation, rule[0], rule, rule_mask)]
-            elif relation == 0:
+            else:
                 rule = [[]]
                 rule_mask = [1 for t in tokens]
                 processed += [(token_ids, pos, ner, deprel, head, subj_positions, obj_positions, subj_type, obj_type, relation, rule[0], rule, rule_mask)]
