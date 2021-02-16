@@ -95,11 +95,11 @@ class BERTtrainer(Trainer):
         if self.opt['classifier']:
             loss = self.criterion(logits, labels)
             # l2 decay on all conv layers
-            if self.opt.get('conv_l2', 0) > 0:
-                loss += self.classifier.conv_l2() * self.opt['conv_l2']
-            # l2 penalty on output representations
-            if self.opt.get('pooling_l2', 0) > 0:
-                loss += self.opt['pooling_l2'] * (pooling_output ** 2).sum(1).mean()
+            # if self.opt.get('conv_l2', 0) > 0:
+            #     loss += self.classifier.conv_l2() * self.opt['conv_l2']
+            # # l2 penalty on output representations
+            # if self.opt.get('pooling_l2', 0) > 0:
+            #     loss += self.opt['pooling_l2'] * (pooling_output ** 2).sum(1).mean()
         if self.opt['decoder']:
             # decoder
             batch_size = labels.size(0)
