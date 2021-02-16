@@ -121,7 +121,6 @@ class DataLoader(object):
         # else:
         #     words = batch[0]
         tokens = batch[0]
-        words = ' '.join(tokens)
         tokens = map_to_ids(tokens, vocab.word2id)
         tokens = get_long_tensor(words, batch_size)
         # convert to tensors
