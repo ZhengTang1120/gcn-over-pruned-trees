@@ -22,6 +22,7 @@ class DataLoader(object):
         self.eval = evaluation
         self.label2id = constant.LABEL_TO_ID
         self.mappings = mappings
+        self.tokenizer = BertTokenizer.from_pretrained('bert-base-uncased')
 
         with open(filename) as infile:
             data = json.load(infile)
@@ -122,7 +123,7 @@ class DataLoader(object):
 
         # convert to tensors
         # words = get_long_tensor(words, batch_size)
-        words = tokenizer(words, padding=True, truncation=True, return_tensors="pt")
+        words = self.tokenizer(words, padding=True, truncation=True, return_tensors="pt")
         masks = torch.eq(words, 0)
         pos = get_long_tensor(batch[1], batch_size)
         ner = get_long_tensor(batch[2], batch_size)
