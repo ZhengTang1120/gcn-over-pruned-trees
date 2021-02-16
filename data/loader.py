@@ -120,7 +120,7 @@ class DataLoader(object):
         #     words = [word_dropout(sent, self.opt['word_dropout']) for sent in batch[0]]
         # else:
         #     words = batch[0]
-
+        words = batch[0]
         # convert to tensors
         # words = get_long_tensor(words, batch_size)
         words = self.tokenizer(words, padding=True, truncation=True, return_tensors="pt")
