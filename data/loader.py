@@ -146,7 +146,7 @@ class DataLoader(object):
             yield self.__getitem__(i)
 
 def map_to_ids(tokens, vocab):
-    ids = [vocab[t] if t in vocab else constant.UNK_ID for t in tokens]
+    ids = [constant.SOS_ID] + [vocab[t] if t in vocab else constant.UNK_ID for t in tokens] + [constant.EOS_ID]
     return ids
 
 def get_positions(start_idx, end_idx, length):
@@ -156,10 +156,10 @@ def get_positions(start_idx, end_idx, length):
 
 def get_long_tensor(tokens_list, batch_size):
     """ Convert list of list of tokens to a padded LongTensor. """
-    token_len = max(len(x) for x in tokens_list)+2
+    token_len = max(len(x) for x in tokens_list)
     tokens = torch.LongTensor(batch_size, token_len).fill_(constant.PAD_ID)
     for i, s in enumerate(tokens_list):
-        tokens[i,1 :len(s)] = torch.LongTensor(s)
+        tokens[i,:len(s)] = torch.LongTensor(s)
     return tokens
 
 def sort_all(batch, lens):
