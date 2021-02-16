@@ -21,4 +21,4 @@ class BERTclassifier(nn.Module):
         outputs = outputs.last_hidden_state
         print (outputs)
         logits = self.classifier(outputs)
-        return logits, encode_outputs, hidden
+        return logits, None, None, None
