@@ -146,26 +146,26 @@ class BERTtrainer(Trainer):
             _, predictions, probs = [list(t) for t in zip(*sorted(zip(orig_idx,\
                     predictions, probs)))]
         # decoder
-        batch_size = labels.size(0)
-        decoded = []
-        masks = inputs[1]
-        output = Variable(torch.LongTensor([constant.SOS_ID] * batch_size)) # sos
-        output = output.cuda() if self.opt['cuda'] else output
-        decoded = torch.zeros(constant.MAX_RULE_LEN, batch_size)
-        decoded[0] = output
-        if self.opt['cuda']:
-                decoded = decoded.cuda()
-        h0 = hidden.view(self.opt['num_layers'], batch_size, -1)
-        c0 = hidden.view(self.opt['num_layers'], batch_size, -1)
-        decoder_hidden = (h0, c0)
-        for t in range(1, constant.MAX_RULE_LEN):
-            output, decoder_hidden, attn_weights = self.decoder(
-                    output, masks, decoder_hidden, encoder_outputs)
-            topv, topi = output.data.topk(1)
-            output = topi.view(-1)
-            decoded[t] = output
-        decoded = decoded.transpose(0, 1).tolist()
-        if unsort:
-            _, decoded, probs = [list(t) for t in zip(*sorted(zip(orig_idx,\
-                    decoded, probs)))]
-        return predictions, probs, decoded, loss.item()
+        # batch_size = labels.size(0)
+        # decoded = []
+        # masks = inputs[1]
+        # output = Variable(torch.LongTensor([constant.SOS_ID] * batch_size)) # sos
+        # output = output.cuda() if self.opt['cuda'] else output
+        # decoded = torch.zeros(constant.MAX_RULE_LEN, batch_size)
+        # decoded[0] = output
+        # if self.opt['cuda']:
+        #         decoded = decoded.cuda()
+        # h0 = hidden.view(self.opt['num_layers'], batch_size, -1)
+        # c0 = hidden.view(self.opt['num_layers'], batch_size, -1)
+        # decoder_hidden = (h0, c0)
+        # for t in range(1, constant.MAX_RULE_LEN):
+        #     output, decoder_hidden, attn_weights = self.decoder(
+        #             output, masks, decoder_hidden, encoder_outputs)
+        #     topv, topi = output.data.topk(1)
+        #     output = topi.view(-1)
+        #     decoded[t] = output
+        # decoded = decoded.transpose(0, 1).tolist()
+        # if unsort:
+        #     _, decoded, probs = [list(t) for t in zip(*sorted(zip(orig_idx,\
+        #             decoded, probs)))]
+        return predictions#, probs, decoded, loss.item()

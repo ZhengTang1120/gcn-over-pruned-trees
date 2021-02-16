@@ -161,7 +161,8 @@ for epoch in range(1, opt['num_epoch']+1):
     candidates = []
     count = 0
     for i, batch in enumerate(dev_batch):
-        preds, _, decoded, loss = trainer.predict(batch)
+        preds = trainer.predict(batch)
+        # preds, _, decoded, loss = trainer.predict(batch)
         predictions += preds
         dev_loss += loss
         batch_size = len(preds)
@@ -184,7 +185,7 @@ for epoch in range(1, opt['num_epoch']+1):
     dev_loss = dev_loss / dev_batch.num_examples * opt['batch_size']
 
     dev_p, dev_r, dev_f1 = scorer.score(dev_batch.gold(), predictions)
-    bleu = corpus_bleu(references, candidates) if len(candidates)!=0 else 0
+    bleu = 0#corpus_bleu(references, candidates) if len(candidates)!=0 else 0
     print("epoch {}: train_loss = {:.6f}, dev_loss = {:.6f}, dev_f1 = {:.4f}, bleu = {:.4f}".format(epoch,\
         train_loss, dev_loss, dev_f1, bleu))
     if opt['classifier']:
