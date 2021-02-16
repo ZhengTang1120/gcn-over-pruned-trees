@@ -51,7 +51,7 @@ class Trainer(object):
 def unpack_batch(batch, cuda):
     rules = None
     if cuda:
-        inputs = [Variable(b.to('cuda')) for b in batch[:10]]
+        inputs = [batch[0].to('cuda')] + [Variable(b.cuda()) for b in batch[1:10]]
         labels = Variable(batch[10].cuda())
         rules  = Variable(batch[12]).cuda()
     else:
