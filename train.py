@@ -121,14 +121,14 @@ helper.print_config(opt)
 
 # model
 if not opt['load']:
-    trainer = GCNTrainer(opt, emb_matrix=emb_matrix)
+    trainer = BERTtrainer(opt, emb_matrix=emb_matrix)
 else:
     # load pretrained model
     model_file = opt['model_file'] 
     print("Loading model from {}".format(model_file))
     model_opt = torch_utils.load_config(model_file)
     model_opt['optim'] = opt['optim']
-    trainer = GCNTrainer(model_opt)
+    trainer = BERTtrainer(model_opt)
     trainer.load(model_file)   
 
 id2label = dict([(v,k) for k,v in label2id.items()])
