@@ -9,6 +9,8 @@ import numpy as np
 
 from utils import constant, helper, vocab
 
+from transformers import BertTokenizer
+
 class DataLoader(object):
     """
     Load data from json files, preprocess and prepare batches.
@@ -59,12 +61,13 @@ class DataLoader(object):
             tokens = list(d['token'])
             if opt['lower']:
                 tokens = [t.lower() for t in tokens]
+            words = ' '.join(tokens)
             # anonymize tokens
             ss, se = d['subj_start'], d['subj_end']
             os, oe = d['obj_start'], d['obj_end']
             tokens[ss:se+1] = ['SUBJ-'+d['subj_type']] * (se-ss+1)
             tokens[os:oe+1] = ['OBJ-'+d['obj_type']] * (oe-os+1)
-            tokens = map_to_ids(tokens, vocab.word2id)
+            # tokens = map_to_ids(tokens, vocab.word2id)
             pos = map_to_ids(d['stanford_pos'], constant.POS_TO_ID)
             ner = map_to_ids(d['stanford_ner'], constant.NER_TO_ID)
             deprel = map_to_ids(d['stanford_deprel'], constant.DEPREL_TO_ID)
@@ -85,7 +88,7 @@ class DataLoader(object):
                     rule.append(r)
             else:
                 rule = [[]]
-            processed += [(tokens, pos, ner, deprel, head, subj_positions, obj_positions, subj_type, obj_type, relation, rule[0], rule)]
+            processed += [(words, pos, ner, deprel, head, subj_positions, obj_positions, subj_type, obj_type, relation, rule[0], rule)]
         # exit()
         return processed
 
@@ -112,13 +115,14 @@ class DataLoader(object):
         batch, orig_idx = sort_all(batch, lens)
 
         # word dropout
-        if not self.eval:
-            words = [word_dropout(sent, self.opt['word_dropout']) for sent in batch[0]]
-        else:
-            words = batch[0]
+        # if not self.eval:
+        #     words = [word_dropout(sent, self.opt['word_dropout']) for sent in batch[0]]
+        # else:
+        #     words = batch[0]
 
         # convert to tensors
-        words = get_long_tensor(words, batch_size)
+        # words = get_long_tensor(words, batch_size)
+        words = tokenizer(words, padding=True, truncation=True, return_tensors="pt")
         masks = torch.eq(words, 0)
         pos = get_long_tensor(batch[1], batch_size)
         ner = get_long_tensor(batch[2], batch_size)
@@ -150,10 +154,10 @@ def get_positions(start_idx, end_idx, length):
 
 def get_long_tensor(tokens_list, batch_size):
     """ Convert list of list of tokens to a padded LongTensor. """
-    token_len = max(len(x) for x in tokens_list)
+    token_len = max(len(x) for x in tokens_list)+2
     tokens = torch.LongTensor(batch_size, token_len).fill_(constant.PAD_ID)
     for i, s in enumerate(tokens_list):
-        tokens[i, :len(s)] = torch.LongTensor(s)
+        tokens[i,1 :len(s)] = torch.LongTensor(s)
     return tokens
 
 def sort_all(batch, lens):

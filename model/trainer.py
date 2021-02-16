@@ -8,7 +8,7 @@ import torch.nn.functional as F
 from torch.autograd import Variable
 import numpy as np
 
-from model.gcn import GCNClassifier
+from model.bert import BERTclassifier
 from model.decoder import Decoder
 from utils import constant, torch_utils
 
@@ -65,11 +65,11 @@ def unpack_batch(batch, cuda):
     lens = batch[1].eq(0).long().sum(1).squeeze()
     return inputs, labels, rules, tokens, head, subj_pos, obj_pos, lens
 
-class GCNTrainer(Trainer):
+class BERTtrainer(Trainer):
     def __init__(self, opt, emb_matrix=None):
         self.opt = opt
         self.emb_matrix = emb_matrix
-        self.classifier = GCNClassifier(opt, emb_matrix=emb_matrix)
+        self.classifier = BERTclassifier(opt, emb_matrix=emb_matrix)
         self.decoder = Decoder(opt)
         self.criterion = nn.CrossEntropyLoss()
         self.criterion_d = nn.NLLLoss(ignore_index=constant.PAD_ID)
