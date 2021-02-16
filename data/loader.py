@@ -62,7 +62,7 @@ class DataLoader(object):
             tokens = list(d['token'])
             if opt['lower']:
                 tokens = [t.lower() for t in tokens]
-            words = ' '.join(tokens)
+            
             # anonymize tokens
             ss, se = d['subj_start'], d['subj_end']
             os, oe = d['obj_start'], d['obj_end']
@@ -89,7 +89,7 @@ class DataLoader(object):
                     rule.append(r)
             else:
                 rule = [[]]
-            processed += [(words, pos, ner, deprel, head, subj_positions, obj_positions, subj_type, obj_type, relation, rule[0], rule)]
+            processed += [(tokens, pos, ner, deprel, head, subj_positions, obj_positions, subj_type, obj_type, relation, rule[0], rule)]
         # exit()
         return processed
 
@@ -120,11 +120,14 @@ class DataLoader(object):
         #     words = [word_dropout(sent, self.opt['word_dropout']) for sent in batch[0]]
         # else:
         #     words = batch[0]
-        words = batch[0]
+        tokens = batch[0]
+        words = ' '.join(tokens)
+        tokens = map_to_ids(tokens, vocab.word2id)
+        tokens = get_long_tensor(words, batch_size)
         # convert to tensors
         # words = get_long_tensor(words, batch_size)
         words = self.tokenizer(words, padding=True, truncation=True, return_tensors="pt")
-        masks = torch.eq(words, 0)
+        masks = torch.eq(tokens, 0)
         pos = get_long_tensor(batch[1], batch_size)
         ner = get_long_tensor(batch[2], batch_size)
         deprel = get_long_tensor(batch[3], batch_size)
