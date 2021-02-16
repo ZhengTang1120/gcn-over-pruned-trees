@@ -42,7 +42,7 @@ class DataLoader(object):
             self.refs.append(temp)
 
         self.id2label = dict([(v,k) for k,v in self.label2id.items()])
-        self.labels = [self.id2label[d[-3]] for d in data]
+        self.labels = [self.id2label[d[-4]] for d in data]
         self.num_examples = len(data)
         
         # chunk into batches
@@ -62,7 +62,7 @@ class DataLoader(object):
             tokens = list(d['token'])
             if opt['lower']:
                 tokens = [t.lower() for t in tokens]
-            
+            words = ' '.join(tokens)
             # anonymize tokens
             ss, se = d['subj_start'], d['subj_end']
             os, oe = d['obj_start'], d['obj_end']
@@ -89,7 +89,7 @@ class DataLoader(object):
                     rule.append(r)
             else:
                 rule = [[]]
-            processed += [(tokens, pos, ner, deprel, head, subj_positions, obj_positions, subj_type, obj_type, relation, rule[0], rule)]
+            processed += [(tokens, pos, ner, deprel, head, subj_positions, obj_positions, subj_type, obj_type, relation, rule[0], rule, words)]
         # exit()
         return processed
 
@@ -126,7 +126,7 @@ class DataLoader(object):
         tokens = get_long_tensor(words, batch_size)
         # convert to tensors
         # words = get_long_tensor(words, batch_size)
-        words = self.tokenizer(words, padding=True, truncation=True, return_tensors="pt")
+        words = self.tokenizer(batch[-1], padding=True, truncation=True, return_tensors="pt")
         masks = torch.eq(tokens, 0)
         pos = get_long_tensor(batch[1], batch_size)
         ner = get_long_tensor(batch[2], batch_size)
