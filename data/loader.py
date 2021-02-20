@@ -64,8 +64,9 @@ class DataLoader(object):
             # anonymize tokens
             ss, se = d['subj_start'], d['subj_end']
             os, oe = d['obj_start'], d['obj_end']
-            tokens[ss:se+1] = ['SUBJ-'+d['subj_type']] * (se-ss+1)
-            tokens[os:oe+1] = ['OBJ-'+d['obj_type']] * (oe-os+1)
+            tokens[ss:se+1] = ['[SUBJ-'+d['subj_type']+']'] * (se-ss+1)
+            tokens[os:oe+1] = ['[OBJ-'+d['obj_type']+']'] * (oe-os+1)
+            tokens = [t for i, t in enumerate(tokens) if i not in range(ss, se) and i not in range(os, oe)]
             words = ' '.join(tokens)
             tokens = map_to_ids(tokens, vocab.word2id)
             pos = map_to_ids(d['stanford_pos'], constant.POS_TO_ID)
