@@ -16,7 +16,6 @@ class BERTclassifier(nn.Module):
 
     def forward(self, inputs):
         words, masks, pos, ner, deprel, head, subj_pos, obj_pos, subj_type, obj_type = inputs
-        print (words)
         outputs = self.model(**words)
         outputs = outputs.pooler_output
         logits = self.classifier(outputs)
