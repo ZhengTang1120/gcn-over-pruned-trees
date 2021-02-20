@@ -22,6 +22,8 @@ from utils.vocab import Vocab
 
 from nltk.translate.bleu_score import corpus_bleu, sentence_bleu
 
+from transformers import BertTokenizer
+
 parser = argparse.ArgumentParser()
 parser.add_argument('--data_dir', type=str, default='dataset/tacred')
 parser.add_argument('--vocab_dir', type=str, default='dataset/vocab')
@@ -102,9 +104,11 @@ assert emb_matrix.shape[0] == vocab.size
 assert emb_matrix.shape[1] == opt['emb_dim']
 
 # load data
+tokenizer = BertTokenizer.from_pretrained('bert-base-uncased')
+self.tokenizer.add_tokens(constant.ENTITY_TOKENS, special_tokens=True)
 print("Loading data from {} with batch size {}...".format(opt['data_dir'], opt['batch_size']))
-train_batch = DataLoader(opt['data_dir'] + '/train.json'.format(opt['curve']), opt['batch_size'], opt, vocab, opt['data_dir'] + '/mappings_train.txt'.format(opt['curve']), evaluation=False)
-dev_batch = DataLoader(opt['data_dir'] + '/dev.json', opt['batch_size'], opt, vocab, opt['data_dir'] + '/mappings_dev.txt', evaluation=True)
+train_batch = DataLoader(opt['data_dir'] + '/train.json'.format(opt['curve']), opt['batch_size'], opt, vocab, opt['data_dir'] + '/mappings_train.txt'.format(opt['curve']), tokenizer, evaluation=False)
+dev_batch = DataLoader(opt['data_dir'] + '/dev.json', opt['batch_size'], opt, vocab, opt['data_dir'] + '/mappings_dev.txt', tokenizer, evaluation=True)
 
 model_id = opt['id'] if len(opt['id']) > 1 else '0' + opt['id']
 model_save_dir = opt['save_dir'] + '/' + model_id
@@ -129,7 +133,9 @@ else:
     model_opt = torch_utils.load_config(model_file)
     model_opt['optim'] = opt['optim']
     trainer = BERTtrainer(model_opt)
-    trainer.load(model_file)   
+    trainer.load(model_file)  
+
+trainer.classifier.model.resize_token_embeddings(len(tokenizer)) 
 
 id2label = dict([(v,k) for k,v in label2id.items()])
 dev_score_history = []

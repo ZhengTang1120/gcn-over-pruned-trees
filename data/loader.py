@@ -9,22 +9,19 @@ import numpy as np
 
 from utils import constant, helper, vocab
 
-from transformers import BertTokenizer
 
 class DataLoader(object):
     """
     Load data from json files, preprocess and prepare batches.
     """
-    def __init__(self, filename, batch_size, opt, vocab, mappings, evaluation=False):
+    def __init__(self, filename, batch_size, opt, vocab, mappings, tokenizer, evaluation=False):
         self.batch_size = batch_size
         self.opt = opt
         self.vocab = vocab
         self.eval = evaluation
         self.label2id = constant.LABEL_TO_ID
         self.mappings = mappings
-        self.tokenizer = BertTokenizer.from_pretrained('bert-base-uncased')
-
-        self.tokenizer.add_tokens(constant.ENTITY_TOKENS)
+        self.tokenizer = tokenizer
 
         with open(filename) as infile:
             data = json.load(infile)
