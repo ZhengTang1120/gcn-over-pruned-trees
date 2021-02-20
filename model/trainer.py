@@ -73,7 +73,7 @@ class BERTtrainer(Trainer):
         self.decoder = Decoder(opt)
         self.criterion = nn.CrossEntropyLoss()
         self.criterion_d = nn.NLLLoss(ignore_index=constant.PAD_ID)
-        self.parameters = [p for p in self.classifier.parameters() if p.requires_grad] + [p for p in self.decoder.parameters() if p.requires_grad]
+        self.parameters = [p for p in self.classifier.parameters() if p.requires_grad]# + [p for p in self.decoder.parameters() if p.requires_grad]
         if opt['cuda']:
             self.classifier.cuda()
             self.decoder.cuda()
