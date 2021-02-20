@@ -105,7 +105,9 @@ assert emb_matrix.shape[1] == opt['emb_dim']
 
 # load data
 tokenizer = BertTokenizer.from_pretrained('bert-base-cased')
+print (len(tokenizer))
 tokenizer.add_tokens(constant.ENTITY_TOKENS)
+print (len(tokenizer))
 print (tokenizer.get_vocab())
 print("Loading data from {} with batch size {}...".format(opt['data_dir'], opt['batch_size']))
 train_batch = DataLoader(opt['data_dir'] + '/train.json'.format(opt['curve']), opt['batch_size'], opt, vocab, opt['data_dir'] + '/mappings_train.txt'.format(opt['curve']), tokenizer, evaluation=False)
