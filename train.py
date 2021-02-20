@@ -172,10 +172,10 @@ for epoch in range(1, opt['num_epoch']+1):
         # preds, _, decoded, loss = trainer.predict(batch)
         predictions += preds
         dev_loss += loss
-        batch_size = len(preds)
-        for i in range(batch_size):
-            print (id2label[preds[i]], dev_batch.gold()[x])
-            x += 1
+        # batch_size = len(preds)
+        # for i in range(batch_size):
+        #     print (id2label[preds[i]], dev_batch.gold()[x])
+        #     x += 1
         #     if id2label[preds[i]] != 'no_relation':
         #         output = decoded.transpose(0, 1)[i]
         #         candidate = []
