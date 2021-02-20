@@ -10,7 +10,7 @@ class BERTclassifier(nn.Module):
     def __init__(self, opt, emb_matrix=None):
         super().__init__()
         in_dim = 768
-        self.model = BertModel.from_pretrained("bert-base-uncased")
+        self.model = BertModel.from_pretrained("bert-base-cased")
         self.classifier = nn.Linear(in_dim, opt['num_class'])
         self.opt = opt
 
