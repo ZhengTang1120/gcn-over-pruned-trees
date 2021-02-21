@@ -11,13 +11,28 @@ class BERTclassifier(nn.Module):
         super().__init__()
         in_dim = 768
         self.model = BertModel.from_pretrained("bert-base-cased")
-        self.classifier = nn.Linear(in_dim, 42)
+        self.classifier = nn.Linear(in_dim, opt['num_class'])
         self.opt = opt
 
-    def forward(self, words):
-        # words, masks, pos, ner, deprel, head, subj_pos, obj_pos, subj_type, obj_type = inputs
-
+    def forward(self, inputs):
+        words, masks, pos, ner, deprel, head, subj_pos, obj_pos, subj_type, obj_type = inputs
+        subj_mask, obj_mask = subj_pos.eq(0).eq(0).unsqueeze(2), obj_pos.eq(0).eq(0).unsqueeze(2)
         outputs = self.model(**words)
-        outputs = outputs.last_hidden_state[:,0,:]
+        h = outputs.last_hidden_state.transpose(1,0)
+        pool_type = self.opt['pooling']
+        subj_out = pool(h, subj_mask, type=pool_type)
+        obj_out = pool(h, obj_mask, type=pool_type)
+        cls_out = h[0]
         logits = self.classifier(outputs)
         return logits, None, None, None
+
+def pool(h, mask, type='max'):
+    if type == 'max':
+        h = h.masked_fill(mask, -constant.INFINITY_NUMBER)
+        return torch.max(h, 1)[0]
+    elif type == 'avg':
+        h = h.masked_fill(mask, 0)
+        return h.sum(1) / (mask.size(1) - mask.float().sum(1))
+    else:
+        h = h.masked_fill(mask, 0)
+        return h.sum(1)
