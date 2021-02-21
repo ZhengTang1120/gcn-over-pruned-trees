@@ -41,7 +41,7 @@ class DataLoader(object):
             self.refs.append(temp)
 
         self.id2label = dict([(v,k) for k,v in self.label2id.items()])
-        self.labels = [self.id2label[d[-4]] for d in data]
+        self.labels = [self.id2label[d[-3]] for d in data]
         self.num_examples = len(data)
         
         # chunk into batches
@@ -66,9 +66,7 @@ class DataLoader(object):
             os, oe = d['obj_start'], d['obj_end']
             tokens[ss:se+1] = ['[SUBJ-'+d['subj_type']+']'] * (se-ss+1)
             tokens[os:oe+1] = ['[OBJ-'+d['obj_type']+']'] * (oe-os+1)
-            tokens = [t for i, t in enumerate(tokens) if i not in range(ss, se) and i not in range(os, oe)]
-            words = ' '.join(tokens)
-            tokens = map_to_ids(tokens, vocab.word2id)
+            # tokens = map_to_ids(tokens, vocab.word2id)
             pos = map_to_ids(d['stanford_pos'], constant.POS_TO_ID)
             ner = map_to_ids(d['stanford_ner'], constant.NER_TO_ID)
             deprel = map_to_ids(d['stanford_deprel'], constant.DEPREL_TO_ID)
@@ -89,7 +87,7 @@ class DataLoader(object):
                     rule.append(r)
             else:
                 rule = [[]]
-            processed += [(tokens, pos, ner, deprel, head, subj_positions, obj_positions, subj_type, obj_type, relation, rule[0], rule, words)]
+            processed += [(tokens, pos, ner, deprel, head, subj_positions, obj_positions, subj_type, obj_type, relation, rule[0], rule)]
         # exit()
         return processed
 
@@ -120,11 +118,11 @@ class DataLoader(object):
         #     words = [word_dropout(sent, self.opt['word_dropout']) for sent in batch[0]]
         # else:
         #     words = batch[0]
-        tokens = batch[0]
-        tokens = get_long_tensor(tokens, batch_size)
+        # tokens = batch[0]
+        # tokens = get_long_tensor(tokens, batch_size)
         # convert to tensors
         # words = get_long_tensor(words, batch_size)
-        words = self.tokenizer(batch[-1], padding=True, return_tensors="pt")
+        words = self.tokenizer(batch[0], padding=True, is_split_into_words=True, return_tensors="pt")
         # for i, ids in enumerate(words.input_ids):
         #     print (batch[-1][i])
         #     print ([self.tokenizer.convert_ids_to_tokens(i) for i in ids.numpy().tolist()])
