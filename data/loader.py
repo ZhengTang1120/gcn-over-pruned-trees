@@ -66,6 +66,7 @@ class DataLoader(object):
             os, oe = d['obj_start'], d['obj_end']
             tokens[ss:se+1] = ['[SUBJ-'+d['subj_type']+']'] * (se-ss+1)
             tokens[os:oe+1] = ['[OBJ-'+d['obj_type']+']'] * (oe-os+1)
+            tokens = self.tokenizer.convert_tokens_to_ids(tokens)
             # tokens = map_to_ids(tokens, vocab.word2id)
             pos = map_to_ids(d['stanford_pos'], constant.POS_TO_ID)
             ner = map_to_ids(d['stanford_ner'], constant.NER_TO_ID)
@@ -113,25 +114,25 @@ class DataLoader(object):
         lens = [len(x) for x in batch[0]]
         batch, orig_idx = sort_all(batch, lens)
         # word dropout
-        # if not self.eval:
-        #     words = [word_dropout(sent, self.opt['word_dropout']) for sent in batch[0]]
-        # else:
-        #     words = batch[0]
-        # tokens = batch[0]
-        # tokens = get_long_tensor(tokens, batch_size)
+        if not self.eval:
+            words = [word_dropout(sent, self.opt['word_dropout']) for sent in batch[0]]
+        else:
+            words = batch[0]
         # convert to tensors
-        # words = get_long_tensor(words, batch_size)
-        words = self.tokenizer(batch[0], is_split_into_words=True, padding=True, truncation=True, return_tensors="pt")
-
+        words = get_long_tensor(words, batch_size)
+        # words = self.tokenizer(batch[0], is_split_into_words=True, padding=True, truncation=True, return_tensors="pt")
         masks = torch.eq(words.input_ids, 0)
         pos = get_long_tensor(batch[1], batch_size)
         ner = get_long_tensor(batch[2], batch_size)
         deprel = get_long_tensor(batch[3], batch_size)
         head = get_long_tensor(batch[4], batch_size)
-        # subj_positions = get_long_tensor(batch[5], batch_size)
-        # obj_positions = get_long_tensor(batch[6], batch_size)
-        subj_mask = torch.ge(words.input_ids, 28996) * torch.lt(words.input_ids, 28998)
-        obj_mask = torch.ge(words.input_ids, 28998)
+        subj_positions = get_long_tensor(batch[5], batch_size)
+        obj_positions = get_long_tensor(batch[6], batch_size)
+        print (words, words.size())
+        print (masks, masks.size())
+        print (subj_positions, subj_positions.size())
+        # subj_mask = torch.ge(words.input_ids, 28996) * torch.lt(words.input_ids, 28998)
+        # obj_mask = torch.ge(words.input_ids, 28998)
         subj_type = get_long_tensor(batch[7], batch_size)
         obj_type = get_long_tensor(batch[8], batch_size)
 
@@ -139,7 +140,7 @@ class DataLoader(object):
 
         rule = get_long_tensor(batch[10], batch_size)
         
-        return (words, masks, pos, ner, deprel, head, subj_mask, obj_mask, subj_type, obj_type, rels, orig_idx, rule)
+        return (words, masks, pos, ner, deprel, head, subj_positions, obj_positions, subj_type, obj_type, rels, orig_idx, rule)
 
     def __iter__(self):
         for i in range(self.__len__()):
