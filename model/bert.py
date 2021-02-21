@@ -19,7 +19,9 @@ class BERTclassifier(nn.Module):
 
         outputs = self.model(**words)
         print (outputs.last_hidden_state[:,0,:])
+        print (outputs.last_hidden_state[:,0,:].size())
         outputs = outputs.pooler_output
         print (outputs)
+        print (outputs.size())
         logits = self.classifier(outputs)
         return logits, None, None, None
