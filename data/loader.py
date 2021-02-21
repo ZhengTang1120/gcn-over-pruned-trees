@@ -73,8 +73,8 @@ class DataLoader(object):
             head = [int(x) for x in d['stanford_head']]
             assert any([x == 0 for x in head])
             l = len(tokens)
-            subj_positions = get_positions(d['subj_start']+1, d['subj_end']+1, l)
-            obj_positions = get_positions(d['obj_start']+1, d['obj_end']+1, l)
+            subj_positions = get_positions(d['subj_start']+1, d['subj_end']+1, l+2)
+            obj_positions = get_positions(d['obj_start']+1, d['obj_end']+1, l+2)
             subj_type = [constant.SUBJ_NER_TO_ID[d['subj_type']]]
             obj_type = [constant.OBJ_NER_TO_ID[d['obj_type']]]
             relation = self.label2id[d['relation']]
@@ -123,6 +123,7 @@ class DataLoader(object):
         # convert to tensors
         # words = get_long_tensor(words, batch_size)
         words = self.tokenizer(batch[0], padding=True, is_split_into_words=True, return_tensors="pt")
+        print (words.input_ids.size())
         # for i, ids in enumerate(words.input_ids):
         #     print (batch[-1][i])
         #     print ([self.tokenizer.convert_ids_to_tokens(i) for i in ids.numpy().tolist()])
@@ -134,6 +135,7 @@ class DataLoader(object):
         head = get_long_tensor(batch[4], batch_size)
         subj_positions = get_long_tensor(batch[5], batch_size)
         obj_positions = get_long_tensor(batch[6], batch_size)
+        print (subj_positions.size(), obj_positions.size())
         subj_type = get_long_tensor(batch[7], batch_size)
         obj_type = get_long_tensor(batch[8], batch_size)
 
