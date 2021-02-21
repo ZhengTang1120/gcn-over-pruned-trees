@@ -75,6 +75,7 @@ class DataLoader(object):
             l = len(tokens)
             subj_positions = get_positions(d['subj_start']+1, d['subj_end']+1, l+2)
             obj_positions = get_positions(d['obj_start']+1, d['obj_end']+1, l+2)
+            print (len(tokens, len(subj_positions)))
             subj_type = [constant.SUBJ_NER_TO_ID[d['subj_type']]]
             obj_type = [constant.OBJ_NER_TO_ID[d['obj_type']]]
             relation = self.label2id[d['relation']]
