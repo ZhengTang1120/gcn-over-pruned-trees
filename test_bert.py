@@ -42,7 +42,7 @@ dev_batches = process_data('dataset/tacred/dev.json')
 classifier = BERTclassifier(None, emb_matrix=None)
 criterion = nn.CrossEntropyLoss()
 parameters = [p for p in classifier.parameters() if p.requires_grad]
-optimizer = torch_utils.get_optimizer('adam', self.parameters, 1e-5)
+optimizer = torch_utils.get_optimizer('adam', parameters, 1e-5)
 for i in range(100):
     classifier.train()
     for words, labels in train_batches:
