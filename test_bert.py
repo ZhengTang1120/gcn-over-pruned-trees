@@ -7,7 +7,7 @@ import numpy as np
 from model.bert import BERTclassifier
 from transformers import BertTokenizer
 
-from utils import constant, torch_utils
+from utils import constant, torch_utils, scorer
 import json
 
 tokenizer = BertTokenizer.from_pretrained('bert-base-cased')
