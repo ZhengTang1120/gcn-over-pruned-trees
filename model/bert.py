@@ -9,8 +9,8 @@ class BERTclassifier(nn.Module):
     """ A wrapper classifier for GCNRelationModel. """
     def __init__(self, opt, emb_matrix=None):
         super().__init__()
-        in_dim = 768
-        self.model = BertModel.from_pretrained("bert-base-cased")
+        in_dim = 1024
+        self.model = BertModel.from_pretrained("bert-large-cased")
         self.classifier = nn.Linear(in_dim, opt['num_class'])
         self.opt = opt
 

@@ -104,7 +104,7 @@ assert emb_matrix.shape[0] == vocab.size
 assert emb_matrix.shape[1] == opt['emb_dim']
 
 # load data
-tokenizer = BertTokenizer.from_pretrained('bert-base-cased')
+tokenizer = BertTokenizer.from_pretrained('bert-large-cased')
 special_tokens_dict = {'additional_special_tokens': constant.ENTITY_TOKENS}
 num_added_toks = tokenizer.add_special_tokens(special_tokens_dict)
 print("Loading data from {} with batch size {}...".format(opt['data_dir'], opt['batch_size']))
