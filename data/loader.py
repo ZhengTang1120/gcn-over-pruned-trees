@@ -75,8 +75,8 @@ class DataLoader(object):
             head = [int(x) for x in d['stanford_head']]
             assert any([x == 0 for x in head])
             l = len(tokens)
-            subj_positions = get_positions(d['subj_start'], d['subj_end'], l)
-            obj_positions = get_positions(d['obj_start'], d['obj_end'], l)
+            subj_positions = get_positions(d['subj_start']+1, d['subj_end']+1, l)
+            obj_positions = get_positions(d['obj_start']+1, d['obj_end']+1, l)
             subj_type = [constant.SUBJ_NER_TO_ID[d['subj_type']]]
             obj_type = [constant.OBJ_NER_TO_ID[d['obj_type']]]
             relation = self.label2id[d['relation']]
