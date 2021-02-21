@@ -122,7 +122,7 @@ class DataLoader(object):
         # convert to tensors
         words = get_long_tensor(words, batch_size)
         # words = self.tokenizer(batch[0], is_split_into_words=True, padding=True, truncation=True, return_tensors="pt")
-        masks = torch.eq(words.input_ids, 0)
+        masks = torch.eq(words, 0)
         pos = get_long_tensor(batch[1], batch_size)
         ner = get_long_tensor(batch[2], batch_size)
         deprel = get_long_tensor(batch[3], batch_size)
