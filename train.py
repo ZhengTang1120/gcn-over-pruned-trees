@@ -151,7 +151,7 @@ max_steps = len(dev_batch) * opt['num_epoch']
 # start training
 for epoch in range(1, opt['num_epoch']+1):
     train_loss = 0
-    for i, batch in enumerate(dev_batch):
+    for i, batch in enumerate(train_batch):
         start_time = time.time()
         global_step += 1
         loss = trainer.update(batch)
