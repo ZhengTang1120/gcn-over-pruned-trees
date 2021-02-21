@@ -26,6 +26,7 @@ def process_data(filename):
         tokens[ss:se+1] = ['[SUBJ-'+d['subj_type']+']'] * (se-ss+1)
         tokens[os:oe+1] = ['[OBJ-'+d['obj_type']+']'] * (oe-os+1)
         tokens = [t for i, t in enumerate(tokens) if i not in range(ss, se) and i not in range(os, oe)]
+        print (tokens, tokens[oe], tokens[se])
         relation = constant.LABEL_TO_ID[d['relation']]
         data += [(tokens, relation)]
     data = [data[i:i+batch_size] for i in range(0, len(data), batch_size)]
