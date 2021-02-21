@@ -34,13 +34,14 @@ def process_data(filename):
     batches = list()
     for batch in data:
         batch = list(zip(*batch))
-        words = tokenizer(batch[0], padding=True, return_tensors="pt")
-        rels = torch.LongTensor(batch[1])
+        words = tokenizer(batch[0], padding=True, return_tensors="pt").to('cuda')
+        rels = torch.LongTensor(batch[1]).cuda()
         batches += [(words, rels)]
     return batches
 train_batches = process_data('dataset/tacred/train.json')
 dev_batches = process_data('dataset/tacred/dev.json')
 classifier = BERTclassifier(None, emb_matrix=None)
+classifier.cuda()
 classifier.model.resize_token_embeddings(len(tokenizer)) 
 criterion = nn.CrossEntropyLoss()
 parameters = [p for p in classifier.parameters() if p.requires_grad]
