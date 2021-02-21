@@ -17,6 +17,7 @@ num_added_toks = tokenizer.add_special_tokens(special_tokens_dict)
 def process_data(filename):
     with open(filename) as infile:
         data = json.load(infile)
+    print (data)
     id2label = dict([(v,k) for k,v in constant.LABEL_TO_ID.items()])
     data = list()
     batch_size = 24
@@ -39,7 +40,6 @@ def process_data(filename):
     return batches
 train_batches = process_data('dataset/tacred/train.json')
 dev_batches = process_data('dataset/tacred/dev.json')
-print (len(train_batches))
 classifier = BERTclassifier(None, emb_matrix=None)
 criterion = nn.CrossEntropyLoss()
 parameters = [p for p in classifier.parameters() if p.requires_grad]
