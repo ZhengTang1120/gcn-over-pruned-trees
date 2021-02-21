@@ -13,7 +13,7 @@ tokenizer = BertTokenizer.from_pretrained('bert-base-cased')
 special_tokens_dict = {'additional_special_tokens': constant.ENTITY_TOKENS}
 num_added_toks = tokenizer.add_special_tokens(special_tokens_dict)
 
-def process_data(infile):
+def process_data(filename):
     with open(filename) as infile:
         data = json.load(infile)
     id2label = dict([(v,k) for k,v in constant.LABEL_TO_ID.items()])
