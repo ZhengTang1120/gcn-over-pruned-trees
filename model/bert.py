@@ -20,7 +20,7 @@ class BERTclassifier(nn.Module):
     def forward(self, inputs):
         words, masks, pos, ner, deprel, head, subj_pos, obj_pos, subj_type, obj_type = inputs
         subj_mask, obj_mask = subj_pos.eq(0).eq(0).unsqueeze(2), obj_pos.eq(0).eq(0).unsqueeze(2)
-        outputs = self.model(**words)
+        outputs = self.model(words)
         h = outputs.last_hidden_state
         pool_type = self.opt['pooling']
         subj_out = F.tanh(self.linear(pool(h, subj_mask, type=pool_type)))
