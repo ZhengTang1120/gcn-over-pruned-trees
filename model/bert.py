@@ -17,8 +17,8 @@ class BERTclassifier(nn.Module):
         self.opt = opt
 
     def forward(self, inputs):
-        words, masks, pos, ner, deprel, head, subj_pos, obj_pos, subj_type, obj_type = inputs
-        subj_mask, obj_mask = subj_pos.eq(0).eq(0).unsqueeze(2), obj_pos.eq(0).eq(0).unsqueeze(2)
+        words, masks, pos, ner, deprel, head, subj_mask, obj_mask, subj_type, obj_type = inputs
+        subj_mask, obj_mask = subj_mask.eq(0).unsqueeze(2), obj_mask.eq(0).unsqueeze(2)
         outputs = self.model(**words)
         h = outputs.last_hidden_state
         pool_type = self.opt['pooling']
