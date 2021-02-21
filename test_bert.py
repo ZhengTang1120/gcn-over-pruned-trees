@@ -26,14 +26,13 @@ def process_data(filename):
         tokens[ss:se+1] = ['[SUBJ-'+d['subj_type']+']'] * (se-ss+1)
         tokens[os:oe+1] = ['[OBJ-'+d['obj_type']+']'] * (oe-os+1)
         tokens = [t for i, t in enumerate(tokens) if i not in range(ss, se) and i not in range(os, oe)]
-        words = ' '.join(tokens)
         relation = constant.LABEL_TO_ID[d['relation']]
-        data += [(words, relation)]
+        data += [(tokens, relation)]
     data = [data[i:i+batch_size] for i in range(0, len(data), batch_size)]
     batches = list()
     for batch in data:
         batch = list(zip(*batch))
-        words = tokenizer(batch[0], padding=True, return_tensors="pt").to('cuda')
+        words = (batch[0], padding=True, return_tensors="pt", is_split_into_words=True).to('cuda')
         rels = torch.LongTensor(batch[1]).cuda()
         batches += [(words, rels)]
     return batches
