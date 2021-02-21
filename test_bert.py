@@ -16,12 +16,11 @@ num_added_toks = tokenizer.add_special_tokens(special_tokens_dict)
 
 def process_data(filename):
     with open(filename) as infile:
-        data = json.load(infile)
-    print (data)
+        j = json.load(infile)
     id2label = dict([(v,k) for k,v in constant.LABEL_TO_ID.items()])
     data = list()
     batch_size = 24
-    for c, d in enumerate(data):
+    for c, d in enumerate(j):
         tokens = list(d['token'])
         ss, se = d['subj_start'], d['subj_end']
         os, oe = d['obj_start'], d['obj_end']
