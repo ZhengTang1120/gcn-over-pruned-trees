@@ -16,8 +16,6 @@ class BERTclassifier(nn.Module):
 
     def forward(self, inputs):
         words, masks, pos, ner, deprel, head, subj_pos, obj_pos, subj_type, obj_type = inputs
-        for ids in words.input_ids:
-            print ([self.tokenizer.convert_ids_to_tokens(i) for i in ids.cpu().numpy().tolist()])
 
         outputs = self.model(**words)
         outputs = outputs.pooler_output
