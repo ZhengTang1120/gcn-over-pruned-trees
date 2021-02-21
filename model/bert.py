@@ -23,5 +23,6 @@ class BERTclassifier(nn.Module):
         outputs = outputs.pooler_output
         print (outputs)
         print (outputs.size())
+        print ()
         logits = self.classifier(outputs)
         return logits, None, None, None
