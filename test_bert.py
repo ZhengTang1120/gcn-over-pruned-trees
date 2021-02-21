@@ -61,5 +61,5 @@ for i in range(100):
         loss = criterion(logits, labels)
         probs = F.softmax(logits, 1).data.cpu().numpy().tolist()
         preds += [id2label[t] for t in np.argmax(logits.data.cpu().numpy(), axis=1).tolist()]
-        golds += [id2label[t] for t in labels]
+        golds += [id2label[t] for t in labels.cpu().numpy().tolist()]
     print (scorer.score(golds, preds))
