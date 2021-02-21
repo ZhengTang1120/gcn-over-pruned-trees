@@ -13,7 +13,8 @@ class BERTclassifier(nn.Module):
         super().__init__()
         in_dim = 768
         self.model = BertModel.from_pretrained("bert-base-cased")
-        self.classifier = nn.Linear(in_dim*3, opt['num_class'])
+        self.classifier1 = nn.Linear(in_dim*3, 400)
+        self.classifier2 = nn.Linear(400, opt['num_class'])
         self.opt = opt
 
     def forward(self, inputs):
@@ -26,7 +27,7 @@ class BERTclassifier(nn.Module):
         obj_out = pool(h, obj_mask, type=pool_type)
         cls_out = h.transpose(1,0)[0]
         outputs = torch.cat([cls_out, subj_out, obj_out], dim=1)
-        logits = self.classifier(outputs)
+        logits = self.classifier2(F.tanh(self.classifier1(outputs)))
         return logits, None, None, None
 
 def pool(h, mask, type='max'):
