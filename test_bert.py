@@ -32,7 +32,7 @@ def process_data(filename):
     batches = list()
     for batch in data:
         batch = list(zip(*batch))
-        words = (batch[0], padding=True, return_tensors="pt", is_split_into_words=True).to('cuda')
+        words = tokenizer(batch[0], padding=True, return_tensors="pt", is_split_into_words=True).to('cuda')
         rels = torch.LongTensor(batch[1]).cuda()
         batches += [(words, rels)]
     return batches
