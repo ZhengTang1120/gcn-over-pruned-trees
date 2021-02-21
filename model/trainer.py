@@ -12,7 +12,7 @@ from model.bert import BERTclassifier
 from model.decoder import Decoder
 from utils import constant, torch_utils
 
-from transformers import AdamW
+from transformers import AdaFactor
 
 class Trainer(object):
     def __init__(self, opt, emb_matrix=None):
