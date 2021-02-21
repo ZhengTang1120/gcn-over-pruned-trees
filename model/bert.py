@@ -24,7 +24,7 @@ class BERTclassifier(nn.Module):
         pool_type = self.opt['pooling']
         subj_out = pool(h, subj_mask, type=pool_type)
         obj_out = pool(h, obj_mask, type=pool_type)
-        cls_out = h[0]
+        cls_out = h.transpose(1,0)[0]
         outputs = torch.cat([cls_out, subj_out, obj_out], dim=1)
         logits = self.classifier(outputs)
         return logits, None, None, None
