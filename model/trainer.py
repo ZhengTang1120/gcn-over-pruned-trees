@@ -84,8 +84,7 @@ class BERTtrainer(Trainer):
         #self.optimizer = torch_utils.get_optimizer(opt['optim'], self.parameters, opt['lr'])
         self.optimizer = Adafactor(
             self.parameters,
-            lr=opt['lr'],
-        )
+          )
     def update(self, batch):
         inputs, labels, rules, tokens, head, subj_pos, obj_pos, lens = unpack_batch(batch, self.opt['cuda'])
 
