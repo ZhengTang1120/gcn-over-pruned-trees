@@ -112,8 +112,6 @@ class DataLoader(object):
         # sort all fields by lens for easy RNN operations
         lens = [len(x) for x in batch[0]]
         batch, orig_idx = sort_all(batch, lens)
-        print (len(batch[0][0]))
-        print (len(batch[5][0]))
         # word dropout
         # if not self.eval:
         #     words = [word_dropout(sent, self.opt['word_dropout']) for sent in batch[0]]
@@ -125,9 +123,9 @@ class DataLoader(object):
         # words = get_long_tensor(words, batch_size)
         words = self.tokenizer(batch[0], padding=True, is_split_into_words=True, return_tensors="pt")
         print (words.input_ids.size())
-        # for i, ids in enumerate(words.input_ids):
-        #     print (batch[-1][i])
-        #     print ([self.tokenizer.convert_ids_to_tokens(i) for i in ids.numpy().tolist()])
+        for i, ids in enumerate(words.input_ids):
+            print (batch[0][i])
+            print (ids.numpy().tolist())
 
         masks = torch.eq(words.input_ids, 0)
         pos = get_long_tensor(batch[1], batch_size)
