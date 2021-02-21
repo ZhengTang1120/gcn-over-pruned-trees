@@ -66,6 +66,7 @@ class DataLoader(object):
             os, oe = d['obj_start'], d['obj_end']
             tokens[ss:se+1] = ['[SUBJ-'+d['subj_type']+']'] * (se-ss+1)
             tokens[os:oe+1] = ['[OBJ-'+d['obj_type']+']'] * (oe-os+1)
+            tokens = ['[CLS]'] + tokens
             tokens = self.tokenizer.convert_tokens_to_ids(tokens)
             # tokens = map_to_ids(tokens, vocab.word2id)
             pos = map_to_ids(d['stanford_pos'], constant.POS_TO_ID)
@@ -74,8 +75,8 @@ class DataLoader(object):
             head = [int(x) for x in d['stanford_head']]
             assert any([x == 0 for x in head])
             l = len(tokens)
-            subj_positions = get_positions(d['subj_start']+1, d['subj_end']+1, l+2)
-            obj_positions = get_positions(d['obj_start']+1, d['obj_end']+1, l+2)
+            subj_positions = get_positions(d['subj_start']+1, d['subj_end']+1, l+1)
+            obj_positions = get_positions(d['obj_start']+1, d['obj_end']+1, l+1)
             subj_type = [constant.SUBJ_NER_TO_ID[d['subj_type']]]
             obj_type = [constant.OBJ_NER_TO_ID[d['obj_type']]]
             relation = self.label2id[d['relation']]
