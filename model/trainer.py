@@ -12,7 +12,7 @@ from model.bert import BERTclassifier
 from model.decoder import Decoder
 from utils import constant, torch_utils
 
-from transformers import AdaFactor
+from transformers import AdamW, Adafactor
 
 class Trainer(object):
     def __init__(self, opt, emb_matrix=None):
@@ -82,7 +82,7 @@ class BERTtrainer(Trainer):
             self.criterion.cuda()
             self.criterion_d.cuda()
         #self.optimizer = torch_utils.get_optimizer(opt['optim'], self.parameters, opt['lr'])
-        self.optimizer = AdaFactor(
+        self.optimizer = Adafactor(
             self.parameters,
             lr=opt['lr'],
         )
