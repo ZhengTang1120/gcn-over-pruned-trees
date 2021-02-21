@@ -130,8 +130,8 @@ class DataLoader(object):
         head = get_long_tensor(batch[4], batch_size)
         # subj_positions = get_long_tensor(batch[5], batch_size)
         # obj_positions = get_long_tensor(batch[6], batch_size)
-        subj_mask = torch.ge(words.input_ids, 28995) and torch.lt(words.input_ids, 28997)
-        obj_mask = torch.ge(words.input_ids, 28997)
+        subj_mask = torch.ge(words.input_ids, 28996) * torch.lt(words.input_ids, 28998)
+        obj_mask = torch.ge(words.input_ids, 28998)
         for i, ids in enumerate(words.input_ids):
             print (ids)
             print ([self.tokenizer.convert_ids_to_tokens(i) for i in ids.numpy().tolist()])
