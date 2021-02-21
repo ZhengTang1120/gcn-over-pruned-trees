@@ -20,6 +20,8 @@ class BERTclassifier(nn.Module):
     def forward(self, inputs):
         words, masks, pos, ner, deprel, head, subj_pos, obj_pos, subj_type, obj_type = inputs
         subj_mask, obj_mask = subj_pos.eq(1000).eq(0).unsqueeze(2), obj_pos.eq(1000).eq(0).unsqueeze(2)
+        print (subj_mask)
+        print (obj_mask)
         outputs = self.model(words)
         h = outputs.last_hidden_state
         pool_type = self.opt['pooling']
