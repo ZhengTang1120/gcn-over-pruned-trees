@@ -12,6 +12,8 @@ from model.bert import BERTclassifier
 from model.decoder import Decoder
 from utils import constant, torch_utils
 
+from transformers import AdamW
+
 class Trainer(object):
     def __init__(self, opt, emb_matrix=None):
         raise NotImplementedError
@@ -79,8 +81,11 @@ class BERTtrainer(Trainer):
             self.decoder.cuda()
             self.criterion.cuda()
             self.criterion_d.cuda()
-        self.optimizer = torch_utils.get_optimizer(opt['optim'], self.parameters, opt['lr'])
-
+        #self.optimizer = torch_utils.get_optimizer(opt['optim'], self.parameters, opt['lr'])
+        self.optimizer = AdamW(
+            self.parameters,
+            lr=opt['lr'],
+        )
     def update(self, batch):
         inputs, labels, rules, tokens, head, subj_pos, obj_pos, lens = unpack_batch(batch, self.opt['cuda'])
 
