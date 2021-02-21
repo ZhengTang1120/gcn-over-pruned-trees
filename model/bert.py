@@ -11,7 +11,7 @@ class BERTclassifier(nn.Module):
         super().__init__()
         in_dim = 1024
         self.model = BertModel.from_pretrained("bert-large-cased")
-        self.classifier = nn.Linear(in_dim, opt['num_class'])
+        self.classifier = nn.Linear(in_dim, 42)
         self.opt = opt
 
     def forward(self, words):

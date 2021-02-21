@@ -39,7 +39,7 @@ def process_data(filename):
     return batches
 train_batches = process_data('dataset/tacred/train.json')
 dev_batches = process_data('dataset/tacred/dev.json')
-classifier = BERTclassifier(opt, emb_matrix=None)
+classifier = BERTclassifier(None, emb_matrix=None)
 criterion = nn.CrossEntropyLoss()
 parameters = [p for p in classifier.parameters() if p.requires_grad]
 optimizer = torch_utils.get_optimizer('adam', self.parameters, 1e-5)
