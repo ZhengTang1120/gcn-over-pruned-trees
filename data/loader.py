@@ -125,9 +125,9 @@ class DataLoader(object):
         # convert to tensors
         # words = get_long_tensor(words, batch_size)
         words = self.tokenizer(batch[-1], padding=True, return_tensors="pt")
-        for i, ids in enumerate(words.input_ids):
-            print (batch[-1][i])
-            print ([self.tokenizer.convert_ids_to_tokens(i) for i in ids.numpy().tolist()])
+        # for i, ids in enumerate(words.input_ids):
+        #     print (batch[-1][i])
+        #     print ([self.tokenizer.convert_ids_to_tokens(i) for i in ids.numpy().tolist()])
 
         masks = torch.eq(tokens, 0)
         pos = get_long_tensor(batch[1], batch_size)
