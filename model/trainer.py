@@ -82,7 +82,7 @@ class BERTtrainer(Trainer):
             self.criterion.cuda()
             self.criterion_d.cuda()
         #self.optimizer = torch_utils.get_optimizer(opt['optim'], self.parameters, opt['lr'])
-        self.optimizer = AdamW(
+        self.optimizer = AdaFactor(
             self.parameters,
             lr=opt['lr'],
         )
