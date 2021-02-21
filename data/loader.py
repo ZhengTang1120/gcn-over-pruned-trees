@@ -121,7 +121,7 @@ class DataLoader(object):
         # tokens = get_long_tensor(tokens, batch_size)
         # convert to tensors
         # words = get_long_tensor(words, batch_size)
-        words = self.tokenizer(batch[0], padding=True, is_split_into_words=True, return_tensors="pt")
+        words = self.tokenizer(batch[0], is_split_into_words=True, padding=True, return_tensors="pt")
         for i, ids in enumerate(words.input_ids):
             print (batch[0][i], len(batch[0][i]))
             print (ids.numpy().tolist(), ids.size())
