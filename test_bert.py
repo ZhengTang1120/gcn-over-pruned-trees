@@ -39,6 +39,7 @@ def process_data(filename):
     return batches
 train_batches = process_data('dataset/tacred/train.json')
 dev_batches = process_data('dataset/tacred/dev.json')
+print (len(train_batches))
 classifier = BERTclassifier(None, emb_matrix=None)
 criterion = nn.CrossEntropyLoss()
 parameters = [p for p in classifier.parameters() if p.requires_grad]
