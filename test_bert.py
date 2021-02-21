@@ -8,6 +8,7 @@ from model.bert import BERTclassifier
 from transformers import BertTokenizer
 
 from utils import constant
+import json
 
 tokenizer = BertTokenizer.from_pretrained('bert-base-cased')
 special_tokens_dict = {'additional_special_tokens': constant.ENTITY_TOKENS}
