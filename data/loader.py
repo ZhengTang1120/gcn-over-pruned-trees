@@ -130,8 +130,14 @@ class DataLoader(object):
         head = get_long_tensor(batch[4], batch_size)
         # subj_positions = get_long_tensor(batch[5], batch_size)
         # obj_positions = get_long_tensor(batch[6], batch_size)
-        subj_mask = torch.gt(words.input_ids, 30522)
-        obj_mask = torch.gt(words.input_ids, 30522)
+        subj_mask = torch.gt(words.input_ids, 28994)
+        obj_mask = torch.gt(words.input_ids, 28994)
+        for i, ids in enumerate(words.input_ids):
+            print (batch[0][i], len(batch[0][i]))
+            print ([self.tokenizer.convert_ids_to_tokens(i) for i in ids.numpy().tolist()])
+            print (subj_mask[i])
+            print (obj_mask[i])
+            print ()
         subj_type = get_long_tensor(batch[7], batch_size)
         obj_type = get_long_tensor(batch[8], batch_size)
 
@@ -139,7 +145,7 @@ class DataLoader(object):
 
         rule = get_long_tensor(batch[10], batch_size)
         
-        return (words, masks, pos, ner, deprel, head, subj_positions, obj_positions, subj_type, obj_type, rels, orig_idx, rule)
+        return (words, masks, pos, ner, deprel, head, subj_mask, obj_mask, subj_type, obj_type, rels, orig_idx, rule)
 
     def __iter__(self):
         for i in range(self.__len__()):
