@@ -19,7 +19,7 @@ def process_data(filename):
         j = json.load(infile)
     id2label = dict([(v,k) for k,v in constant.LABEL_TO_ID.items()])
     data = list()
-    batch_size = 24
+    batch_size = 30
     for c, d in enumerate(j):
         tokens = list(d['token'])
         ss, se = d['subj_start'], d['subj_end']
