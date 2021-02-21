@@ -8,7 +8,6 @@ from transformers import BertModel
 from utils import constant, torch_utils
 
 class BERTclassifier(nn.Module):
-    """ A wrapper classifier for GCNRelationModel. """
     def __init__(self, opt, emb_matrix=None):
         super().__init__()
         in_dim = 768
