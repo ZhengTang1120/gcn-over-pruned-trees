@@ -13,11 +13,10 @@ import json
 tokenizer = BertTokenizer.from_pretrained('bert-base-cased')
 special_tokens_dict = {'additional_special_tokens': constant.ENTITY_TOKENS}
 num_added_toks = tokenizer.add_special_tokens(special_tokens_dict)
-
+id2label = dict([(v,k) for k,v in constant.LABEL_TO_ID.items()])
 def process_data(filename):
     with open(filename) as infile:
         j = json.load(infile)
-    id2label = dict([(v,k) for k,v in constant.LABEL_TO_ID.items()])
     data = list()
     batch_size = 30
     for c, d in enumerate(j):
@@ -61,6 +60,6 @@ for i in range(100):
         logits, hidden, encoder_outputs, hidden = classifier(words)
         loss = criterion(logits, labels)
         probs = F.softmax(logits, 1).data.cpu().numpy().tolist()
-        preds += np.argmax(logits.data.cpu().numpy(), axis=1).tolist()
-        golds += labels
+        preds += [id2label[t] for t in np.argmax(logits.data.cpu().numpy(), axis=1).tolist()]
+        golds += [id2label[t] for t in labels]
     print (scorer.score(golds, preds))
