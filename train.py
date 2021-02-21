@@ -168,14 +168,14 @@ for epoch in range(1, opt['num_epoch']+1):
     references = []
     candidates = []
     count = 0
-    for i, batch in enumerate(dev_batch):
+    for _, batch in enumerate(dev_batch):
         preds = trainer.predict(batch)
         # preds, _, decoded, loss = trainer.predict(batch)
         predictions += preds
         dev_loss += loss
         batch_size = len(preds)
         for i in range(batch_size):
-            ids = dev_batch[0].input_ids[i]
+            ids = batch[0].input_ids[i]
             print ([tokenizer.convert_ids_to_tokens(i) for i in ids.cpu().numpy().tolist()])
             print (id2label[preds[i]], dev_batch.gold()[x])
             x += 1
