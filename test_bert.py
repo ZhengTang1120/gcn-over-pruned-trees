@@ -34,8 +34,6 @@ def process_data(filename):
     batches = list()
     for batch in data:
         batch = list(zip(*batch))
-        print (batch[0])
-        print (batch[1])
         words = tokenizer(batch[0], padding=True, return_tensors="pt")
         rels = torch.LongTensor(batch[1])
         batches += [(words, rels)]
