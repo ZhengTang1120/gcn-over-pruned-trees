@@ -14,8 +14,8 @@ class BERTclassifier(nn.Module):
         self.classifier = nn.Linear(in_dim, opt['num_class'])
         self.opt = opt
 
-    def forward(self, inputs):
-        words, masks, pos, ner, deprel, head, subj_pos, obj_pos, subj_type, obj_type = inputs
+    def forward(self, words):
+        # words, masks, pos, ner, deprel, head, subj_pos, obj_pos, subj_type, obj_type = inputs
 
         outputs = self.model(**words)
         outputs = outputs.pooler_output
