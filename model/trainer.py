@@ -70,15 +70,15 @@ class BERTtrainer(Trainer):
         self.opt = opt
         self.emb_matrix = emb_matrix
         self.classifier = BERTclassifier(opt, emb_matrix=emb_matrix)
-        # self.decoder = Decoder(opt)
+        self.decoder = Decoder(opt)
         self.criterion = nn.CrossEntropyLoss()
         self.criterion_d = nn.NLLLoss(ignore_index=constant.PAD_ID)
         self.parameters = [p for p in self.classifier.parameters() if p.requires_grad]# + [p for p in self.decoder.parameters() if p.requires_grad]
         if opt['cuda']:
             self.classifier.cuda()
-            # self.decoder.cuda()
+            self.decoder.cuda()
             self.criterion.cuda()
-            # self.criterion_d.cuda()
+            self.criterion_d.cuda()
         self.optimizer = torch_utils.get_optimizer(opt['optim'], self.parameters, opt['lr'])
 
     def update(self, batch):
@@ -86,7 +86,7 @@ class BERTtrainer(Trainer):
 
         # step forward
         self.classifier.train()
-        # self.decoder.train()
+        self.decoder.train()
         self.optimizer.zero_grad()
 
         loss = 0
@@ -137,7 +137,7 @@ class BERTtrainer(Trainer):
         orig_idx = batch[11]
         # forward
         self.classifier.eval()
-        # self.decoder.eval()
+        self.decoder.eval()
         logits, hidden, encoder_outputs, hidden = self.classifier(inputs)
         loss = self.criterion(logits, labels)
         probs = F.softmax(logits, 1).data.cpu().numpy().tolist()
