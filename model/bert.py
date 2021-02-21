@@ -18,6 +18,8 @@ class BERTclassifier(nn.Module):
         # words, masks, pos, ner, deprel, head, subj_pos, obj_pos, subj_type, obj_type = inputs
 
         outputs = self.model(**words)
+        print (outputs.last_hidden_state)[:,0,:]
         outputs = outputs.pooler_output
+        print (outputs)
         logits = self.classifier(outputs)
         return logits, None, None, None
