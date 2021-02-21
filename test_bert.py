@@ -51,7 +51,7 @@ for i in range(100):
     for words, labels in train_batches:
         logits, pooling_output, encoder_outputs, hidden = classifier(words)
         loss = criterion(logits, labels)
-        print (loss.item())
+        # print (loss.item())
         loss.backward()
         optimizer.step()
     classifier.eval()
