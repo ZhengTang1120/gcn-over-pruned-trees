@@ -150,7 +150,7 @@ def map_to_ids(tokens, vocab):
 
 def get_positions(start_idx, end_idx, length):
     """ Get subj/obj position sequence. """
-    return list(range(-start_idx, 0)) + [0]*(end_idx - start_idx + 1) + \
+    return list(range(-start_idx, 0)) + [1000]*(end_idx - start_idx + 1) + \
             list(range(1, length-end_idx))
 
 def get_long_tensor(tokens_list, batch_size):
