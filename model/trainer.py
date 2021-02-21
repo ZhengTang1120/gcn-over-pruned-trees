@@ -12,7 +12,7 @@ from model.bert import BERTclassifier
 from model.decoder import Decoder
 from utils import constant, torch_utils
 
-from transformers import AdamW, Adafactor
+from transformers import AdamW
 
 class Trainer(object):
     def __init__(self, opt, emb_matrix=None):
@@ -82,9 +82,10 @@ class BERTtrainer(Trainer):
             self.criterion.cuda()
             self.criterion_d.cuda()
         #self.optimizer = torch_utils.get_optimizer(opt['optim'], self.parameters, opt['lr'])
-        self.optimizer = Adafactor(
+        self.optimizer = AdamW(
             self.parameters,
-          )
+            lr=opt['lr'],
+        )
     def update(self, batch):
         inputs, labels, rules, tokens, head, subj_pos, obj_pos, lens = unpack_batch(batch, self.opt['cuda'])
 
@@ -97,7 +98,6 @@ class BERTtrainer(Trainer):
         # classifier
         logits, pooling_output, encoder_outputs, hidden = self.classifier(inputs)
         if self.opt['classifier']:
-            print (logits.size(), labels.size())
             loss = self.criterion(logits, labels)
             # l2 decay on all conv layers
             # if self.opt.get('conv_l2', 0) > 0:
