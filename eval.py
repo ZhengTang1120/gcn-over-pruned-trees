@@ -13,6 +13,8 @@ from utils.vocab import Vocab
 
 from nltk.translate.bleu_score import corpus_bleu, sentence_bleu
 
+from model.trainer import BERTtrainer
+
 parser = argparse.ArgumentParser()
 parser.add_argument('model_dir', type=str, help='Directory of the model.')
 parser.add_argument('--model', type=str, default='best_model.pt', help='Name of the model file.')
@@ -31,11 +33,16 @@ if args.cpu:
 elif args.cuda:
     torch.cuda.manual_seed(args.seed)
 
+tokenizer = BertTokenizer.from_pretrained('bert-large-cased')
+special_tokens_dict = {'additional_special_tokens': constant.ENTITY_TOKENS}
+num_added_toks = tokenizer.add_special_tokens(special_tokens_dict)
+
 # load opt
 model_file = args.model_dir + '/' + args.model
 print("Loading model from {}".format(model_file))
 opt = torch_utils.load_config(model_file)
 trainer = BERTtrainer(opt)
+trainer.classifier.model.resize_token_embeddings(len(tokenizer)) 
 trainer.load(model_file)
 
 # load vocab
@@ -46,7 +53,7 @@ assert opt['vocab_size'] == vocab.size, "Vocab size must match that in the saved
 # load data
 data_file = opt['data_dir'] + '/{}.json'.format(args.dataset)
 print("Loading data from {} with batch size {}...".format(data_file, opt['batch_size']))
-batch = DataLoader(data_file, opt['batch_size'], opt, vocab, opt['data_dir'] + '/mappings_{}.txt'.format(args.dataset), evaluation=True)
+batch = DataLoader(data_file, opt['batch_size'], opt, vocab, opt['data_dir'] + '/mappings_{}.txt'.format(args.dataset), tokenizer, evaluation=True)
 
 helper.print_config(opt)
 label2id = constant.LABEL_TO_ID
