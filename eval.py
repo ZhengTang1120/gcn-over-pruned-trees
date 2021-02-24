@@ -7,7 +7,7 @@ from tqdm import tqdm
 import torch
 
 from data.loader import DataLoader
-from model.trainer import GCNTrainer
+from model.trainer import BERTtrainer
 from utils import torch_utils, scorer, constant, helper
 from utils.vocab import Vocab
 
@@ -35,7 +35,7 @@ elif args.cuda:
 model_file = args.model_dir + '/' + args.model
 print("Loading model from {}".format(model_file))
 opt = torch_utils.load_config(model_file)
-trainer = GCNTrainer(opt)
+trainer = BERTtrainer(opt)
 trainer.load(model_file)
 
 # load vocab
@@ -62,41 +62,41 @@ x = 0
 exact_match = 0
 other = 0
 for c, b in enumerate(batch_iter):
-    preds, probs, decoded, loss = trainer.predict(b)
+    preds = trainer.predict(b)
     predictions += preds
     all_probs += probs
 
-    batch_size = len(preds)
-    for i in range(batch_size):
-        if id2label[preds[i]] != 'no_relation':
-            output = decoded[i]
-            candidate = []
-            for r in output[1:]:
-                if int(r) == 3:
-                    break
-                else:
-                    candidate.append(vocab.id2rule[int(r)])
-            if len(batch.refs[x][0])!=0:
-                if candidate not in batch.refs[x]:
-                    print (id2label[preds[i]], batch.gold()[x])
-                    for t in batch.refs[x]:
-                        print (' '.join(t))
-                    print (' '.join(candidate))
-                    print ()
-                    other += 1
-                else:
-                    exact_match += 1
+    # batch_size = len(preds)
+    # for i in range(batch_size):
+    #     if id2label[preds[i]] != 'no_relation':
+    #         output = decoded[i]
+    #         candidate = []
+    #         for r in output[1:]:
+    #             if int(r) == 3:
+    #                 break
+    #             else:
+    #                 candidate.append(vocab.id2rule[int(r)])
+    #         if len(batch.refs[x][0])!=0:
+    #             if candidate not in batch.refs[x]:
+    #                 print (id2label[preds[i]], batch.gold()[x])
+    #                 for t in batch.refs[x]:
+    #                     print (' '.join(t))
+    #                 print (' '.join(candidate))
+    #                 print ()
+    #                 other += 1
+    #             else:
+    #                 exact_match += 1
 
-                references.append(batch.refs[x])
-                candidates.append(candidate)
-        x += 1
-print (exact_match, other)
+    #             references.append(batch.refs[x])
+    #             candidates.append(candidate)
+    #     x += 1
+# print (exact_match, other)
 predictions = [id2label[p] for p in predictions]
 # for pred in predictions:
 #     print (pred)
 p, r, f1 = scorer.score(batch.gold(), predictions, verbose=True)
 bleu = corpus_bleu(references, candidates)
-print("{} set evaluate result: {:.2f}\t{:.2f}\t{:.2f}\t{:.4f}".format(args.dataset,p,r,f1,bleu))
+print("{} set evaluate result: {:.2f}\t{:.2f}\t{:.2f}\t{:.4f}".format(args.dataset,p,r,f1,0))
 
 print("Evaluation ended.")
 
