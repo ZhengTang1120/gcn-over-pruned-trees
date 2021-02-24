@@ -70,13 +70,18 @@ class DataLoader(object):
             if ss<os:
                 os = os + 2
                 oe = oe + 2
+                tokens.insert(ss, '#')
+                tokens.insert(se+2, '#')
+                tokens.insert(os, '$')
+                tokens.insert(oe+2, '$')
             else:
                 ss = ss + 2
                 se = se + 2
-            tokens.insert(ss, '#')
-            tokens.insert(se+2, '#')
-            tokens.insert(os, '$')
-            tokens.insert(oe+2, '$')
+                tokens.insert(os, '$')
+                tokens.insert(oe+2, '$')
+                tokens.insert(ss, '#')
+                tokens.insert(se+2, '#')
+                
             tokens = ['[CLS]'] + tokens
             print (tokens)
             tokens = self.tokenizer.convert_tokens_to_ids(tokens)
