@@ -13,7 +13,7 @@ from utils.vocab import Vocab
 
 from nltk.translate.bleu_score import corpus_bleu, sentence_bleu
 
-from model.trainer import BERTtrainer
+from transformers import BertTokenizer
 
 parser = argparse.ArgumentParser()
 parser.add_argument('model_dir', type=str, help='Directory of the model.')
