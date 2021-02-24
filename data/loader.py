@@ -27,6 +27,7 @@ class DataLoader(object):
             data = json.load(infile)
         self.raw_data = data
         data = self.preprocess(data, vocab, opt)
+        exit()
 
         # shuffle for training
         if not evaluation:
