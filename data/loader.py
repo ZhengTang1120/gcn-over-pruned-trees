@@ -77,6 +77,7 @@ class DataLoader(object):
             tokens.insert(os, '$')
             tokens.insert(oe+2, '$')
             tokens = ['[CLS]'] + tokens
+            print (tokens)
             tokens = self.tokenizer.convert_tokens_to_ids(tokens)
             # tokens = map_to_ids(tokens, vocab.word2id)
             pos = map_to_ids(d['stanford_pos'], constant.POS_TO_ID)
@@ -87,7 +88,6 @@ class DataLoader(object):
             l = len(tokens)
             subj_positions = get_positions(ss+1, se+1, l)
             obj_positions = get_positions(os+1, oe+1, l)
-            print (tokens)
             print (subj_positions)
             print (obj_positions)
             subj_type = [constant.SUBJ_NER_TO_ID[d['subj_type']]]
