@@ -10,7 +10,7 @@ from utils import constant, torch_utils
 class BERTclassifier(nn.Module):
     def __init__(self, opt, emb_matrix=None):
         super().__init__()
-        in_dim = 768
+        in_dim = 1024
         self.model = BertModel.from_pretrained("bert-large-cased")
         # self.linear = nn.Linear(in_dim, in_dim)
         # self.classifier1 = nn.Linear(in_dim*3, 400)
