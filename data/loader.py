@@ -74,8 +74,8 @@ class DataLoader(object):
                 se = se + 2
             tokens.insert(ss, '#')
             tokens.insert(se+2, '#')
-            tokens.insert(os, '$', os)
-            tokens.insert(oe+2'$')
+            tokens.insert(os, '$')
+            tokens.insert(oe+2, '$')
             tokens = ['[CLS]'] + tokens
             tokens = self.tokenizer.convert_tokens_to_ids(tokens)
             # tokens = map_to_ids(tokens, vocab.word2id)
