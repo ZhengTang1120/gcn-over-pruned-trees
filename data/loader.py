@@ -92,6 +92,7 @@ class DataLoader(object):
             head = [int(x) for x in d['stanford_head']]
             assert any([x == 0 for x in head])
             l = len(tokens)
+            print (ss, se, os, oe)
             subj_positions = get_positions(ss+1, se+1, l)
             obj_positions = get_positions(os+1, oe+1, l)
             print (subj_positions)
