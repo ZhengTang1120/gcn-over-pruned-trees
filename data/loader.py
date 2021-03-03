@@ -57,8 +57,6 @@ class DataLoader(object):
             mappings = f.readlines()
         # with open('dataset/tacred/rules.json') as f:
         #     rules = json.load(f)
-        a = 0
-        b = 0
         for c, d in enumerate(data):
             tokens = list(d['token'])
             if opt['lower']:
@@ -69,16 +67,8 @@ class DataLoader(object):
             tokens[ss:se+1] = ['[SUBJ-'+d['subj_type']+']'] * (se-ss+1)
             tokens[os:oe+1] = ['[OBJ-'+d['obj_type']+']'] * (oe-os+1)
             rl, masked = mappings[c].split('\t')
-            masked = eval(masked)
-            if masked:
-                if (rl == d['relation']):
-                    if (masked!=(min(os, ss), max(oe, se)+1)):
-                        a += 1
-                        print (c, masked, (min(os, ss), max(oe, se)+1))
-                    else:
-                        b += 1
+            masked = list(range(eval(masked)))
             rule = [[]]
-            tk_map = {}
             if ss<os:
                 os = os + 2
                 oe = oe + 2
@@ -93,8 +83,21 @@ class DataLoader(object):
                 tokens.insert(oe+2, '$')
                 tokens.insert(ss, '#')
                 tokens.insert(se+2, '#')
-            
             tokens = ['[CLS]'] + tokens
+            
+            for i in range(len(masked)):
+                if masked[i] < min(os, ss):
+                    masked[i] += 1
+                elif masked[i] < min(se,oe):
+                    masked[i] += 2
+                elif masked[i] < max(os, ss):
+                    masked[i] += 3
+                elif masked[i] < max(se, oe):
+                    masked[i] += 4
+                else:
+                    masked[i] += 5
+            print (masked, min(os, ss), max(oe, se))
+
             tokens = self.tokenizer.convert_tokens_to_ids(tokens)
             # tokens = map_to_ids(tokens, vocab.word2id)
             pos = map_to_ids(d['stanford_pos'], constant.POS_TO_ID)
@@ -109,7 +112,6 @@ class DataLoader(object):
             obj_type = [constant.OBJ_NER_TO_ID[d['obj_type']]]
             relation = self.label2id[d['relation']]
             processed += [(tokens, pos, ner, deprel, head, subj_positions, obj_positions, subj_type, obj_type, relation, rule[0], rule)]
-        print (a, b)
         return processed
 
     def gold(self):
