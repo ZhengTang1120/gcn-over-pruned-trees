@@ -95,6 +95,7 @@ class DataLoader(object):
             subj_type = [constant.SUBJ_NER_TO_ID[d['subj_type']]]
             obj_type = [constant.OBJ_NER_TO_ID[d['obj_type']]]
             relation = self.label2id[d['relation']]
+            print (mappings[c])
             rl, masked = mappings[c].split(' ')
             masked = eval(masked)
             if masked:
