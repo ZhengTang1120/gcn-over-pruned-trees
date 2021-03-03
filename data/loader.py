@@ -70,6 +70,7 @@ class DataLoader(object):
             masked = eval(masked)
             if masked:
                 masked = list(range(masked[0], masked[1]))
+                print ([tokens[i] for i in masked])
                 for i in range(len(masked)):
                     if masked[i] < min(os, ss):
                         masked[i] += 1
@@ -99,6 +100,7 @@ class DataLoader(object):
             tokens = ['[CLS]'] + tokens
             if masked:
                 print ([tokens[i] for i in masked])
+                print ()
 
             tokens = self.tokenizer.convert_tokens_to_ids(tokens)
             # tokens = map_to_ids(tokens, vocab.word2id)
