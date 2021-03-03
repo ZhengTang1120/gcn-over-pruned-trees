@@ -200,9 +200,10 @@ for epoch in range(1, opt['num_epoch']+1):
     for i, p in enumerate(predictions):
         if p!=0:
             print (id2label[p], dev_batch.gold()[i])
-            print (inputs[i])
-            print (tags[i])
-            print (goldt[i])
+            if sum(goldt[i])!=0:
+                print ([(goldt[i][j], tags[i][j], inputs[i][j])for j in range(len(inputs[i]))])
+            else:
+                print ([(tags[i][j], inputs[i][j])for j in range(len(inputs[i]))])
             print ()
     predictions = [id2label[p] for p in predictions]
     train_loss = train_loss / train_batch.num_examples * opt['batch_size'] # avg loss per batch
