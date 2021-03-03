@@ -96,7 +96,7 @@ class DataLoader(object):
                 tokens.insert(ss, '#')
                 tokens.insert(se+2, '#')
             tokens = ['[CLS]'] + tokens
-            if eval(masked):
+            if masked!='None':
                 print ([tokens[i] for i in masked])
 
             tokens = self.tokenizer.convert_tokens_to_ids(tokens)
