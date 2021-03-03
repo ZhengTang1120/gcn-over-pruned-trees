@@ -55,8 +55,8 @@ class DataLoader(object):
         processed_rule = []
         with open(self.mappings) as f:
             mappings = f.readlines()
-        with open('dataset/tacred/rules.json') as f:
-            rules = json.load(f)
+        # with open('dataset/tacred/rules.json') as f:
+        #     rules = json.load(f)
         for c, d in enumerate(data):
             tokens = list(d['token'])
             if opt['lower']:
@@ -80,7 +80,7 @@ class DataLoader(object):
                 tokens.insert(oe+2, '$')
                 tokens.insert(ss, '#')
                 tokens.insert(se+2, '#')
-            print (tokens)
+            
             tokens = ['[CLS]'] + tokens
             tokens = self.tokenizer.convert_tokens_to_ids(tokens)
             # tokens = map_to_ids(tokens, vocab.word2id)
@@ -95,15 +95,10 @@ class DataLoader(object):
             subj_type = [constant.SUBJ_NER_TO_ID[d['subj_type']]]
             obj_type = [constant.OBJ_NER_TO_ID[d['obj_type']]]
             relation = self.label2id[d['relation']]
-            if 't_' in mappings[c] or 's_' in mappings[c]:
-                rule = []
-                for m in eval(mappings[c]):
-                    r = helper.word_tokenize(rules[m[1]])
-                    r = map_to_ids(r, vocab.rule2id) 
-                    r = [constant.SOS_ID] + r + [constant.EOS_ID]
-                    rule.append(r)
-            else:
-                rule = [[]]
+            rl, masked = mappings[i].split(' ')
+            masked = eval(masked)
+            if masked:
+                print (rl, d['relation'])
             processed += [(tokens, pos, ner, deprel, head, subj_positions, obj_positions, subj_type, obj_type, relation, rule[0], rule)]
         # exit()
         return processed
