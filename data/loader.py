@@ -99,6 +99,7 @@ class DataLoader(object):
             masked = eval(masked)
             if masked:
                 print (rl, d['relation'])
+            rule = [[]]
             processed += [(tokens, pos, ner, deprel, head, subj_positions, obj_positions, subj_type, obj_type, relation, rule[0], rule)]
         # exit()
         return processed
