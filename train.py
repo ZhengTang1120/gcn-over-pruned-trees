@@ -104,7 +104,7 @@ assert emb_matrix.shape[0] == vocab.size
 assert emb_matrix.shape[1] == opt['emb_dim']
 
 # load data
-tokenizer = BertTokenizer.from_pretrained('spanbert-large-finetuned-tacred')
+tokenizer = BertTokenizer.from_pretrained('mrm8488/spanbert-large-finetuned-tacred')
 special_tokens_dict = {'additional_special_tokens': constant.ENTITY_TOKENS}
 num_added_toks = tokenizer.add_special_tokens(special_tokens_dict)
 # print (tokenizer.get_vocab())
