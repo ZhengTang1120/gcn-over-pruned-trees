@@ -33,15 +33,8 @@ class DataLoader(object):
             indices = list(range(len(data)))
             random.shuffle(indices)
             data = [data[i] for i in indices]
-        self.refs = list()
-        for d in data:
-            temp = []
-            for rule in d[11]:
-                temp += [[vocab.id2rule[r] for r in rule if r not in [0,2,3]]]
-            self.refs.append(temp)
-
         self.id2label = dict([(v,k) for k,v in self.label2id.items()])
-        self.labels = [self.id2label[d[-3]] for d in data]
+        self.labels = [self.id2label[d[-2]] for d in data]
         self.num_examples = len(data)
         
         # chunk into batches
@@ -70,7 +63,6 @@ class DataLoader(object):
             masked = eval(masked)
             if masked:
                 masked = list(range(masked[0], masked[1]))
-                print ([tokens[i] for i in masked])
                 for i in range(len(masked)):
                     if masked[i] < min(os, ss):
                         masked[i] += 1
@@ -82,7 +74,10 @@ class DataLoader(object):
                         masked[i] += 4
                     else:
                         masked[i] += 5
-            rule = [[]]
+                tagging = [1 if i in masked else 0 for i in range(len(tokens)+5)]
+            else:
+                masked = []
+                tagging = [0 for i in range(len(tokens)+5)]
             if ss<os:
                 os = os + 2
                 oe = oe + 2
@@ -98,9 +93,6 @@ class DataLoader(object):
                 tokens.insert(ss, '#')
                 tokens.insert(se+2, '#')
             tokens = ['[CLS]'] + tokens
-            if masked:
-                print ([tokens[i] for i in masked])
-                print ()
 
             tokens = self.tokenizer.convert_tokens_to_ids(tokens)
             # tokens = map_to_ids(tokens, vocab.word2id)
@@ -115,7 +107,7 @@ class DataLoader(object):
             subj_type = [constant.SUBJ_NER_TO_ID[d['subj_type']]]
             obj_type = [constant.OBJ_NER_TO_ID[d['obj_type']]]
             relation = self.label2id[d['relation']]
-            processed += [(tokens, pos, ner, deprel, head, subj_positions, obj_positions, subj_type, obj_type, relation, rule[0], rule)]
+            processed += [(tokens, pos, ner, deprel, head, subj_positions, obj_positions, subj_type, obj_type, relation, tagging)]
         return processed
 
     def gold(self):
@@ -159,7 +151,7 @@ class DataLoader(object):
         subj_type = get_long_tensor(batch[7], batch_size)
         obj_type = get_long_tensor(batch[8], batch_size)
 
-        rels = torch.LongTensor(batch[9])
+        rels = torch.eq(torch.LongTensor(batch[9]), 0)
 
         rule = get_long_tensor(batch[10], batch_size)
         

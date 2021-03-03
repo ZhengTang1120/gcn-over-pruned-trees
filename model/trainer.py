@@ -96,7 +96,7 @@ class BERTtrainer(Trainer):
 
         loss = 0
         # classifier
-        logits, pooling_output, encoder_outputs, hidden = self.classifier(inputs)
+        logits, tagging_output, encoder_outputs, hidden = self.classifier(inputs)
         if self.opt['classifier']:
             loss = self.criterion(logits, labels)
             # l2 decay on all conv layers
@@ -107,25 +107,27 @@ class BERTtrainer(Trainer):
             #     loss += self.opt['pooling_l2'] * (pooling_output ** 2).sum(1).mean()
         if self.opt['decoder']:
             # decoder
-            batch_size = labels.size(0)
-            rules = rules.view(batch_size, -1)
-            masks = inputs[1]
-            max_len = rules.size(1)
-            rules = rules.transpose(1,0)
-            output = Variable(torch.LongTensor([constant.SOS_ID] * batch_size)) # sos
-            output = output.cuda() if self.opt['cuda'] else output
-            loss_d = 0
-            h0 = hidden.view(self.opt['num_layers'], batch_size, -1)
-            c0 = hidden.view(self.opt['num_layers'], batch_size, -1)
-            decoder_hidden = (h0, c0)
-            for t in range(1, max_len):
-                output, decoder_hidden, attn_weights = self.decoder(
-                        output, masks, decoder_hidden, encoder_outputs)
-                loss_d += self.criterion_d(output, rules[t])
-                output = rules.data[t]
-                if self.opt['cuda']:
-                    output = output.cuda()
-            loss += loss_d/max_len if (self.opt['classifier'] and max_len!=0) else loss_d
+            print (tagging_output.size())
+            loss += self.criterion(tagging_output, rules)
+            # batch_size = labels.size(0)
+            # rules = rules.view(batch_size, -1)
+            # masks = inputs[1]
+            # max_len = rules.size(1)
+            # rules = rules.transpose(1,0)
+            # output = Variable(torch.LongTensor([constant.SOS_ID] * batch_size)) # sos
+            # output = output.cuda() if self.opt['cuda'] else output
+            # loss_d = 0
+            # h0 = hidden.view(self.opt['num_layers'], batch_size, -1)
+            # c0 = hidden.view(self.opt['num_layers'], batch_size, -1)
+            # decoder_hidden = (h0, c0)
+            # for t in range(1, max_len):
+            #     output, decoder_hidden, attn_weights = self.decoder(
+            #             output, masks, decoder_hidden, encoder_outputs)
+            #     loss_d += self.criterion_d(output, rules[t])
+            #     output = rules.data[t]
+            #     if self.opt['cuda']:
+            #         output = output.cuda()
+            # loss += loss_d/max_len if (self.opt['classifier'] and max_len!=0) else loss_d
         if loss != 0:
             loss_val = loss.item()
             # backward
@@ -143,8 +145,8 @@ class BERTtrainer(Trainer):
         # forward
         self.classifier.eval()
         self.decoder.eval()
-        logits, hidden, encoder_outputs, hidden = self.classifier(inputs)
-        loss = self.criterion(logits, labels)
+        logits, tagging_output, encoder_outputs, hidden = self.classifier(inputs)
+        loss = self.criterion(logits, labels) + self.criterion(tagging_output, rules)
         probs = F.softmax(logits, 1).data.cpu().numpy().tolist()
         predictions = np.argmax(logits.data.cpu().numpy(), axis=1).tolist()
         if unsort:
