@@ -151,7 +151,7 @@ class DataLoader(object):
         subj_type = get_long_tensor(batch[7], batch_size)
         obj_type = get_long_tensor(batch[8], batch_size)
 
-        rels = torch.eq(torch.LongTensor(batch[9]), 0)
+        rels = torch.LongTensor(batch[9])
 
         rule = get_long_tensor(batch[10], batch_size)
         
