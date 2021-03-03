@@ -73,7 +73,9 @@ class DataLoader(object):
             if masked:
                 if (rl == d['relation']):
                     if (masked!=(min(os, ss), max(oe, se)+1)):
-                        print (tokens)
+                        a += 1
+                    else:
+                        b += 1
             rule = [[]]
             tk_map = {}
             if ss<os:
@@ -106,6 +108,7 @@ class DataLoader(object):
             obj_type = [constant.OBJ_NER_TO_ID[d['obj_type']]]
             relation = self.label2id[d['relation']]
             processed += [(tokens, pos, ner, deprel, head, subj_positions, obj_positions, subj_type, obj_type, relation, rule[0], rule)]
+        print (a, b)
         return processed
 
     def gold(self):
