@@ -171,6 +171,7 @@ for epoch in range(1, opt['num_epoch']+1):
     references = []
     candidates = []
     count = 0
+    inputs = []
     for _, batch in enumerate(dev_batch):
         preds, ts, tagged = trainer.predict(batch)
         # preds, _, decoded, loss = trainer.predict(batch)
@@ -179,9 +180,9 @@ for epoch in range(1, opt['num_epoch']+1):
         goldt += tagged
         dev_loss += loss
         batch_size = len(preds)
-        # for i in range(batch_size):
-        #     ids = batch[0].input_ids[i]
-        #     print ([tokenizer.convert_ids_to_tokens(i) for i in ids.cpu().numpy().tolist()])
+        for i in range(batch_size):
+            ids = batch[0].input_ids[i]
+            inputs += [[tokenizer.convert_ids_to_tokens(i) for i in ids.cpu().numpy().tolist()]]
         #     print (id2label[preds[i]], dev_batch.gold()[x])
         #     x += 1
         #     if id2label[preds[i]] != 'no_relation':
@@ -198,7 +199,8 @@ for epoch in range(1, opt['num_epoch']+1):
         #     count += 1
     for i, p in enumerate(predictions):
         if p!=0:
-            print (id2label[p])
+            print (id2label[p], dev_batch.gold()[i])
+            print (inputs[i])
             print (tags[i])
             print (goldt[i])
             print ()
