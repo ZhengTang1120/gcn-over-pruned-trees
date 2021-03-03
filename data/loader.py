@@ -34,7 +34,7 @@ class DataLoader(object):
             random.shuffle(indices)
             data = [data[i] for i in indices]
         self.id2label = dict([(v,k) for k,v in self.label2id.items()])
-        self.labels = [self.id2label[d[-2]] for d in data]
+        self.labels = [self.id2label[d[-3]] for d in data]
         self.num_examples = len(data)
         
         # chunk into batches
@@ -75,9 +75,11 @@ class DataLoader(object):
                     else:
                         masked[i] += 5
                 tagging = [1 if i in masked else 0 for i in range(len(tokens)+5)]
+                has_tag = True
             else:
                 masked = []
                 tagging = [0 for i in range(len(tokens)+5)]
+                has_tag = False
             if ss<os:
                 os = os + 2
                 oe = oe + 2
@@ -107,7 +109,7 @@ class DataLoader(object):
             subj_type = [constant.SUBJ_NER_TO_ID[d['subj_type']]]
             obj_type = [constant.OBJ_NER_TO_ID[d['obj_type']]]
             relation = self.label2id[d['relation']]
-            processed += [(tokens, pos, ner, deprel, head, subj_positions, obj_positions, subj_type, obj_type, relation, tagging)]
+            processed += [(tokens, pos, ner, deprel, head, subj_positions, obj_positions, subj_type, obj_type, relation, tagging, has_tag)]
         return processed
 
     def gold(self):
@@ -155,7 +157,7 @@ class DataLoader(object):
 
         rule = get_long_tensor(batch[10], batch_size)
         
-        return (words, masks, pos, ner, deprel, head, subj_positions, obj_positions, subj_type, obj_type, rels, orig_idx, rule)
+        return (words, masks, pos, ner, deprel, head, subj_positions, obj_positions, subj_type, obj_type, rels, orig_idx, rule, batch[-1])
 
     def __iter__(self):
         for i in range(self.__len__()):

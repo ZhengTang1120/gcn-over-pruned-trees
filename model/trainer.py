@@ -64,8 +64,9 @@ def unpack_batch(batch, cuda):
     head = batch[5]
     subj_pos = batch[6]
     obj_pos = batch[7]
+    tagged = batch[-1]
     lens = batch[1].eq(0).long().sum(1).squeeze()
-    return inputs, labels, rules, tokens, head, subj_pos, obj_pos, lens
+    return inputs, labels, rules, tokens, head, subj_pos, obj_pos, lens, tagged
 
 class BERTtrainer(Trainer):
     def __init__(self, opt, emb_matrix=None):
@@ -87,7 +88,7 @@ class BERTtrainer(Trainer):
             lr=opt['lr'],
         )
     def update(self, batch):
-        inputs, labels, rules, tokens, head, subj_pos, obj_pos, lens = unpack_batch(batch, self.opt['cuda'])
+        inputs, labels, rules, tokens, head, subj_pos, obj_pos, lens, tagged = unpack_batch(batch, self.opt['cuda'])
 
         # step forward
         self.classifier.train()
@@ -107,8 +108,10 @@ class BERTtrainer(Trainer):
             #     loss += self.opt['pooling_l2'] * (pooling_output ** 2).sum(1).mean()
         if self.opt['decoder']:
             # decoder
-            print (tagging_output.size(), rules.size())
-            loss += self.criterion(tagging_output, rules)
+            for i, f in enumerate(tagged):
+                if f:
+                    print (tagging_output[i].size(), rules[i].size())
+                    loss += self.criterion(tagging_output[i], rules[i])
             # batch_size = labels.size(0)
             # rules = rules.view(batch_size, -1)
             # masks = inputs[1]
@@ -146,7 +149,7 @@ class BERTtrainer(Trainer):
         self.classifier.eval()
         self.decoder.eval()
         logits, tagging_output, encoder_outputs, hidden = self.classifier(inputs)
-        loss = self.criterion(logits, labels) + self.criterion(tagging_output, rules)
+        loss = self.criterion(logits, labels) + self.criterion(tagging_output.transpose(1,2), rules)
         probs = F.softmax(logits, 1).data.cpu().numpy().tolist()
         predictions = np.argmax(logits.data.cpu().numpy(), axis=1).tolist()
         if unsort:
