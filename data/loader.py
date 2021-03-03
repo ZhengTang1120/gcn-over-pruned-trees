@@ -74,6 +74,7 @@ class DataLoader(object):
                 if (rl == d['relation']):
                     if (masked!=(min(os, ss), max(oe, se)+1)):
                         a += 1
+                        print (masked, (min(os, ss), max(oe, se)+1))
                     else:
                         b += 1
             rule = [[]]
