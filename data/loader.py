@@ -84,7 +84,7 @@ class DataLoader(object):
                 tokens.insert(se+2, '#')
             tokens = ['[CLS]'] + tokens
             if eval(masked):
-                masked = list(range(eval(masked)))
+                masked = list(range(eval(masked)[0], eval(masked)[1]))
                 for i in range(len(masked)):
                     if masked[i] < min(os, ss):
                         masked[i] += 1
