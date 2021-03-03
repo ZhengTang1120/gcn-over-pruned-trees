@@ -74,11 +74,11 @@ class DataLoader(object):
                 for i in range(len(masked)):
                     if masked[i] < min(os, ss):
                         masked[i] += 1
-                    elif masked[i] < min(se,oe):
+                    elif masked[i] < min(se,oe)+1:
                         masked[i] += 2
-                    elif masked[i] < max(os, ss):
+                    elif masked[i] < max(os, ss)+2:
                         masked[i] += 3
-                    elif masked[i] < max(se, oe):
+                    elif masked[i] < max(se, oe)+3:
                         masked[i] += 4
                     else:
                         masked[i] += 5
