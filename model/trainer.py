@@ -142,7 +142,7 @@ class BERTtrainer(Trainer):
         return loss_val
 
     def predict(self, batch, unsort=True):
-        inputs, labels, rules, tokens, head, subj_pos, obj_pos, lens = unpack_batch(batch, self.opt['cuda'])
+        inputs, labels, rules, tokens, head, subj_pos, obj_pos, lens, tagged = unpack_batch(batch, self.opt['cuda'])
         orig_idx = batch[11]
         # forward
         self.classifier.eval()
