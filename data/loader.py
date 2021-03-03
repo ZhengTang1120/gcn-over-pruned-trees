@@ -96,7 +96,7 @@ class DataLoader(object):
                         masked[i] += 4
                     else:
                         masked[i] += 5
-                print (masked, min(os, ss), max(oe, se))
+                print ([tokens[i] for i in masked])
 
             tokens = self.tokenizer.convert_tokens_to_ids(tokens)
             # tokens = map_to_ids(tokens, vocab.word2id)
