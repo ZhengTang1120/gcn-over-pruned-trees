@@ -24,8 +24,8 @@ class BERTclassifier(nn.Module):
         outputs = self.model(words)
         h = outputs.last_hidden_state
         pool_type = self.opt['pooling']
-        subj_out = F.tanh(self.linear(pool(h, subj_mask, type=pool_type)))
-        obj_out = F.tanh(self.linear(pool(h, obj_mask, type=pool_type)))
+        # subj_out = F.tanh(self.linear(pool(h, subj_mask, type=pool_type)))
+        # obj_out = F.tanh(self.linear(pool(h, obj_mask, type=pool_type)))
         cls_out = outputs.pooler_output
         # outputs = torch.cat([cls_out, subj_out, obj_out], dim=1)
         # logits = self.classifier2(F.tanh(self.classifier1(outputs)))
