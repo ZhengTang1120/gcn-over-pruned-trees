@@ -67,6 +67,19 @@ class DataLoader(object):
             tokens[ss:se+1] = ['[SUBJ-'+d['subj_type']+']'] * (se-ss+1)
             tokens[os:oe+1] = ['[OBJ-'+d['obj_type']+']'] * (oe-os+1)
             rl, masked = mappings[c].split('\t')
+            if eval(masked):
+                masked = list(range(eval(masked)[0], eval(masked)[1]))
+                for i in range(len(masked)):
+                    if masked[i] < min(os, ss):
+                        masked[i] += 1
+                    elif masked[i] < min(se,oe):
+                        masked[i] += 2
+                    elif masked[i] < max(os, ss):
+                        masked[i] += 3
+                    elif masked[i] < max(se, oe):
+                        masked[i] += 4
+                    else:
+                        masked[i] += 5
             rule = [[]]
             if ss<os:
                 os = os + 2
@@ -84,18 +97,6 @@ class DataLoader(object):
                 tokens.insert(se+2, '#')
             tokens = ['[CLS]'] + tokens
             if eval(masked):
-                masked = list(range(eval(masked)[0], eval(masked)[1]))
-                for i in range(len(masked)):
-                    if masked[i] < min(os, ss):
-                        masked[i] += 1
-                    elif masked[i] < min(se,oe):
-                        masked[i] += 2
-                    elif masked[i] < max(os, ss):
-                        masked[i] += 3
-                    elif masked[i] < max(se, oe):
-                        masked[i] += 4
-                    else:
-                        masked[i] += 5
                 print ([tokens[i] for i in masked])
 
             tokens = self.tokenizer.convert_tokens_to_ids(tokens)
