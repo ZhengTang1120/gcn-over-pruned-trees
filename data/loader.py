@@ -72,8 +72,9 @@ class DataLoader(object):
             masked = eval(masked)
             if masked:
                 if (rl == d['relation']):
-                    print (masked, ss, se, os, oe)
+                    print (masked, (min(os, ss), max(oe, se)))
             rule = [[]]
+            tk_map = {}
             if ss<os:
                 os = os + 2
                 oe = oe + 2
