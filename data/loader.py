@@ -69,7 +69,7 @@ class DataLoader(object):
             rl, masked = mappings[c].split('\t')
             masked = eval(masked)
             if masked:
-                masked = list(range(eval(masked)[0], eval(masked)[1]))
+                masked = list(range(masked[0], masked[1]))
                 for i in range(len(masked)):
                     if masked[i] < min(os, ss):
                         masked[i] += 1
