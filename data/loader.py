@@ -68,6 +68,11 @@ class DataLoader(object):
             os, oe = d['obj_start'], d['obj_end']
             tokens[ss:se+1] = ['[SUBJ-'+d['subj_type']+']'] * (se-ss+1)
             tokens[os:oe+1] = ['[OBJ-'+d['obj_type']+']'] * (oe-os+1)
+            rl, masked = mappings[c].split('\t')
+            masked = eval(masked)
+            if masked:
+                if (rl == d['relation']):
+                    print (maksed, ss, se, os, oe)
             if ss<os:
                 os = os + 2
                 oe = oe + 2
@@ -97,16 +102,7 @@ class DataLoader(object):
             subj_type = [constant.SUBJ_NER_TO_ID[d['subj_type']]]
             obj_type = [constant.OBJ_NER_TO_ID[d['obj_type']]]
             relation = self.label2id[d['relation']]
-            rl, masked = mappings[c].split('\t')
-            masked = eval(masked)
-            if masked:
-                if (rl == d['relation']):
-                    a += 1
-                else:
-                    b += 1
-            rule = [[]]
             processed += [(tokens, pos, ner, deprel, head, subj_positions, obj_positions, subj_type, obj_type, relation, rule[0], rule)]
-        print (a, b)
         return processed
 
     def gold(self):
