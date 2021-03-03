@@ -73,6 +73,7 @@ class DataLoader(object):
             if masked:
                 if (rl == d['relation']):
                     print (maksed, ss, se, os, oe)
+            rule = [[]]
             if ss<os:
                 os = os + 2
                 oe = oe + 2
