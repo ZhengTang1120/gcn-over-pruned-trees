@@ -57,6 +57,8 @@ class DataLoader(object):
             mappings = f.readlines()
         # with open('dataset/tacred/rules.json') as f:
         #     rules = json.load(f)
+        a = 0
+        b = 0
         for c, d in enumerate(data):
             tokens = list(d['token'])
             if opt['lower']:
@@ -98,10 +100,13 @@ class DataLoader(object):
             rl, masked = mappings[c].split('\t')
             masked = eval(masked)
             if masked:
-                print (rl, d['relation'])
+                if (rl == d['relation']):
+                    a += 1
+                else:
+                    b += 1
             rule = [[]]
             processed += [(tokens, pos, ner, deprel, head, subj_positions, obj_positions, subj_type, obj_type, relation, rule[0], rule)]
-        # exit()
+        print (a, b)
         return processed
 
     def gold(self):
