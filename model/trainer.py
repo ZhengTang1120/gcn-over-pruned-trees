@@ -150,12 +150,19 @@ class BERTtrainer(Trainer):
         self.classifier.eval()
         self.decoder.eval()
         logits, tagging_output, encoder_outputs, hidden = self.classifier(inputs)
-        loss = self.criterion(logits, labels) + self.criterion(tagging_output.transpose(1,2), rules)
+        loss = self.criterion(logits, labels)
         probs = F.softmax(logits, 1).data.cpu().numpy().tolist()
         predictions = np.argmax(logits.data.cpu().numpy(), axis=1).tolist()
+        tags = []
+        for i, p in enumerate(predictions):
+            if p != 0:
+                t = np.argmax(tagging_output[i].data.cpu().numpy(), axis=1).tolist()
+                tags += [t]
+            else:
+                tags += [[]]
         if unsort:
-            _, predictions, probs = [list(t) for t in zip(*sorted(zip(orig_idx,\
-                    predictions, probs)))]
+            _, predictions, probs, tags = [list(t) for t in zip(*sorted(zip(orig_idx,\
+                    predictions, probs, tags)))]
         # decoder
         # batch_size = labels.size(0)
         # decoded = []
@@ -179,4 +186,4 @@ class BERTtrainer(Trainer):
         # if unsort:
         #     _, decoded, probs = [list(t) for t in zip(*sorted(zip(orig_idx,\
         #             decoded, probs)))]
-        return predictions#, probs, decoded, loss.item()
+        return predictions, tags#, probs, decoded, loss.item()
