@@ -108,9 +108,10 @@ class BERTtrainer(Trainer):
             #     loss += self.opt['pooling_l2'] * (pooling_output ** 2).sum(1).mean()
         if self.opt['decoder']:
             # decoder
+            print (tagged)
+            exit()
             for i, f in enumerate(tagged):
                 if f:
-                    print (tagging_output[i].size(), rules[i].size())
                     loss += self.criterion(tagging_output[i], rules[i])
             # batch_size = labels.size(0)
             # rules = rules.view(batch_size, -1)
