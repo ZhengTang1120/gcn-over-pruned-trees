@@ -14,13 +14,14 @@ class DataLoader(object):
     """
     Load data from json files, preprocess and prepare batches.
     """
-    def __init__(self, filename, batch_size, opt, vocab, mappings, tokenizer, evaluation=False):
+    def __init__(self, filename, batch_size, opt, vocab, intervals, patterns, tokenizer, evaluation=False):
         self.batch_size = batch_size
         self.opt = opt
         self.vocab = vocab
         self.eval = evaluation
         self.label2id = constant.LABEL_TO_ID
-        self.mappings = mappings
+        self.intervals = intervals
+        self.patterns = patterns
         self.tokenizer = tokenizer
 
         with open(filename) as infile:
@@ -46,8 +47,10 @@ class DataLoader(object):
         """ Preprocess the data and convert to ids. """
         processed = []
         processed_rule = []
-        with open(self.mappings) as f:
-            mappings = f.readlines()
+        with open(self.intervals) as f:
+            intervals = f.readlines()
+        with open(self.patterns) as f:
+            patterns = f.readlines()
         # with open('dataset/tacred/rules.json') as f:
         #     rules = json.load(f)
         for c, d in enumerate(data):
@@ -59,9 +62,13 @@ class DataLoader(object):
             os, oe = d['obj_start'], d['obj_end']
             tokens[ss:se+1] = ['[SUBJ-'+d['subj_type']+']'] * (se-ss+1)
             tokens[os:oe+1] = ['[OBJ-'+d['obj_type']+']'] * (oe-os+1)
-            rl, masked = mappings[c].split('\t')
+            rl, masked = intervals[c].split('\t')
+            rl, pattern = patterns[c].split('\t')
             masked = eval(masked)
+
             if masked:
+                pattern = helper.word_tokenize(pattern)
+
                 masked = list(range(masked[0], masked[1]))
                 for i in range(len(masked)):
                     if masked[i] < min(os, ss):
@@ -74,11 +81,10 @@ class DataLoader(object):
                         masked[i] += 4
                     else:
                         masked[i] += 5
-                tagging = [1 if i in masked else 0 for i in range(len(tokens)+5)]
                 has_tag = True
             else:
+                pattern = []
                 masked = []
-                tagging = [0 for i in range(len(tokens)+5)]
                 has_tag = False
             if ss<os:
                 os = os + 2
@@ -95,7 +101,8 @@ class DataLoader(object):
                 tokens.insert(ss, '#')
                 tokens.insert(se+2, '#')
             tokens = ['[CLS]'] + tokens
-
+            tagging = [0 if i not in masked else 1 if tokens[i] in pattern else 2 for i in range(len(tokens))]
+            print ([(tokens[i], tagging[i]) for i in range(len(tokens))])
             tokens = self.tokenizer.convert_tokens_to_ids(tokens)
             # tokens = map_to_ids(tokens, vocab.word2id)
             pos = map_to_ids(d['stanford_pos'], constant.POS_TO_ID)
@@ -156,7 +163,7 @@ class DataLoader(object):
         rels = torch.LongTensor(batch[9])
 
         rule = get_long_tensor(batch[10], batch_size)
-        
+        exit()
         return (words, masks, pos, ner, deprel, head, subj_positions, obj_positions, subj_type, obj_type, rels, orig_idx, rule, batch[-1])
 
     def __iter__(self):
