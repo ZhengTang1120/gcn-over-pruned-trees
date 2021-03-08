@@ -102,7 +102,8 @@ class DataLoader(object):
                 tokens.insert(se+2, '#')
             tokens = ['[CLS]'] + tokens
             tagging = [0 if i not in masked else 1 if tokens[i] in pattern else 2 for i in range(len(tokens))]
-            print ([(tokens[i], tagging[i]) for i in range(len(tokens))])
+            if has_tag:
+                print ([(tokens[i], tagging[i]) for i in range(len(tokens))])
             tokens = self.tokenizer.convert_tokens_to_ids(tokens)
             # tokens = map_to_ids(tokens, vocab.word2id)
             pos = map_to_ids(d['stanford_pos'], constant.POS_TO_ID)
