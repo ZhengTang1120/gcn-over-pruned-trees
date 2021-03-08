@@ -53,9 +53,6 @@ class DataLoader(object):
             patterns = f.readlines()
         # with open('dataset/tacred/rules.json') as f:
         #     rules = json.load(f)
-        one = 0
-        two = 0
-        zero = 0
         for c, d in enumerate(data):
             tokens = list(d['token'])
             if opt['lower']:
@@ -106,6 +103,9 @@ class DataLoader(object):
             tokens = ['[CLS]'] + tokens
             tagging = [0 if i not in masked else 1 if tokens[i] in pattern else 2 for i in range(len(tokens))]
             if has_tag:
+                one = 0
+                two = 0
+                zero = 0
                 for t in tagging:
                     if t == 0:
                         zero += 1
@@ -114,6 +114,7 @@ class DataLoader(object):
                     if t == 2:
                         two += 1
                 print ([(tokens[i], tagging[i]) for i in range(len(tokens))])
+                print (one, two, zero)
             tokens = self.tokenizer.convert_tokens_to_ids(tokens)
             # tokens = map_to_ids(tokens, vocab.word2id)
             pos = map_to_ids(d['stanford_pos'], constant.POS_TO_ID)
@@ -128,7 +129,6 @@ class DataLoader(object):
             obj_type = [constant.OBJ_NER_TO_ID[d['obj_type']]]
             relation = self.label2id[d['relation']]
             processed += [(tokens, pos, ner, deprel, head, subj_positions, obj_positions, subj_type, obj_type, relation, tagging, has_tag)]
-            print (one, two, zero)
         return processed
 
     def gold(self):
