@@ -144,6 +144,7 @@ class BERTtrainer(Trainer):
     def predict(self, batch, unsort=True):
         inputs, labels, rules, tokens, head, subj_pos, obj_pos, lens, tagged = unpack_batch(batch, self.opt['cuda'])
         rules = rules.data.cpu().numpy().tolist()
+        tokens = tokens.data.cpu.numpy().tolist()
         orig_idx = batch[11]
         # forward
         self.classifier.eval()
@@ -162,7 +163,7 @@ class BERTtrainer(Trainer):
         if unsort:
             _, predictions, probs, tags, rules, tokens = [list(t) for t in zip(*sorted(zip(orig_idx,\
                     predictions, probs, tags, rules, tokens)))]
-        ids = [orig_idx.index(i) for i in range(len(inputs))]
+        # ids = [orig_idx.index(i) for i in range(len(inputs))]
         # decoder
         # batch_size = labels.size(0)
         # decoded = []
@@ -186,4 +187,4 @@ class BERTtrainer(Trainer):
         # if unsort:
         #     _, decoded, probs = [list(t) for t in zip(*sorted(zip(orig_idx,\
         #             decoded, probs)))]
-        return predictions, tags, rules, ids#, probs, decoded, loss.item()
+        return predictions, tags, rules, tokens#, probs, decoded, loss.item()
