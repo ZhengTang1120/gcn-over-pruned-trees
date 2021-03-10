@@ -180,7 +180,7 @@ for epoch in range(1, opt['num_epoch']+1):
         goldt += tagged
         dev_loss += loss
         batch_size = len(preds)
-        for i in range(orig_idx):
+        for i in orig_idx:
             ids = batch[0][i]
             inputs += [[tokenizer.convert_ids_to_tokens(i) for i in ids.cpu().numpy().tolist()]]
         #     print (id2label[preds[i]], dev_batch.gold()[x])
