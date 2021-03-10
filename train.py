@@ -166,15 +166,17 @@ for epoch in range(1, opt['num_epoch']+1):
     print("Evaluating on dev set...")
     predictions = []
     tags = []
+    goldt = []
     dev_loss = 0
     references = []
     candidates = []
     count = 0
     inputs = []
     for _, batch in enumerate(dev_batch):
-        preds, tagged = trainer.predict(batch)
+        preds, ts, tagged = trainer.predict(batch)
         # preds, _, decoded, loss = trainer.predict(batch)
         predictions += preds
+        goldt += ts
         tags += tagged
         dev_loss += loss
         batch_size = len(preds)
@@ -198,10 +200,10 @@ for epoch in range(1, opt['num_epoch']+1):
     for i, p in enumerate(predictions):
         if p!=0:
             print (id2label[p], dev_batch.gold()[i])
-            if sum(dev_batch.tags[i])!=0:
-                print ([(dev_batch.tags[i][j], tags[i][j], inputs[i][j]) for j in range(len(inputs[i]))])
+            if sum(goldt[i])!=0:
+                print ([(goldt[i][j], tags[i][j], inputs[i][j])for j in range(len(inputs[i]))])
             else:
-                print ([(tags[i][j], inputs[i][j]) for j in range(len(inputs[i]))])
+                print ([(tags[i][j], inputs[i][j])for j in range(len(inputs[i]))])
             print ()
     predictions = [id2label[p] for p in predictions]
     train_loss = train_loss / train_batch.num_examples * opt['batch_size'] # avg loss per batch
