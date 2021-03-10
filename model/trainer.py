@@ -160,8 +160,8 @@ class BERTtrainer(Trainer):
             else:
                 tags += [[]]
         if unsort:
-            _, predictions, probs, tags, rules, inputs = [list(t) for t in zip(*sorted(zip(orig_idx,\
-                    predictions, probs, tags, rules, inputs)))]
+            _, predictions, probs, tags, rules, tokens = [list(t) for t in zip(*sorted(zip(orig_idx,\
+                    predictions, probs, tags, rules, tokens)))]
         # decoder
         # batch_size = labels.size(0)
         # decoded = []
@@ -185,4 +185,4 @@ class BERTtrainer(Trainer):
         # if unsort:
         #     _, decoded, probs = [list(t) for t in zip(*sorted(zip(orig_idx,\
         #             decoded, probs)))]
-        return predictions, tags, rules, inputs#, probs, decoded, loss.item()
+        return predictions, tags, rules, tokens#, probs, decoded, loss.item()
