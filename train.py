@@ -176,8 +176,8 @@ for epoch in range(1, opt['num_epoch']+1):
         preds, ts, tagged = trainer.predict(batch)
         # preds, _, decoded, loss = trainer.predict(batch)
         predictions += preds
-        goldt += ts
-        tags += tagged
+        tags += ts
+        goldt += tagged
         dev_loss += loss
         batch_size = len(preds)
         for i in range(batch_size):
