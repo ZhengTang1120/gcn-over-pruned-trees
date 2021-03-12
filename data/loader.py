@@ -104,9 +104,9 @@ class DataLoader(object):
                 tokens.insert(oe+2, '$')
                 tokens.insert(ss, '#')
                 tokens.insert(se+2, '#')
-            tokens =  [tokens[i] for i in range(len(tokens)) if i in masked]
+            # tokens =  [tokens[i] for i in range(len(tokens)) if i in masked]
             tokens = ['[CLS]'] + tokens
-            tagging = [0 if tokens[i] in ['$', '#', '[CLS]'] else 1 if tokens[i] in pattern else 3 if 'SUBJ-' in tokens[i] or 'OBJ-' in tokens[i] else 2 for i in range(len(tokens))]
+            tagging = [0 if i not in masked else 1 if tokens[i] in pattern else 3 if 'SUBJ-' in tokens[i] or 'OBJ-' in tokens[i] else 2 for i in range(len(tokens))]
             # if has_tag:
             #     one = 0
             #     two = 0
@@ -125,7 +125,7 @@ class DataLoader(object):
             #         if t == 3:
             #             three += 1
             #             threes += 1
-                # print ([(tokens[i], tagging[i]) for i in range(len(tokens))])
+            #     print ([(tokens[i], tagging[i]) for i in range(len(tokens))])
             #     print (one, two, three, zero)
             tokens = self.tokenizer.convert_tokens_to_ids(tokens)
             # tokens = map_to_ids(tokens, vocab.word2id)
