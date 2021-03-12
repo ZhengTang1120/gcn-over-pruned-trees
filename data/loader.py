@@ -106,7 +106,7 @@ class DataLoader(object):
                 tokens.insert(se+2, '#')
             tokens =  [tokens[i] for i in range(len(tokens)) if i in masked]
             tokens = ['[CLS]'] + tokens
-            tagging = [1 if tokens[i] in pattern else 3 if 'SUBJ-' in tokens[i] or 'OBJ-' in tokens[i] else 2 for i in range(len(tokens))]
+            tagging = [0 if tokens[i] in ['$', '#', '[CLS]'] else 1 if tokens[i] in pattern else 3 if 'SUBJ-' in tokens[i] or 'OBJ-' in tokens[i] else 2 for i in range(len(tokens))]
             if has_tag:
             #     one = 0
             #     two = 0
