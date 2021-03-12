@@ -112,7 +112,7 @@ class DataLoader(object):
             #     two = 0
             #     three = 0
             #     zero = 0
-                for t in tagging:
+            #     for t in tagging:
             #         if t == 0:
             #             zero += 1
             #             zeros += 1
