@@ -75,6 +75,7 @@ class BERTtrainer(Trainer):
         self.classifier = BERTclassifier(opt, emb_matrix=emb_matrix)
         self.decoder = Decoder(opt)
         self.criterion = nn.CrossEntropyLoss()
+        self.criterion2 = nn.CrossEntropyLoss(ignore_index=0)
         self.criterion_d = nn.NLLLoss(ignore_index=constant.PAD_ID)
         self.parameters = [p for p in self.classifier.parameters() if p.requires_grad]# + [p for p in self.decoder.parameters() if p.requires_grad]
         if opt['cuda']:
@@ -110,7 +111,7 @@ class BERTtrainer(Trainer):
             # decoder
             for i, f in enumerate(tagged):
                 if f:
-                    loss += self.criterion(tagging_output[i], rules[i])
+                    loss += self.criterion2(tagging_output[i], rules[i])
             # batch_size = labels.size(0)
             # rules = rules.view(batch_size, -1)
             # masks = inputs[1]
