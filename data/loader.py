@@ -74,6 +74,10 @@ class DataLoader(object):
                 pattern = helper.word_tokenize(pattern)
 
                 masked = list(range(masked[0], masked[1]))
+                if masked[0]<min(ss, os)-1 or masked[1]>max(oe, se)+1:
+                    print (tokens)
+                    print (masked[0], masked[1], ss. se, os, oe)
+                    print ()
                 # for i in range(len(masked)):
                 #     if masked[i] < min(os, ss):
                 #         masked[i] += 1
@@ -88,7 +92,7 @@ class DataLoader(object):
                 has_tag = True
             else:
                 pattern = []
-                masked = list(range(min(os, ss)-2, max(oe, se)+2))
+                masked = []
                 has_tag = False
             # if ss<os:
             #     os = os + 2
@@ -105,8 +109,8 @@ class DataLoader(object):
             #     tokens.insert(ss, '#')
             #     tokens.insert(se+2, '#')
             tagging = [0 if (i+1) not in masked else 1 if tokens[i] in pattern else 3 if 'SUBJ-' in tokens[i] or 'OBJ-' in tokens[i] else 2 for i in range(len(tokens))]
-            tokens =  [tokens[i] for i in range(len(tokens)) if i in range(min(ss, os), max(se, oe)+1)]
-            tagging = [tagging[i] for i in range(len(tagging)) if i in range(min(ss, os), max(se, oe)+1)]
+            tokens =  [tokens[i] for i in range(len(tokens)) if i in range(min(ss, os)-1, max(se, oe)+1)]
+            tagging = [tagging[i] for i in range(len(tagging)) if i in range(min(ss, os)-1, max(se, oe)+1)]
             tokens = ['[CLS]'] + tokens
             tagging = [0] + tagging
             if has_tag:
