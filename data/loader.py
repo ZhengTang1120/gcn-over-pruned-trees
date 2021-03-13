@@ -73,7 +73,7 @@ class DataLoader(object):
             if masked:
                 pattern = helper.word_tokenize(pattern)
 
-                masked = list(range(masked[0], masked[1]))
+                masked = list(range(masked[0], masked[1]+1))
                 # for i in range(len(masked)):
                 #     if masked[i] < min(os, ss):
                 #         masked[i] += 1
