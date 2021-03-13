@@ -109,7 +109,7 @@ class DataLoader(object):
             tagging = [tagging[i] for i in range(len(tagging)) if i in range(min(ss, os)-2, max(se, oe)+3)]
             tokens = ['[CLS]'] + tokens
             tagging = [0] + tagging
-            if has_tag:
+            # if has_tag:
             #     one = 0
             #     two = 0
             #     three = 0
@@ -127,7 +127,7 @@ class DataLoader(object):
             #         if t == 3:
             #             three += 1
             #             threes += 1
-                print ([(tokens[i], tagging[i]) for i in range(len(tokens))])
+                # print ([(tokens[i], tagging[i]) for i in range(len(tokens))])
             #     print (one, two, three, zero)
             tokens = self.tokenizer.convert_tokens_to_ids(tokens)
             # tokens = map_to_ids(tokens, vocab.word2id)
@@ -142,10 +142,8 @@ class DataLoader(object):
             subj_type = [constant.SUBJ_NER_TO_ID[d['subj_type']]]
             obj_type = [constant.OBJ_NER_TO_ID[d['obj_type']]]
             relation = self.label2id[d['relation']]
-            if has_tag:
-                processed += [(tokens, pos, ner, deprel, head, subj_positions, obj_positions, subj_type, obj_type, relation, tagging, has_tag)]
+            processed += [(tokens, pos, ner, deprel, head, subj_positions, obj_positions, subj_type, obj_type, relation, tagging, has_tag)]
         # print (ones, twos, threes, zeros)
-        exit()
         return processed
 
     def gold(self):
