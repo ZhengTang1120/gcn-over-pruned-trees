@@ -74,9 +74,9 @@ class DataLoader(object):
                 pattern = helper.word_tokenize(pattern)
 
                 masked = list(range(masked[0], masked[1]))
-                if masked[0]<min(ss, os)-1 or masked[1]>max(oe, se)+1:
+                if masked[0]<min(ss, os)-1 or masked[-1]>max(oe, se)+1:
                     print (tokens)
-                    print ('exceed',intervals[c], masked[0], masked[1], ss, se, os, oe)
+                    print ('exceed',intervals[c], masked[0], masked[-1], ss, se, os, oe)
                     print ()
                 # for i in range(len(masked)):
                 #     if masked[i] < min(os, ss):
