@@ -74,40 +74,40 @@ class DataLoader(object):
                 pattern = helper.word_tokenize(pattern)
 
                 masked = list(range(masked[0], masked[1]))
-                for i in range(len(masked)):
-                    if masked[i] < min(os, ss):
-                        masked[i] += 1
-                    elif masked[i] <= min(se,oe):
-                        masked[i] += 2
-                    elif masked[i] < max(os, ss):
-                        masked[i] += 3
-                    elif masked[i] <= max(se, oe):
-                        masked[i] += 4
-                    else:
-                        masked[i] += 5
+                # for i in range(len(masked)):
+                #     if masked[i] < min(os, ss):
+                #         masked[i] += 1
+                #     elif masked[i] <= min(se,oe):
+                #         masked[i] += 2
+                #     elif masked[i] < max(os, ss):
+                #         masked[i] += 3
+                #     elif masked[i] <= max(se, oe):
+                #         masked[i] += 4
+                #     else:
+                #         masked[i] += 5
                 has_tag = True
             else:
                 pattern = []
                 masked = []
                 has_tag = False
-            if ss<os:
-                os = os + 2
-                oe = oe + 2
-                tokens.insert(ss, '#')
-                tokens.insert(se+2, '#')
-                tokens.insert(os, '$')
-                tokens.insert(oe+2, '$')
-            else:
-                ss = ss + 2
-                se = se + 2
-                tokens.insert(os, '$')
-                tokens.insert(oe+2, '$')
-                tokens.insert(ss, '#')
-                tokens.insert(se+2, '#')
-            # tokens =  [tokens[i] for i in range(len(tokens)) if i in masked]
+            # if ss<os:
+            #     os = os + 2
+            #     oe = oe + 2
+            #     tokens.insert(ss, '#')
+            #     tokens.insert(se+2, '#')
+            #     tokens.insert(os, '$')
+            #     tokens.insert(oe+2, '$')
+            # else:
+            #     ss = ss + 2
+            #     se = se + 2
+            #     tokens.insert(os, '$')
+            #     tokens.insert(oe+2, '$')
+            #     tokens.insert(ss, '#')
+            #     tokens.insert(se+2, '#')
+            tokens =  [tokens[i] for i in range(len(tokens)) if i in masked]
             tokens = ['[CLS]'] + tokens
-            tagging = [0 if i not in masked else 1 if tokens[i] in pattern else 3 if 'SUBJ-' in tokens[i] or 'OBJ-' in tokens[i] else 2 for i in range(len(tokens))]
-            # if has_tag:
+            tagging = [0 if (i+1) not in masked else 1 if tokens[i] in pattern else 3 if 'SUBJ-' in tokens[i] or 'OBJ-' in tokens[i] else 2 for i in range(len(tokens))]
+            if has_tag:
             #     one = 0
             #     two = 0
             #     three = 0
@@ -125,7 +125,7 @@ class DataLoader(object):
             #         if t == 3:
             #             three += 1
             #             threes += 1
-            #     print ([(tokens[i], tagging[i]) for i in range(len(tokens))])
+                print ([(tokens[i], tagging[i]) for i in range(len(tokens))])
             #     print (one, two, three, zero)
             tokens = self.tokenizer.convert_tokens_to_ids(tokens)
             # tokens = map_to_ids(tokens, vocab.word2id)
@@ -142,6 +142,7 @@ class DataLoader(object):
             relation = self.label2id[d['relation']]
             processed += [(tokens, pos, ner, deprel, head, subj_positions, obj_positions, subj_type, obj_type, relation, tagging, has_tag)]
         # print (ones, twos, threes, zeros)
+        exit()
         return processed
 
     def gold(self):
