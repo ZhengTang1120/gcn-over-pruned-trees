@@ -76,7 +76,7 @@ class DataLoader(object):
                 masked = list(range(masked[0], masked[1]))
                 if masked[0]<min(ss, os)-1 or masked[1]>max(oe, se)+1:
                     print (tokens)
-                    print ('exceed', masked[0], masked[1], ss, se, os, oe)
+                    print ('exceed',intervals[c], masked[0], masked[1], ss, se, os, oe)
                     print ()
                 # for i in range(len(masked)):
                 #     if masked[i] < min(os, ss):
@@ -113,7 +113,7 @@ class DataLoader(object):
             tagging = [tagging[i] for i in range(len(tagging)) if i in range(min(ss, os)-1, max(se, oe)+1)]
             tokens = ['[CLS]'] + tokens
             tagging = [0] + tagging
-            if has_tag:
+            # if has_tag:
             #     one = 0
             #     two = 0
             #     three = 0
@@ -131,7 +131,7 @@ class DataLoader(object):
             #         if t == 3:
             #             three += 1
             #             threes += 1
-                print ([(tokens[i], tagging[i]) for i in range(len(tokens))])
+                # print ([(tokens[i], tagging[i]) for i in range(len(tokens))])
             #     print (one, two, three, zero)
             tokens = self.tokenizer.convert_tokens_to_ids(tokens)
             # tokens = map_to_ids(tokens, vocab.word2id)
