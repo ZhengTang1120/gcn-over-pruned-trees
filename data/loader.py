@@ -88,7 +88,7 @@ class DataLoader(object):
                 has_tag = True
             else:
                 pattern = []
-                masked = []
+                masked = list(range(0, len(tokens)))
                 has_tag = False
             # if ss<os:
             #     os = os + 2
