@@ -39,7 +39,7 @@ class Tagger(nn.Module):
         in_dim = 1024
 
         self.tagger = nn.Linear(in_dim, 1)
-        self.threshold = 0.8
+        self.threshold = 0.5
 
     def forward(self, h):
 
