@@ -107,8 +107,7 @@ class BERTtrainer(Trainer):
                 else:
                     loss += self.criterion2(tagging_output[i], rules[i])
                 logits = self.classifier(h[i], rules[i].eq(0).unsqueeze(0))
-                print (logits.size(), labels.size(), labels[i].size())
-                loss += self.criterion(logits, labels[i])
+                loss += self.criterion(logits, labels[i].unsqueeze(0))
             else:
                 tag_cands = self.tagger.generate_cand_tags(tagging_output[i])
                 print (tag_cands.size(), rules.size())
