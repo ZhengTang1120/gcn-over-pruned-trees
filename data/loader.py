@@ -119,7 +119,7 @@ class DataLoader(object):
             relation = self.label2id[d['relation']]
             if has_tag:
                 processed1 += [(tokens, pos, ner, deprel, head, subj_positions, obj_positions, subj_type, obj_type, relation, tagging, has_tag)]
-            else:
+            elif relation != 0:
                 processed2 += [(tokens, pos, ner, deprel, head, subj_positions, obj_positions, subj_type, obj_type, relation, tagging, has_tag)]
         return processed1, processed2
 
