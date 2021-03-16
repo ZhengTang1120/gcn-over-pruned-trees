@@ -71,7 +71,7 @@ class BERTtrainer(Trainer):
         self.opt = opt
         self.emb_matrix = emb_matrix
         self.encoder = BERTencoder()
-        self.classifier = BERTclassifier(opt, emb_matrix=emb_matrix)
+        self.classifier = BERTclassifier(opt)
         self.tqgger = Tagger()
         self.criterion = nn.CrossEntropyLoss()
         self.criterion2 = nn.CrossEntropyLoss(ignore_index=0)
