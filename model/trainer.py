@@ -100,7 +100,10 @@ class BERTtrainer(Trainer):
         tagging_output = self.tagger(h)
         for i, f in enumerate(tagged):
             if f:
-                loss += self.criterion2(tagging_output[i], rules[i])
+                if loss == 0:
+                    loss = self.criterion2(tagging_output[i], rules[i])
+                else:
+                    loss += self.criterion2(tagging_output[i], rules[i])
                 logits = self.classifier(h[i], rules[i])
                 loss += self.criterion(logits, labels[i])
             else:
