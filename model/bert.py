@@ -38,12 +38,12 @@ class Tagger(nn.Module):
         super().__init__()
         in_dim = 1024
 
-        self.tagger = nn.Linear(in_dim, 4)
+        self.tagger = nn.Linear(in_dim, 1)
         self.threshold = 0.8
 
     def forward(self, h):
 
-        tag_logits = self.tagger(h)
+        tag_logits = F.sigmoid(self.tagger(h))
         
         return tag_logits
 
