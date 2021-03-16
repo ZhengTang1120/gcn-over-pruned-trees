@@ -103,7 +103,8 @@ class BERTtrainer(Trainer):
         for i, f in enumerate(tagged):
             if f:
                 if loss == 0:
-                    loss = self.criterion2(tagging_output[i], rules[i])
+                    print (tagging_output[i].size(), rules[i].size())
+                    loss = self.criterion2(tagging_output[i].squeeze(1), rules[i])
                 else:
                     loss += self.criterion2(tagging_output[i], rules[i])
                 logits = self.classifier(h[i], rules[i])
