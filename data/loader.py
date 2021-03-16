@@ -27,13 +27,17 @@ class DataLoader(object):
         with open(filename) as infile:
             data = json.load(infile)
         self.raw_data = data
-        data = self.preprocess(data, vocab, opt)
+        data1, data2 = self.preprocess(data, vocab, opt)
 
         # shuffle for training
         if not evaluation:
-            indices = list(range(len(data)))
+            indices = list(range(len(data1)))
             random.shuffle(indices)
-            data = [data[i] for i in indices]
+            data1 = [data1[i] for i in indices]
+            indices = list(range(len(data2)))
+            random.shuffle(indices)
+            data2 = [data2[i] for i in indices]
+        data = data1 + data2
         self.id2label = dict([(v,k) for k,v in self.label2id.items()])
         self.labels = [self.id2label[d[-3]] for d in data]
         self.num_examples = len(data)
@@ -45,8 +49,8 @@ class DataLoader(object):
 
     def preprocess(self, data, vocab, opt):
         """ Preprocess the data and convert to ids. """
-        processed = []
-        processed_rule = []
+        processed1 = []
+        processed2 = []
         with open(self.intervals) as f:
             intervals = f.readlines()
         with open(self.patterns) as f:
@@ -112,8 +116,11 @@ class DataLoader(object):
             subj_type = [constant.SUBJ_NER_TO_ID[d['subj_type']]]
             obj_type = [constant.OBJ_NER_TO_ID[d['obj_type']]]
             relation = self.label2id[d['relation']]
-            processed += [(tokens, pos, ner, deprel, head, subj_positions, obj_positions, subj_type, obj_type, relation, tagging, has_tag)]
-        return processed
+            if has_tag:
+                processed1 += [(tokens, pos, ner, deprel, head, subj_positions, obj_positions, subj_type, obj_type, relation, tagging, has_tag)]
+            else:
+                processed2 += [(tokens, pos, ner, deprel, head, subj_positions, obj_positions, subj_type, obj_type, relation, tagging, has_tag)]
+        return processed1, processed2
 
     def gold(self):
         """ Return gold labels as a list. """
