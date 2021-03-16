@@ -105,7 +105,7 @@ class BERTtrainer(Trainer):
                 if loss == 0:
                     loss = self.criterion2(tagging_output[i].squeeze(1), rules[i].to(torch.float32))
                 else:
-                    loss += self.criterion2(tagging_output[i], rules[i])
+                    loss += self.criterion2(tagging_output[i].squeeze(1), rules[i].to(torch.float32))
                 logits = self.classifier(h[i], rules[i].eq(0).unsqueeze(0))
                 loss += self.criterion(logits, labels[i].unsqueeze(0))
             else:
