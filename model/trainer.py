@@ -103,7 +103,7 @@ class BERTtrainer(Trainer):
         for i, f in enumerate(tagged):
             if f:
                 if loss == 0:
-                    print (tagging_output[i].size(), rules[i]unsqueeze(0).size())
+                    print (tagging_output[i].size(), rules[i].unsqueeze(0).size())
                     loss = self.criterion2(tagging_output[i].squeeze(1), rules[i].to(torch.float32))
                 else:
                     loss += self.criterion2(tagging_output[i], rules[i].unsqueeze(0))
