@@ -165,7 +165,7 @@ class DataLoader(object):
 
         rels = torch.LongTensor(batch[9])
 
-        rule = get_float_tensor(batch[10], batch_size)
+        rule = get_long_tensor(batch[10], batch_size)
         return (words, masks, pos, ner, deprel, head, subj_positions, obj_positions, subj_type, obj_type, rels, orig_idx, rule, batch[-1])
 
     def __iter__(self):
@@ -187,14 +187,6 @@ def get_long_tensor(tokens_list, batch_size):
     tokens = torch.LongTensor(batch_size, token_len).fill_(constant.PAD_ID)
     for i, s in enumerate(tokens_list):
         tokens[i,:len(s)] = torch.LongTensor(s)
-    return tokens
-
-def get_float_tensor(tokens_list, batch_size):
-    """ Convert list of list of tokens to a padded LongTensor. """
-    token_len = max(len(x) for x in tokens_list)
-    tokens = torch.FloatTensor(batch_size, token_len).fill_(constant.PAD_ID)
-    for i, s in enumerate(tokens_list):
-        tokens[i,:len(s)] = torch.FloatTensor(s)
     return tokens
 
 def sort_all(batch, lens):
