@@ -100,6 +100,7 @@ class BERTtrainer(Trainer):
         loss = 0
         h = self.encoder(inputs)
         tagging_output = self.tagger(h)
+        print (tagging_output.size(), rules.size())
         if tagged[0]:
             loss = self.criterion2(tagging_output, rules.to(torch.float32))
             logits = self.classifier(h, rules)
