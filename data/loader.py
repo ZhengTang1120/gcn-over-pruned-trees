@@ -28,13 +28,12 @@ class DataLoader(object):
             data = json.load(infile)
         self.raw_data = data
         data1, data2 = self.preprocess(data, vocab, opt)
-
+        print (len(data1), len(data2))
         # shuffle for training
         if not evaluation:
             indices = list(range(len(data1)))
             random.shuffle(indices)
             data1 = [data1[i] for i in indices]
-            data1 = data1 * 10
             indices = list(range(len(data2)))
             random.shuffle(indices)
             data2 = [data2[i] for i in indices]
