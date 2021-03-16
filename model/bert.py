@@ -17,7 +17,7 @@ class BERTclassifier(nn.Module):
         # self.classifier2 = nn.Linear(400, opt['num_class'])
         self.classifier = nn.Linear(in_dim, opt['num_class'])
         self.opt = opt
-        self.tagger = nn.Linear(in_dim, 4)
+        self.tagger = nn.Linear(in_dim, 2)
 
     def forward(self, inputs):
         words, masks, pos, ner, deprel, head, subj_pos, obj_pos, subj_type, obj_type = inputs
