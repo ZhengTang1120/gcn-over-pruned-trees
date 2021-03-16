@@ -104,18 +104,19 @@ class BERTtrainer(Trainer):
             loss = self.criterion2(tagging_output.squeeze(2), rules.to(torch.float32))
             logits = self.classifier(h, rules.eq(0))
             loss += self.criterion(logits, labels)
-        for i, f in enumerate(tagged):
-            tag_cands = self.tagger.generate_cand_tags(tagging_output[i])
-            print (tag_cands.size(), rules.size())
-            logits = self.classifier(h[i], tag_cands)
-            print (logits.size())
-            print (np.argmax(logits.data.cpu().numpy(), axis=0))
-            best = np.argmax(logits.data.cpu().numpy(), axis=0).tolist()[labels[i]]
-            if loss == 0:
-                loss = self.criterion2(tagging_output[i], tag_cands[best])
-            else:
-                loss += self.criterion2(tagging_output[i], tag_cands[best])
-            loss += self.criterion(logits[best], labels[i])
+        else:
+            for i, f in enumerate(tagged):
+                tag_cands = self.tagger.generate_cand_tags(tagging_output[i])
+                print (tag_cands.size(), rules.size())
+                logits = self.classifier(h[i], tag_cands)
+                print (logits.size())
+                print (np.argmax(logits.data.cpu().numpy(), axis=0))
+                best = np.argmax(logits.data.cpu().numpy(), axis=0).tolist()[labels[i]]
+                if loss == 0:
+                    loss = self.criterion2(tagging_output[i], tag_cands[best])
+                else:
+                    loss += self.criterion2(tagging_output[i], tag_cands[best])
+                loss += self.criterion(logits[best], labels[i])
         if loss != 0:
             loss_val = loss.item()
             # backward
