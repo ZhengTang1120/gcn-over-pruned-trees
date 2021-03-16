@@ -96,29 +96,19 @@ class BERTtrainer(Trainer):
         self.optimizer.zero_grad()
 
         loss = 0
-        # # classifier
-        # logits, tagging_output, encoder_outputs, hidden = self.classifier(inputs)
-        # if self.opt['classifier']:
-        #     loss = self.criterion(logits, labels)
-        # if self.opt['decoder']:
-        #     # decoder
-        #     for i, f in enumerate(tagged):
-        #         if f:
-        #             loss += self.criterion2(tagging_output[i], rules[i])
         h = self.encoder(inputs)
-        tagging_output, tag_cands = self.tagger(h)
+        tagging_output = self.tagger(h)
         for i, f in enumerate(tagged):
             if f:
-                loss = self.criterion2(tagging_output[i], rules[i])
+                loss += self.criterion2(tagging_output[i], rules[i])
                 logits = self.classifier(h[i], rules[i])
                 loss += self.criterion(logits, labels[i])
             else:
-                max_l = 0
-                for tag in tag_cands:
-                    logits = self.classifier(h[i], tag)
-                    if logits[labels[i]] > max_l[labels[i]]:
-                        max_l = logits
-                loss = self.criterion(max_l, labels[i])
+                tag_cands = self.tagger.generate_cand_tags(F.softmax(tagging_output[i]))
+                logits = self.classifier(h[i], tag_cands)
+                best = np.argmax(logits.data.cpu().numpy(), axis=0).tolist()[labels[i]]
+                loss += self.criterion2(tagging_output[i], tag_cands[best])
+                loss += self.criterion(logits[best], labels[i])
         if loss != 0:
             loss_val = loss.item()
             # backward

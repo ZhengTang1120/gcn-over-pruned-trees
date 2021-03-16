@@ -39,19 +39,28 @@ class Tagger(nn.Module):
         in_dim = 1024
 
         self.tagger = nn.Linear(in_dim, 4)
+        self.threshold = 0.8
 
     def forward(self, h):
 
         tag_logits = self.tagger(h)
-        cand_tags = generate_cand_tags(tag_logits, threshold)
         
-        return tag_logits, cand_tags
+        return tag_logits
 
-def generate_cand_tags(tag_logits, threshold):
-    cand_tags = list()
-    for t in tag_logits:
-        t.gt(threshold)
-    return cand_tags
+    def generate_cand_tags(tag_logits):
+        cand_tags = [[]]
+        for t in tag_logits.gt(self.threshold):
+            if t:
+                temp = []
+                for ct in cand_tags:
+                    temp.append(ct+[0])
+                    ct.append(1)
+                cand_tags += temp
+            else:
+                for ct in cand_tags:
+                    ct.append(0)
+
+        return torch.BoolTensor(cand_tags)
 
 def pool(h, mask, type='max'):
     if type == 'max':
