@@ -106,8 +106,8 @@ class BERTtrainer(Trainer):
                     print (tagging_output[i].size(), rules[i].unsqueeze(0).size())
                     loss = self.criterion2(tagging_output[i].squeeze(1), rules[i].to(torch.float32))
                 else:
-                    loss += self.criterion2(tagging_output[i], rules[i].unsqueeze(0))
-                logits = self.classifier(h[i], rules[i])
+                    loss += self.criterion2(tagging_output[i], rules[i])
+                logits = self.classifier(h[i], rules[i].unsqueeze(0))
                 loss += self.criterion(logits, labels[i])
             else:
                 tag_cands = self.tagger.generate_cand_tags(tagging_output[i])
