@@ -72,7 +72,7 @@ class BERTtrainer(Trainer):
         self.emb_matrix = emb_matrix
         self.encoder = BERTencoder()
         self.classifier = BERTclassifier(opt)
-        self.tqgger = Tagger()
+        self.tagger = Tagger()
         self.criterion = nn.CrossEntropyLoss()
         self.criterion2 = nn.CrossEntropyLoss(ignore_index=0)
         self.criterion_d = nn.NLLLoss(ignore_index=constant.PAD_ID)
