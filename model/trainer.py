@@ -109,7 +109,7 @@ class BERTtrainer(Trainer):
                 logits = self.classifier(h[i], rules[i])
                 loss += self.criterion(logits, labels[i])
             else:
-                tag_cands = self.tagger.generate_cand_tags(F.softmax(tagging_output[i]))
+                tag_cands = self.tagger.generate_cand_tags(tagging_output[i])
                 logits = self.classifier(h[i], tag_cands)
                 best = np.argmax(logits.data.cpu().numpy(), axis=0).tolist()[labels[i]]
                 loss += self.criterion2(tagging_output[i], tag_cands[best])
