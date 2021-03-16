@@ -34,10 +34,11 @@ class DataLoader(object):
             indices = list(range(len(data1)))
             random.shuffle(indices)
             data1 = [data1[i] for i in indices]
+            data1 = data1 * 10
             indices = list(range(len(data2)))
             random.shuffle(indices)
             data2 = [data2[i] for i in indices]
-        data = data1 * 10 + data2
+        data = data1 + data2
         self.id2label = dict([(v,k) for k,v in self.label2id.items()])
         self.labels = [self.id2label[d[-3]] for d in data]
         self.num_examples = len(data)
