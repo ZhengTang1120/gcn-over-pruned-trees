@@ -34,7 +34,7 @@ class DataLoader(object):
             indices = list(range(len(data1)))
             random.shuffle(indices)
             data1 = [data1[i] for i in indices]
-            # data1 = data1 * 30
+            data1 = data1 * 30
             indices = list(range(len(data2)))
             random.shuffle(indices)
             data2 = [data2[i] for i in indices]
