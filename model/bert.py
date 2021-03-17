@@ -18,7 +18,7 @@ class BERTencoder(nn.Module):
         words, masks, pos, ner, deprel, head, subj_pos, obj_pos, subj_type, obj_type = inputs
         outputs = self.model(words)
         h = outputs.last_hidden_state
-        out = self.classifier(outputs.last_hidden_state)
+        out = self.classifier(outputs.pooler_output)
 
         return h, out
 

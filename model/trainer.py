@@ -73,7 +73,7 @@ class BERTtrainer(Trainer):
         self.encoder = BERTencoder()
         self.classifier = BERTclassifier(opt)
         self.tagger = Tagger()
-        self.criterion = nn.CrossEntropyLoss()
+        self.criterion = nn.CrossEntropyLoss(ignore_index=0)
         self.criterion2 = nn.BCELoss()
         self.parameters = [p for p in self.classifier.parameters() if p.requires_grad] 
                         + [p for p in self.encoder.parameters() if p.requires_grad]
@@ -89,7 +89,7 @@ class BERTtrainer(Trainer):
             lr=opt['lr'],
         )
     
-    def update(self, batch):
+    def update(self, batch, epoch):
         inputs, labels, rules, tokens, head, subj_pos, obj_pos, lens, tagged = unpack_batch(batch, self.opt['cuda'])
 
         # step forward
@@ -99,11 +99,12 @@ class BERTtrainer(Trainer):
         self.optimizer.zero_grad()
 
         loss = 0
-        h = self.encoder(inputs)
+        h, b_out = self.encoder(inputs)
         tagging_output = self.tagger(h)
+        loss = self.criterion2(b_out, (~labels).eq(0).to(torch.float32))
         if epoch <= 20:
             logits = self.classifier(h, inputs[1], inputs[6], inputs[7])
-            loss = self.criterion(logits, labels)
+            loss += self.criterion(logits, labels)
             for i, f in enumerate(tagged):
                 if f:
                     loss += self.criterion2(tagging_output[i], rules[i].unsqueeze(1).to(torch.float32))
@@ -144,12 +145,12 @@ class BERTtrainer(Trainer):
         self.encoder.eval()
         self.classifier.eval()
         self.tagger.eval()
-        h = self.encoder(inputs)
-        tagging_output, tag_cands = self.tagger(h)
-        logits = self.classifier(h, tagging_output)
+        h, b_out = self.encoder(inputs)
+        tagging_output = self.tagger(h)
+        logits = self.classifier(h, inputs[1], inputs[6], inputs[7])
         loss = self.criterion(logits, labels)
-        probs = F.softmax(logits, 1).data.cpu().numpy().tolist()
-        predictions = np.argmax(logits.data.cpu().numpy(), axis=1).tolist()
+        probs = F.softmax(logits, 1) * (~b_out.eq(0))#.data.cpu().numpy().tolist()
+        predictions = np.argmax(probs.data.cpu().numpy(), axis=1).tolist()
         tags = []
         for i, p in enumerate(predictions):
             if p != 0:

@@ -100,7 +100,8 @@ class DataLoader(object):
                 tokens.insert(ss, '#')
                 tokens.insert(se+2, '#')
             tokens = ['[CLS]'] + tokens
-            if has_tag:
+            relation = self.label2id[d['relation']]
+            if has_tag and relation!=0:
                 tagging = [0 if i not in masked else 1 if tokens[i] in pattern else 0 for i in range(len(tokens))]
             else:
                 tagging = [1 if i !=0 else 0 for i in range(len(tokens))]
@@ -115,7 +116,6 @@ class DataLoader(object):
             obj_positions = get_positions(os+2, oe+2, l)
             subj_type = [constant.SUBJ_NER_TO_ID[d['subj_type']]]
             obj_type = [constant.OBJ_NER_TO_ID[d['obj_type']]]
-            relation = self.label2id[d['relation']]
             processed += [(tokens, pos, ner, deprel, head, subj_positions, obj_positions, subj_type, obj_type, relation, tagging, has_tag)]
         return processed
 
