@@ -122,7 +122,6 @@ class BERTtrainer(Trainer):
         tags = []
         for i, p in enumerate(predictions):
             if p != 0:
-                print (torch.sigmoid(tagging_output[i]))
                 t = torch.round(torch.sigmoid(tagging_output[i])).data.cpu().numpy().tolist()
                 tags += [t]
             else:
