@@ -53,8 +53,6 @@ class DataLoader(object):
             intervals = f.readlines()
         with open(self.patterns) as f:
             patterns = f.readlines()
-        dict1 = defaultdict(int)
-        dict2 = defaultdict(int)
         for c, d in enumerate(data):
             tokens = list(d['token'])
             if opt['lower']:
@@ -67,9 +65,7 @@ class DataLoader(object):
             rl, masked = intervals[c].split('\t')
             rl, pattern = patterns[c].split('\t')
             masked = eval(masked)
-            dict2[d['relation']]+=1
             if masked and d['relation'] != 'no_relation':
-                dict1[d['relation']]+=1
                 pattern = helper.word_tokenize(pattern)
 
                 masked = list(range(masked[0], masked[1]))
@@ -105,7 +101,7 @@ class DataLoader(object):
                 tokens.insert(se+2, '#')
             tokens = ['[CLS]'] + tokens
             if has_tag:
-                tagging = [0 if i not in masked else 1 if tokens[i] in pattern else 0 for i in range(len(tokens))]
+                tagging = [0 if i not in masked else 1 for i in range(len(tokens))]
             else:
                 tagging = [1 if i !=0 else 0 for i in range(len(tokens))]
             tokens = self.tokenizer.convert_tokens_to_ids(tokens)
@@ -121,9 +117,6 @@ class DataLoader(object):
             obj_type = [constant.OBJ_NER_TO_ID[d['obj_type']]]
             relation = self.label2id[d['relation']]
             processed += [(tokens, pos, ner, deprel, head, subj_positions, obj_positions, subj_type, obj_type, relation, tagging, has_tag)]
-        for n in dict2:
-            print (n, dict1[n], dict2[n])
-        exit()
         return processed
 
     def gold(self):
