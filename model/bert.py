@@ -15,7 +15,7 @@ class BERTclassifier(nn.Module):
         # self.linear = nn.Linear(in_dim, in_dim)
         # self.classifier1 = nn.Linear(in_dim*3, 400)
         # self.classifier2 = nn.Linear(400, opt['num_class'])
-        self.classifier = nn.Linear(3 * in_dim, opt['num_class'])
+        self.classifier = nn.Linear(in_dim, opt['num_class'])
         self.opt = opt
         self.tagger = nn.Linear(in_dim, 1)
 
@@ -25,13 +25,10 @@ class BERTclassifier(nn.Module):
         outputs = self.model(words)
         h = outputs.last_hidden_state
         pool_type = self.opt['pooling']
-        subj_out = pool(h, subj_mask, type=pool_type)
-        obj_out = pool(h, obj_mask, type=pool_type)
-        # cls_out = outputs.pooler_output
-        cls_out = pool(h, masks.unsqueeze(2), type=pool_type)
-        outputs = torch.cat([cls_out, subj_out, obj_out], dim=1)
+        out_mask = masks.unsqueeze(2) + subj_mask + obj_mask
+        cls_out = pool(h, out_mask, type=pool_type)
         # logits = self.classifier2(F.tanh(self.classifier1(outputs)))
-        logits = self.classifier(outputs)
+        logits = self.classifier(cls_out)
         tag_logits = self.tagger(h)
         return logits, tag_logits
 
