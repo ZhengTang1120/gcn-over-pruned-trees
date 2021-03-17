@@ -76,7 +76,7 @@ class BERTtrainer(Trainer):
         if opt['cuda']:
             self.classifier.cuda()
             self.criterion.cuda()
-            self.criterion_d.cuda()
+            self.criterion2.cuda()
         #self.optimizer = torch_utils.get_optimizer(opt['optim'], self.parameters, opt['lr'])
         self.optimizer = AdamW(
             self.parameters,
