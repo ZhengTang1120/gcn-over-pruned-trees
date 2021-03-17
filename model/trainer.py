@@ -34,13 +34,11 @@ class Trainer(object):
             print("Cannot load model from {}".format(filename))
             exit()
         self.classifier.load_state_dict(checkpoint['classifier'])
-        self.decoder.load_state_dict(checkpoint['decoder'])
         self.opt = checkpoint['config']
 
     def save(self, filename, epoch):
         params = {
                 'classifier': self.classifier.state_dict(),
-                'decoder': self.decoder.state_dict(),
                 'config': self.opt,
                 }
         try:
@@ -73,7 +71,6 @@ class BERTtrainer(Trainer):
         self.opt = opt
         self.emb_matrix = emb_matrix
         self.classifier = BERTclassifier(opt, emb_matrix=emb_matrix)
-        self.decoder = Decoder(opt)
         self.criterion = nn.CrossEntropyLoss()
         self.criterion2 = nn.BCELoss()
         self.parameters = [p for p in self.classifier.parameters() if p.requires_grad]# + [p for p in self.decoder.parameters() if p.requires_grad]
@@ -92,7 +89,6 @@ class BERTtrainer(Trainer):
 
         # step forward
         self.classifier.train()
-        self.decoder.train()
         self.optimizer.zero_grad()
 
         loss = 0
@@ -100,42 +96,15 @@ class BERTtrainer(Trainer):
         logits, tagging_output, encoder_outputs, hidden = self.classifier(inputs)
         if self.opt['classifier']:
             loss = self.criterion(logits, labels)
-            # l2 decay on all conv layers
-            # if self.opt.get('conv_l2', 0) > 0:
-            #     loss += self.classifier.conv_l2() * self.opt['conv_l2']
-            # # l2 penalty on output representations
-            # if self.opt.get('pooling_l2', 0) > 0:
-            #     loss += self.opt['pooling_l2'] * (pooling_output ** 2).sum(1).mean()
         if self.opt['decoder']:
             # decoder
             for i, f in enumerate(tagged):
                 if f:
                     loss += self.criterion2(tagging_output[i], rules[i])
-            # batch_size = labels.size(0)
-            # rules = rules.view(batch_size, -1)
-            # masks = inputs[1]
-            # max_len = rules.size(1)
-            # rules = rules.transpose(1,0)
-            # output = Variable(torch.LongTensor([constant.SOS_ID] * batch_size)) # sos
-            # output = output.cuda() if self.opt['cuda'] else output
-            # loss_d = 0
-            # h0 = hidden.view(self.opt['num_layers'], batch_size, -1)
-            # c0 = hidden.view(self.opt['num_layers'], batch_size, -1)
-            # decoder_hidden = (h0, c0)
-            # for t in range(1, max_len):
-            #     output, decoder_hidden, attn_weights = self.decoder(
-            #             output, masks, decoder_hidden, encoder_outputs)
-            #     loss_d += self.criterion_d(output, rules[t])
-            #     output = rules.data[t]
-            #     if self.opt['cuda']:
-            #         output = output.cuda()
-            # loss += loss_d/max_len if (self.opt['classifier'] and max_len!=0) else loss_d
         if loss != 0:
             loss_val = loss.item()
             # backward
             loss.backward()
-            # torch.nn.utils.clip_grad_norm_(self.classifier.parameters(), self.opt['max_grad_norm'])
-            # torch.nn.utils.clip_grad_norm_(self.decoder.parameters(), self.opt['max_grad_norm'])
             self.optimizer.step()
         else:
             loss_val = 0

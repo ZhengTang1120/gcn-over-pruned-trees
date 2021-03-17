@@ -145,7 +145,6 @@ class DataLoader(object):
         # convert to tensors
         words = get_long_tensor(words, batch_size)
         # words = self.tokenizer(batch[0], is_split_into_words=True, padding=True, truncation=True, return_tensors="pt")
-        masks = torch.eq(words, 0)
         pos = get_long_tensor(batch[1], batch_size)
         ner = get_long_tensor(batch[2], batch_size)
         deprel = get_long_tensor(batch[3], batch_size)
@@ -160,6 +159,7 @@ class DataLoader(object):
         rels = torch.LongTensor(batch[9])
 
         rule = get_long_tensor(batch[10], batch_size)
+        masks = torch.eq(rule, 0)
         return (words, masks, pos, ner, deprel, head, subj_positions, obj_positions, subj_type, obj_type, rels, orig_idx, rule, batch[-1])
 
     def __iter__(self):
