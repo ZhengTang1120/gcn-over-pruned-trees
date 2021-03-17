@@ -68,7 +68,7 @@ class DataLoader(object):
             rl, pattern = patterns[c].split('\t')
             masked = eval(masked)
             dict2[d['relation']]+=1
-            if masked:
+            if masked and d['relation'] != 'no_relation':
                 dict1[d['relation']]+=1
                 pattern = helper.word_tokenize(pattern)
 
