@@ -75,9 +75,7 @@ class BERTtrainer(Trainer):
         self.tagger = Tagger()
         self.criterion = nn.CrossEntropyLoss(ignore_index=0)
         self.criterion2 = nn.BCELoss()
-        self.parameters = [p for p in self.classifier.parameters() if p.requires_grad] 
-                        + [p for p in self.encoder.parameters() if p.requires_grad]
-                        + [p for p in self.tagger.parameters() if p.requires_grad]
+        self.parameters = [p for p in self.classifier.parameters() if p.requires_grad] + [p for p in self.encoder.parameters() if p.requires_grad]+ [p for p in self.tagger.parameters() if p.requires_grad]
         if opt['cuda']:
             self.encoder.cuda()
             self.tagger.cuda()
