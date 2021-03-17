@@ -67,9 +67,9 @@ class DataLoader(object):
             rl, masked = intervals[c].split('\t')
             rl, pattern = patterns[c].split('\t')
             masked = eval(masked)
-            dist_dict1[d['relation']].append(max(se, oe)-min(ss, os))
+            dist_dict1[d['relation']].append(max(ss, os)-min(se, oe))
             if masked:
-                dist_dict2[1].append(max(se, oe)-min(ss, os))
+                dist_dict2[1].append(max(ss, os)-min(se, oe))
                 pattern = helper.word_tokenize(pattern)
 
                 masked = list(range(masked[0], masked[1]))
@@ -86,7 +86,7 @@ class DataLoader(object):
                         masked[i] += 5
                 has_tag = True
             else:
-                dist_dict2[2].append(max(se, oe)-min(ss, os))
+                dist_dict2[2].append(max(ss, os)-min(se, oe))
                 pattern = []
                 masked = []
                 has_tag = False
