@@ -32,7 +32,7 @@ class BERTclassifier(nn.Module):
         # outputs = torch.cat([cls_out, subj_out, obj_out], dim=1)
         # logits = self.classifier2(F.tanh(self.classifier1(outputs)))
         logits = self.classifier(cls_out)
-        tag_logits = torch.sigmoid(self.tagger(h))
+        tag_logits = self.tagger(h)
         return logits, tag_logits, None, None
 
 def pool(h, mask, type='max'):

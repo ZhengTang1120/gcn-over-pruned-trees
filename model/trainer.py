@@ -72,7 +72,7 @@ class BERTtrainer(Trainer):
         self.emb_matrix = emb_matrix
         self.classifier = BERTclassifier(opt, emb_matrix=emb_matrix)
         self.criterion = nn.CrossEntropyLoss()
-        self.criterion2 = nn.BCELoss()
+        self.criterion2 = nn.BCEWithLogitsLoss()
         self.parameters = [p for p in self.classifier.parameters() if p.requires_grad]# + [p for p in self.decoder.parameters() if p.requires_grad]
         if opt['cuda']:
             self.classifier.cuda()
@@ -100,7 +100,7 @@ class BERTtrainer(Trainer):
             # decoder
             for i, f in enumerate(tagged):
                 if f:
-                    loss += self.criterion2(tagging_output[i], rules[i])
+                    loss += self.criterion2(tagging_output[i], rules[i].unsqueeze(2).to(torch.float32))
         if loss != 0:
             loss_val = loss.item()
             # backward
@@ -125,7 +125,7 @@ class BERTtrainer(Trainer):
         tags = []
         for i, p in enumerate(predictions):
             if p != 0:
-                t = np.argmax(tagging_output[i].data.cpu().numpy(), axis=1).tolist()
+                t = torch.round(torch.sigmoid(tagging_output[i])).data.cpu().numpy().tolist()
                 tags += [t]
             else:
                 tags += [[]]
