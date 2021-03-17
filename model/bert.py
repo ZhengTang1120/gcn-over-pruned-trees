@@ -12,30 +12,30 @@ class BERTencoder(nn.Module):
         super().__init__()
         in_dim = 1024
         self.model = BertModel.from_pretrained("mrm8488/spanbert-large-finetuned-tacred")
+        self.classifier = nn.Linear(in_dim, 1)
 
     def forward(self, inputs):
         words, masks, pos, ner, deprel, head, subj_pos, obj_pos, subj_type, obj_type = inputs
         outputs = self.model(words)
         h = outputs.last_hidden_state
+        out = self.classifier(outputs.last_hidden_state)
 
-        return h
+        return h, out
 
 class BERTclassifier(nn.Module):
     def __init__(self, opt):
         super().__init__()
         in_dim = 1024
-        self.classifier = nn.Linear(3 * in_dim, opt['num_class'])
+        self.classifier = nn.Linear(in_dim, opt['num_class'])
         self.opt = opt
 
     def forward(self, h, masks, subj_pos, obj_pos):
-        subj_mask, obj_mask = subj_pos.eq(1000).eq(0).unsqueeze(2), obj_pos.eq(1000).eq(0).unsqueeze(2)
+        subj_mask, obj_mask = subj_pos.eq(1000).unsqueeze(2), obj_pos.eq(1000).unsqueeze(2)
         
         pool_type = self.opt['pooling']
-        subj_out = pool(h, subj_mask, type=pool_type)
-        obj_out = pool(h, obj_mask, type=pool_type)
-        cls_out = pool(h, masks.unsqueeze(2), type=pool_type)
-        outputs = torch.cat([cls_out, subj_out, obj_out], dim=1)
-        logits = self.classifier(outputs)
+        out_mask = masks.unsqueeze(2).eq(0) + subj_mask + obj_mask
+        cls_out = pool(h, out_mask.eq(0), type=pool_type)
+        logits = self.classifier(cls_out)
         return logits
 
 class Tagger(nn.Module):
