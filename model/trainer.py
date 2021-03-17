@@ -91,7 +91,7 @@ class BERTtrainer(Trainer):
 
         loss = 0
         # classifier
-        logits, tagging_output, encoder_outputs, hidden = self.classifier(inputs)
+        logits, tagging_output = self.classifier(inputs)
         if self.opt['classifier']:
             loss = self.criterion(logits, labels)
         if self.opt['decoder']:
@@ -115,7 +115,7 @@ class BERTtrainer(Trainer):
         orig_idx = batch[11]
         # forward
         self.classifier.eval()
-        logits, tagging_output, encoder_outputs, hidden = self.classifier(inputs)
+        logits, tagging_output = self.classifier(inputs)
         loss = self.criterion(logits, labels)
         probs = F.softmax(logits, 1).data.cpu().numpy().tolist()
         predictions = np.argmax(logits.data.cpu().numpy(), axis=1).tolist()

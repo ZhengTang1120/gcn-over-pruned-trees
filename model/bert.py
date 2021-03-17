@@ -33,7 +33,7 @@ class BERTclassifier(nn.Module):
         # logits = self.classifier2(F.tanh(self.classifier1(outputs)))
         logits = self.classifier(cls_out)
         tag_logits = self.tagger(h)
-        return logits, tag_logits, None, None
+        return logits, tag_logits
 
 def pool(h, mask, type='max'):
     if type == 'max':
