@@ -21,11 +21,11 @@ class BERTclassifier(nn.Module):
 
     def forward(self, inputs):
         words, masks, pos, ner, deprel, head, subj_pos, obj_pos, subj_type, obj_type = inputs
-        subj_mask, obj_mask = subj_pos.eq(1000).eq(0).unsqueeze(2), obj_pos.eq(1000).eq(0).unsqueeze(2)
+        subj_mask, obj_mask = subj_pos.eq(1000).unsqueeze(2), obj_pos.eq(1000).unsqueeze(2)
         outputs = self.model(words)
         h = outputs.last_hidden_state
         pool_type = self.opt['pooling']
-        out_mask = masks.unsqueeze(2).eq(0) + subj_mask.eq(0) + obj_mask.eq(0)
+        out_mask = masks.unsqueeze(2).eq(0) + subj_mask + obj_mask
         cls_out = pool(h, out_mask.eq(0), type=pool_type)
         # logits = self.classifier2(F.tanh(self.classifier1(outputs)))
         logits = self.classifier(cls_out)
