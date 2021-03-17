@@ -24,13 +24,18 @@ class BERTclassifier(nn.Module):
     def __init__(self, opt):
         super().__init__()
         in_dim = 1024
-        self.classifier = nn.Linear(in_dim, opt['num_class'])
+        self.classifier = nn.Linear(3 * in_dim, opt['num_class'])
         self.opt = opt
 
-    def forward(self, h, tags):
+    def forward(self, h, masks, subj_pos, obj_pos):
+        subj_mask, obj_mask = subj_pos.eq(1000).eq(0).unsqueeze(2), obj_pos.eq(1000).eq(0).unsqueeze(2)
+        
         pool_type = self.opt['pooling']
-        cls_out = pool(h, tags.unsqueeze(2), type=pool_type)
-        logits = self.classifier(cls_out)
+        subj_out = pool(h, subj_mask, type=pool_type)
+        obj_out = pool(h, obj_mask, type=pool_type)
+        cls_out = pool(h, masks.unsqueeze(2), type=pool_type)
+        outputs = torch.cat([cls_out, subj_out, obj_out], dim=1)
+        logits = self.classifier(outputs)
         return logits
 
 class Tagger(nn.Module):
@@ -61,7 +66,7 @@ class Tagger(nn.Module):
                 for ct in cand_tags:
                     ct.append(0)
         print (cand_tags)
-        return torch.BoolTensor(cand_tags).cuda()
+        return torch.BoolTensor(cand_tags).cuda(), len(cand_tags)
 
 def pool(h, mask, type='max'):
     if type == 'max':

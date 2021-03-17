@@ -8,6 +8,8 @@ import torch
 import numpy as np
 
 from utils import constant, helper, vocab
+from collections import defaultdict
+from statistics import mean
 
 
 class DataLoader(object):
@@ -27,16 +29,13 @@ class DataLoader(object):
         with open(filename) as infile:
             data = json.load(infile)
         self.raw_data = data
-        data1, data2 = self.preprocess(data, vocab, opt)
+        data = self.preprocess(data, vocab, opt)
+
         # shuffle for training
         if not evaluation:
-            indices = list(range(len(data1)))
+            indices = list(range(len(data)))
             random.shuffle(indices)
-            data1 = [data1[i] for i in indices]
-            indices = list(range(len(data2)))
-            random.shuffle(indices)
-            data2 = [data2[i] for i in indices]
-        data = data1 + data2
+            data = [data[i] for i in indices]
         self.id2label = dict([(v,k) for k,v in self.label2id.items()])
         self.labels = [self.id2label[d[-3]] for d in data]
         self.num_examples = len(data)
@@ -48,8 +47,8 @@ class DataLoader(object):
 
     def preprocess(self, data, vocab, opt):
         """ Preprocess the data and convert to ids. """
-        processed1 = []
-        processed2 = []
+        processed = []
+        processed_rule = []
         with open(self.intervals) as f:
             intervals = f.readlines()
         with open(self.patterns) as f:
@@ -66,8 +65,7 @@ class DataLoader(object):
             rl, masked = intervals[c].split('\t')
             rl, pattern = patterns[c].split('\t')
             masked = eval(masked)
-
-            if masked:
+            if masked and d['relation'] != 'no_relation':
                 pattern = helper.word_tokenize(pattern)
 
                 masked = list(range(masked[0], masked[1]))
@@ -102,7 +100,10 @@ class DataLoader(object):
                 tokens.insert(ss, '#')
                 tokens.insert(se+2, '#')
             tokens = ['[CLS]'] + tokens
-            tagging = [0 if i not in masked else 1 for i in range(len(tokens))]
+            if has_tag:
+                tagging = [0 if i not in masked else 1 for i in range(len(tokens))]
+            else:
+                tagging = [1 if i !=0 else 0 for i in range(len(tokens))]
             tokens = self.tokenizer.convert_tokens_to_ids(tokens)
             pos = map_to_ids(d['stanford_pos'], constant.POS_TO_ID)
             ner = map_to_ids(d['stanford_ner'], constant.NER_TO_ID)
@@ -115,11 +116,8 @@ class DataLoader(object):
             subj_type = [constant.SUBJ_NER_TO_ID[d['subj_type']]]
             obj_type = [constant.OBJ_NER_TO_ID[d['obj_type']]]
             relation = self.label2id[d['relation']]
-            if has_tag:
-                processed1 += [(tokens, pos, ner, deprel, head, subj_positions, obj_positions, subj_type, obj_type, relation, tagging, has_tag)]
-            else:
-                processed2 += [(tokens, pos, ner, deprel, head, subj_positions, obj_positions, subj_type, obj_type, relation, tagging, has_tag)]
-        return processed1, processed2
+            processed += [(tokens, pos, ner, deprel, head, subj_positions, obj_positions, subj_type, obj_type, relation, tagging, has_tag)]
+        return processed
 
     def gold(self):
         """ Return gold labels as a list. """
@@ -150,7 +148,6 @@ class DataLoader(object):
         # convert to tensors
         words = get_long_tensor(words, batch_size)
         # words = self.tokenizer(batch[0], is_split_into_words=True, padding=True, truncation=True, return_tensors="pt")
-        masks = torch.eq(words, 0)
         pos = get_long_tensor(batch[1], batch_size)
         ner = get_long_tensor(batch[2], batch_size)
         deprel = get_long_tensor(batch[3], batch_size)
@@ -165,6 +162,7 @@ class DataLoader(object):
         rels = torch.LongTensor(batch[9])
 
         rule = get_long_tensor(batch[10], batch_size)
+        masks = torch.eq(rule, 0)
         return (words, masks, pos, ner, deprel, head, subj_positions, obj_positions, subj_type, obj_type, rels, orig_idx, rule, batch[-1])
 
     def __iter__(self):
