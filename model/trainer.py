@@ -98,7 +98,6 @@ class BERTtrainer(Trainer):
             # decoder
             for i, f in enumerate(tagged):
                 if f:
-                    print (tagging_output[i], rules[i])
                     loss += self.criterion2(tagging_output[i], rules[i].unsqueeze(1).to(torch.float32))
         if loss != 0:
             loss_val = loss.item()
