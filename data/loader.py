@@ -105,6 +105,7 @@ class DataLoader(object):
                 tagging = [0 if i not in masked else 1 if tokens[i] in pattern else 0 for i in range(len(tokens))]
                 if sum(tagging) == 0:
                     z += 1
+                    print (pattern)
                 else:
                     n += 1
             else:
