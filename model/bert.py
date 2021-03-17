@@ -25,8 +25,8 @@ class BERTclassifier(nn.Module):
         outputs = self.model(words)
         h = outputs.last_hidden_state
         pool_type = self.opt['pooling']
-        out_mask = masks.unsqueeze(2) + subj_mask + obj_mask
-        cls_out = pool(h, out_mask, type=pool_type)
+        out_mask = masks.unsqueeze(2).eq(0) + subj_mask.eq(0) + obj_mask.eq(0)
+        cls_out = pool(h, out_mask.eq(0), type=pool_type)
         # logits = self.classifier2(F.tanh(self.classifier1(outputs)))
         logits = self.classifier(cls_out)
         tag_logits = self.tagger(h)
