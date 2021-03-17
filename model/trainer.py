@@ -9,7 +9,6 @@ from torch.autograd import Variable
 import numpy as np
 
 from model.bert import BERTclassifier
-from model.decoder import Decoder
 from utils import constant, torch_utils
 
 from transformers import AdamW
@@ -76,7 +75,6 @@ class BERTtrainer(Trainer):
         self.parameters = [p for p in self.classifier.parameters() if p.requires_grad]# + [p for p in self.decoder.parameters() if p.requires_grad]
         if opt['cuda']:
             self.classifier.cuda()
-            self.decoder.cuda()
             self.criterion.cuda()
             self.criterion_d.cuda()
         #self.optimizer = torch_utils.get_optimizer(opt['optim'], self.parameters, opt['lr'])
@@ -117,7 +115,6 @@ class BERTtrainer(Trainer):
         orig_idx = batch[11]
         # forward
         self.classifier.eval()
-        self.decoder.eval()
         logits, tagging_output, encoder_outputs, hidden = self.classifier(inputs)
         loss = self.criterion(logits, labels)
         probs = F.softmax(logits, 1).data.cpu().numpy().tolist()
@@ -132,28 +129,4 @@ class BERTtrainer(Trainer):
         if unsort:
             _, predictions, probs, tags, rules, tokens = [list(t) for t in zip(*sorted(zip(orig_idx,\
                     predictions, probs, tags, rules, tokens)))]
-        # ids = [orig_idx.index(i) for i in range(len(inputs))]
-        # decoder
-        # batch_size = labels.size(0)
-        # decoded = []
-        # masks = inputs[1]
-        # output = Variable(torch.LongTensor([constant.SOS_ID] * batch_size)) # sos
-        # output = output.cuda() if self.opt['cuda'] else output
-        # decoded = torch.zeros(constant.MAX_RULE_LEN, batch_size)
-        # decoded[0] = output
-        # if self.opt['cuda']:
-        #         decoded = decoded.cuda()
-        # h0 = hidden.view(self.opt['num_layers'], batch_size, -1)
-        # c0 = hidden.view(self.opt['num_layers'], batch_size, -1)
-        # decoder_hidden = (h0, c0)
-        # for t in range(1, constant.MAX_RULE_LEN):
-        #     output, decoder_hidden, attn_weights = self.decoder(
-        #             output, masks, decoder_hidden, encoder_outputs)
-        #     topv, topi = output.data.topk(1)
-        #     output = topi.view(-1)
-        #     decoded[t] = output
-        # decoded = decoded.transpose(0, 1).tolist()
-        # if unsort:
-        #     _, decoded, probs = [list(t) for t in zip(*sorted(zip(orig_idx,\
-        #             decoded, probs)))]
         return predictions, tags, rules, tokens#, probs, decoded, loss.item()
