@@ -53,8 +53,8 @@ class DataLoader(object):
             intervals = f.readlines()
         with open(self.patterns) as f:
             patterns = f.readlines()
-        dist_dict1 = defaultdict(list)
-        dist_dict2 = defaultdict(list)
+        dict1 = defaultdict(int)
+        dict2 = defaultdict(int)
         for c, d in enumerate(data):
             tokens = list(d['token'])
             if opt['lower']:
@@ -67,9 +67,9 @@ class DataLoader(object):
             rl, masked = intervals[c].split('\t')
             rl, pattern = patterns[c].split('\t')
             masked = eval(masked)
-            dist_dict1[d['relation']].append(max(ss, os)-min(se, oe))
+            dict2[d['relation']]+=1
             if masked:
-                dist_dict2[1].append(max(ss, os)-min(se, oe))
+                dict1[d['relation']]+=1
                 pattern = helper.word_tokenize(pattern)
 
                 masked = list(range(masked[0], masked[1]))
@@ -86,7 +86,6 @@ class DataLoader(object):
                         masked[i] += 5
                 has_tag = True
             else:
-                dist_dict2[2].append(max(ss, os)-min(se, oe))
                 pattern = []
                 masked = []
                 has_tag = False
@@ -122,10 +121,8 @@ class DataLoader(object):
             obj_type = [constant.OBJ_NER_TO_ID[d['obj_type']]]
             relation = self.label2id[d['relation']]
             processed += [(tokens, pos, ner, deprel, head, subj_positions, obj_positions, subj_type, obj_type, relation, tagging, has_tag)]
-        d1 = {n:mean(dist_dict1[n]) for n in dist_dict1}
-        d2 = {n:mean(dist_dict2[n]) for n in dist_dict2}
-        print (json.dumps(d1))
-        print (json.dumps(d2))
+        for n in dict2:
+            print (n, dict1[n], dict2[n])
         exit()
         return processed
 
