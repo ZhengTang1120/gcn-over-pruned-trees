@@ -8,6 +8,8 @@ import torch
 import numpy as np
 
 from utils import constant, helper, vocab
+from collections import defaultdict
+from statistics import mean
 
 
 class DataLoader(object):
@@ -51,8 +53,8 @@ class DataLoader(object):
             intervals = f.readlines()
         with open(self.patterns) as f:
             patterns = f.readlines()
-        n = 0
-        z = 0
+        dist_dict1 = defaultdict(list)
+        dist_dict2 = defaultdict(list)
         for c, d in enumerate(data):
             tokens = list(d['token'])
             if opt['lower']:
@@ -65,8 +67,9 @@ class DataLoader(object):
             rl, masked = intervals[c].split('\t')
             rl, pattern = patterns[c].split('\t')
             masked = eval(masked)
-
+            dist_dict1[d['relation']].append(max(se, oe)-min(ss, os))
             if masked:
+                dist_dict2[1].append(max(se, oe)-min(ss, os))
                 pattern = helper.word_tokenize(pattern)
 
                 masked = list(range(masked[0], masked[1]))
@@ -83,6 +86,7 @@ class DataLoader(object):
                         masked[i] += 5
                 has_tag = True
             else:
+                dist_dict2[2].append(max(se, oe)-min(ss, os))
                 pattern = []
                 masked = []
                 has_tag = False
@@ -103,11 +107,6 @@ class DataLoader(object):
             tokens = ['[CLS]'] + tokens
             if has_tag:
                 tagging = [0 if i not in masked else 1 if tokens[i] in pattern else 0 for i in range(len(tokens))]
-                if sum(tagging) == 0:
-                    z += 1
-                    print (pattern)
-                else:
-                    n += 1
             else:
                 tagging = [1 if i !=0 else 0 for i in range(len(tokens))]
             tokens = self.tokenizer.convert_tokens_to_ids(tokens)
@@ -123,7 +122,11 @@ class DataLoader(object):
             obj_type = [constant.OBJ_NER_TO_ID[d['obj_type']]]
             relation = self.label2id[d['relation']]
             processed += [(tokens, pos, ner, deprel, head, subj_positions, obj_positions, subj_type, obj_type, relation, tagging, has_tag)]
-        print (n, z)
+        d1 = {n:mean(dist_dict1[n]) for n in dist_dict1}
+        d2 = {n:mean(dist_dict2[n]) for n in dist_dict2}
+        print (json.dumps(d1))
+        print (json.dumps(d2))
+        exit()
         return processed
 
     def gold(self):
