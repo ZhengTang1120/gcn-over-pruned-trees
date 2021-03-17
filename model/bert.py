@@ -18,7 +18,7 @@ class BERTencoder(nn.Module):
         words, masks, pos, ner, deprel, head, subj_pos, obj_pos, subj_type, obj_type = inputs
         outputs = self.model(words)
         h = outputs.last_hidden_state
-        out = self.classifier(outputs.pooler_output)
+        out = torch.sigmoid(self.classifier(outputs.pooler_output))
 
         return h, out
 
@@ -48,7 +48,7 @@ class Tagger(nn.Module):
 
     def forward(self, h):
 
-        tag_logits = F.sigmoid(self.tagger(h))
+        tag_logits = torch.sigmoid(self.tagger(h))
         
         return tag_logits
 
