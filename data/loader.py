@@ -103,7 +103,7 @@ class DataLoader(object):
             relation = self.label2id[d['relation']]
             if has_tag and relation!=0:
                 tagging = [0 if i not in masked else 1 if tokens[i] in pattern else 0 for i in range(len(tokens))]
-            else:
+            elif relation!=0:
                 tagging = [1 if i !=0 else 0 for i in range(len(tokens))]
             tokens = self.tokenizer.convert_tokens_to_ids(tokens)
             pos = map_to_ids(d['stanford_pos'], constant.POS_TO_ID)
