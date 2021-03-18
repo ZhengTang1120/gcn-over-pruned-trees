@@ -146,12 +146,12 @@ current_lr = opt['lr']
 global_step = 0
 global_start_time = time.time()
 format_str = '{}: step {}/{} (epoch {}/{}), loss = {:.6f} ({:.3f} sec/batch), lr: {:.6f}'
-max_steps = len(dev_batch) * opt['num_epoch']
+max_steps = len(train_batch) * opt['num_epoch']
 
 # start training
 for epoch in range(1, opt['num_epoch']+1):
     train_loss = 0
-    for i, batch in enumerate(dev_batch):
+    for i, batch in enumerate(train_batch):
         start_time = time.time()
         global_step += 1
         loss = trainer.update(batch, epoch)
