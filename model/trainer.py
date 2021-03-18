@@ -146,6 +146,7 @@ class BERTtrainer(Trainer):
         h, b_out = self.encoder(inputs)
         tagging_output = self.tagger(h)
         tagging_mask = torch.round(tagging_output).eq(0)
+        print (inputs[1].size(), tagging_mask.size())
         logits = self.classifier(h, tagging_mask, inputs[6], inputs[7])
         loss = self.criterion(logits, labels)
         probs = F.softmax(logits, 1) * (~b_out.eq(0))#.data.cpu().numpy().tolist()
