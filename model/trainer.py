@@ -73,7 +73,7 @@ class BERTtrainer(Trainer):
         self.encoder = BERTencoder()
         self.classifier = BERTclassifier(opt)
         self.tagger = Tagger()
-        self.criterion = nn.CrossEntropyLoss()
+        self.criterion = nn.CrossEntropyLoss(ignore_index=0)
         self.criterion2 = nn.BCELoss()
         self.parameters = [p for p in self.classifier.parameters() if p.requires_grad] + [p for p in self.encoder.parameters() if p.requires_grad]+ [p for p in self.tagger.parameters() if p.requires_grad]
         if opt['cuda']:
@@ -151,7 +151,7 @@ class BERTtrainer(Trainer):
         tagging_mask = torch.round(tagging_output).squeeze(2).eq(0)
         logits = self.classifier(h, tagging_mask, inputs[6], inputs[7])
         loss = self.criterion(logits, labels)
-        probs = F.softmax(logits, 1) * (~(torch.round(b_out).eq(0)))#.data.cpu().numpy().tolist()
+        probs = F.softmax(logits, 1) * torch.round(b_out)#.data.cpu().numpy().tolist()
         predictions = np.argmax(probs.data.cpu().numpy(), axis=1).tolist()
         tags = []
         for i, p in enumerate(predictions):
