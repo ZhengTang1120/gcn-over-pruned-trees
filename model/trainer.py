@@ -103,9 +103,9 @@ class BERTtrainer(Trainer):
         if epoch <= 20:
             logits = self.classifier(h, inputs[1], inputs[6], inputs[7])
             loss += self.criterion(logits, labels)
-            # for i, f in enumerate(tagged):
-            #     if f:
-            #         loss += self.criterion2(tagging_output[i], rules[i].unsqueeze(1).to(torch.float32))
+            for i, f in enumerate(tagged):
+                if f:
+                    loss += self.criterion2(tagging_output[i], rules[i].unsqueeze(1).to(torch.float32))
         else:
             pass
             # for i, f in enumerate(tagged):

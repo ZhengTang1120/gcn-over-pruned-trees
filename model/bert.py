@@ -33,7 +33,7 @@ class BERTclassifier(nn.Module):
         subj_mask, obj_mask = subj_pos.eq(1000).unsqueeze(2), obj_pos.eq(1000).unsqueeze(2)
         
         pool_type = self.opt['pooling']
-        out_mask = subj_mask + obj_mask
+        out_mask = masks.unsqueeze(2).eq(0) + subj_mask + obj_mask
         cls_out = pool(h, out_mask.eq(0), type=pool_type)
         logits = self.classifier(cls_out)
         return logits
