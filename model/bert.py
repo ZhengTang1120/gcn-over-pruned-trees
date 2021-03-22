@@ -44,7 +44,8 @@ class Tagger(nn.Module):
         in_dim = 1024
 
         self.tagger = nn.Linear(in_dim, 1)
-        self.threshold = 0.8
+        self.threshold1 = 0.8
+        self.threshold2 = 0.2
 
     def forward(self, h):
 
@@ -55,13 +56,16 @@ class Tagger(nn.Module):
     def generate_cand_tags(self, tag_logits):
         print (tag_logits)
         cand_tags = [[]]
-        for t in tag_logits.gt(self.threshold):
-            if t:
+        for t in tag_logits:
+            if t < self.threshold1 and t > self.threshold2:
                 temp = []
                 for ct in cand_tags:
                     temp.append(ct+[0])
                     ct.append(1)
                 cand_tags += temp
+            elif t > self.threshold1:
+                for ct in cand_tags:
+                    ct.append(1)
             else:
                 for ct in cand_tags:
                     ct.append(0)
