@@ -101,7 +101,7 @@ class BERTtrainer(Trainer):
         tagging_output = self.tagger(h)
         loss = self.criterion2(b_out, (~(labels.eq(0))).to(torch.float32).unsqueeze(1))
         if epoch <= 10:
-            print (torch.cat(n*[inputs[6][0]]).size(), inputs[6].size())
+            print (torch.cat(30*[inputs[6][0]]).size(), inputs[6].size())
             print (inputs[1].size())
             logits = self.classifier(h, inputs[1], inputs[6], inputs[7])
             loss += self.criterion(logits, labels)
