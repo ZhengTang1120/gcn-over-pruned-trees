@@ -68,7 +68,10 @@ class Tagger(nn.Module):
             else:
                 for ct in cand_tags:
                     ct.append(0)
-        return torch.BoolTensor(cand_tags).cuda(), len(cand_tags)
+        if len(cand_tags) > 2048:
+            return None, -1
+        else:
+            return torch.BoolTensor(cand_tags).cuda(), len(cand_tags)
 
 def pool(h, mask, type='max'):
     if type == 'max':
