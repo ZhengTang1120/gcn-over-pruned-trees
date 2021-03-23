@@ -122,7 +122,7 @@ class BERTtrainer(Trainer):
                     if loss == 0:
                         loss = self.criterion2(tagging_output[i], tag_cands[best].unsqueeze(1).to(torch.float32))
                     else:
-                        loss += self.criterion2(tagging_output[i], tag_cands[best])
+                        loss += self.criterion2(tagging_output[i], tag_cands[best].unsqueeze(1).to(torch.float32))
                     loss += self.criterion(logits[best], labels[i])
         if loss != 0:
             loss_val = loss.item()
