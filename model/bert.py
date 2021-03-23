@@ -55,7 +55,6 @@ class Tagger(nn.Module):
 
     def generate_cand_tags(self, tag_logits):
         cand_tags = [[]]
-        count = 1
         for t in tag_logits:
             if t < self.threshold1 and t > self.threshold2:
                 temp = []
@@ -63,19 +62,15 @@ class Tagger(nn.Module):
                     temp.append(ct+[0])
                     ct.append(1)
                 cand_tags += temp
-                count *= 2
-                if count > 2048:
-                    break
+                if len(cand_tags) > 2048:
+                    return None, -1
             elif t > self.threshold1:
                 for ct in cand_tags:
                     ct.append(1)
             else:
                 for ct in cand_tags:
                     ct.append(0)
-        if count > 2048:
-            return None, -1
-        else:
-            return torch.BoolTensor(cand_tags).cuda(), count
+        return torch.BoolTensor(cand_tags).cuda(), len(cand_tags)
 
 def pool(h, mask, type='max'):
     if type == 'max':
