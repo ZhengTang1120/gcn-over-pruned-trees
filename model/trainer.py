@@ -117,13 +117,10 @@ class BERTtrainer(Trainer):
                     loss += self.criterion(logits, labels[i])
                 elif torch.round(b_out)[i] == 1:
                     tag_cands, n = self.tagger.generate_cand_tags(tagging_output[i])
-                    print (tag_cands.size(), rules.size())
                     logits = self.classifier(h[i], tag_cands, torch.cat(n*[inputs[6][i].unsqueeze(0)], dim=0), torch.cat(n*[inputs[7][i].unsqueeze(0)], dim=0))
-                    print (logits.size())
-                    print (np.argmax(logits.data.cpu().numpy(), axis=0))
                     best = np.argmax(logits.data.cpu().numpy(), axis=0).tolist()[labels[i]]
                     if loss == 0:
-                        loss = self.criterion2(tagging_output[i], tag_cands[best])
+                        loss = self.criterion2(tagging_output[i], tag_cands[best].unsqueeze(1).to(torch.float32))
                     else:
                         loss += self.criterion2(tagging_output[i], tag_cands[best])
                     loss += self.criterion(logits[best], labels[i])
