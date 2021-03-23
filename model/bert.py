@@ -55,6 +55,7 @@ class Tagger(nn.Module):
 
     def generate_cand_tags(self, tag_logits):
         cand_tags = [[]]
+        count = 0
         for t in tag_logits:
             if t < self.threshold1 and t > self.threshold2:
                 temp = []
