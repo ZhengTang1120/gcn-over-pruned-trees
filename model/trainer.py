@@ -34,11 +34,15 @@ class Trainer(object):
             print("Cannot load model from {}".format(filename))
             exit()
         self.classifier.load_state_dict(checkpoint['classifier'])
+        self.encoder.load_state_dict(checkpoint['encoder'])
+        self.tagger.load_state_dict(checkpoint['tagger'])
         self.opt = checkpoint['config']
 
     def save(self, filename, epoch):
         params = {
                 'classifier': self.classifier.state_dict(),
+                'encoder': self.encoder.state_dict(),
+                'tagger': self.tagger.state_dict(),
                 'config': self.opt,
                 }
         try:
@@ -117,7 +121,7 @@ class BERTtrainer(Trainer):
                     loss += self.criterion(logits, labels.unsqueeze(1)[i])
                 elif labels[i] != 0:
                     tag_cands, n = self.tagger.generate_cand_tags(tagging_output[i])
-                    print (n)
+                    # print (n)
                     if n != -1:
                         logits = self.classifier(h[i], tag_cands, torch.cat(n*[inputs[6][i].unsqueeze(0)], dim=0), torch.cat(n*[inputs[7][i].unsqueeze(0)], dim=0))
                         best = np.argmax(logits.data.cpu().numpy(), axis=0).tolist()[labels[i]]
