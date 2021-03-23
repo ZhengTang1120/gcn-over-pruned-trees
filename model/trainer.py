@@ -102,8 +102,6 @@ class BERTtrainer(Trainer):
         loss = self.criterion2(b_out, (~(labels.eq(0))).to(torch.float32).unsqueeze(1))
         if epoch <= 1:
             logits = self.classifier(h, inputs[1], inputs[6], inputs[7])
-            print (logits[0].size(), labels.unsqueeze(1)[0].size())
-            print (logits.size(), labels.size())
             loss += self.criterion(logits, labels)
             for i, f in enumerate(tagged):
                 if f:
@@ -116,7 +114,7 @@ class BERTtrainer(Trainer):
                     else:
                         loss += self.criterion2(tagging_output[i], rules[i].unsqueeze(1).to(torch.float32))
                     logits = self.classifier(h, inputs[1][i], inputs[6][i], inputs[7][i])
-                    loss += self.criterion(logits, labels[i])
+                    loss += self.criterion(logits, labels.unsqueeze(1)[i])
                 elif torch.round(b_out)[i] == 1:
                     tag_cands, n = self.tagger.generate_cand_tags(tagging_output[i])
                     print (n)
@@ -126,7 +124,7 @@ class BERTtrainer(Trainer):
                         loss = self.criterion2(tagging_output[i], tag_cands[best].unsqueeze(1).to(torch.float32))
                     else:
                         loss += self.criterion2(tagging_output[i], tag_cands[best].unsqueeze(1).to(torch.float32))
-                    loss += self.criterion(logits[best], labels[i])
+                    loss += self.criterion(logits[best], labels.unsqueeze(1)[i])
         if loss != 0:
             loss_val = loss.item()
             # backward
