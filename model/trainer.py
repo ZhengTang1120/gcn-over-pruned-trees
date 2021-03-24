@@ -163,13 +163,13 @@ class BERTtrainer(Trainer):
                 t = tagging.data.cpu().numpy().tolist()[i]
                 tags += [t]
                 if sum(rules[i])!=0:
-                    # pass
-                    r = sum([1 if t[j]==rules[i][j] else 0 for j in range(len(t)) if rules[i][j]!=0])/sum(rules[i])
-                    print (r)
-                elif sum(t)!=0:
                     pass
-                    # print (id2label[p], id2label[labels.data.cpu().numpy().tolist()[i]])
-                    # print ([(t[j], tokenizer.convert_ids_to_tokens(tokens[i][j])) if t[j]!=0 else tokenizer.convert_ids_to_tokens(tokens[i][j]) for j in range(len(tokens[i])) if tokens[i][j] != 0])
+                    # r = sum([1 if t[j]==rules[i][j] else 0 for j in range(len(t)) if rules[i][j]!=0])/sum(rules[i])
+                    # print (r)
+                elif sum(t)!=0:
+                    # pass
+                    print (id2label[p], id2label[labels.data.cpu().numpy().tolist()[i]])
+                    print ([(t[j], tokenizer.convert_ids_to_tokens(tokens[i][j])) if t[j]!=0 else tokenizer.convert_ids_to_tokens(tokens[i][j]) for j in range(len(tokens[i])) if tokens[i][j] != 0])
                     # print ()
             else:
                 tags += [[]]
