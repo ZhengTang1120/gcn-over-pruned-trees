@@ -158,7 +158,7 @@ class BERTtrainer(Trainer):
         tags = []
         for i, p in enumerate(predictions):
             if p != 0:
-                t = np.argmax(tagging_output[i].data.cpu().numpy(), axis=1).tolist()
+                t = tagging_mask[i].data.cpu().numpy().tolist()
                 tags += [t]
             else:
                 tags += [[]]
