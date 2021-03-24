@@ -139,7 +139,7 @@ class BERTtrainer(Trainer):
             loss_val = 0
         return loss_val
 
-    def predict(self, batch, unsort=True, id2label, tokenizer):
+    def predict(self, batch, id2label, tokenizer, unsort=True):
         inputs, labels, rules, tokens, head, subj_pos, obj_pos, lens, tagged = unpack_batch(batch, self.opt['cuda'])
         rules = rules.data.cpu().numpy().tolist()
         tokens = tokens.data.cpu().numpy().tolist()
