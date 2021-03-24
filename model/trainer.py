@@ -162,7 +162,7 @@ class BERTtrainer(Trainer):
                 t = tagging_output.data.cpu().numpy().tolist()[i]
                 tags += [t]
                 print (id2label[p], id2label[labels.data.cpu().numpy().tolist()[i]])
-                if sum(goldt[i])!=0:
+                if sum(rules[i])!=0:
                     print ([(rules[i][j], t[j], tokenizer.convert_ids_to_tokens(tokens[i][j])) for j in range(len(tokens[i])) if tokens[i][j] != 0])
                 else:
                     print ([(t[j], tokenizer.convert_ids_to_tokens(tokens[i][j])) for j in range(len(tokens[i])) if tokens[i][j] != 0])
