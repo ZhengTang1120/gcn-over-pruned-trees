@@ -160,7 +160,7 @@ class BERTtrainer(Trainer):
             if p != 0:
                 t = tagging_mask[i].data.cpu().numpy().tolist()
                 tags += [t]
-                print (p)
+                print (id2label[p], id2label[labels[i]])
                 print ([(rules[i][j], t[j], tokenizer.convert_ids_to_tokens(tokens[i][j])) for j in range(len(tokens[i])) if tokens[i][j] != 0])
                 print ()
             else:
