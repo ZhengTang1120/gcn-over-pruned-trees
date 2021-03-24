@@ -42,7 +42,7 @@ model_file = args.model_dir + '/' + args.model
 print("Loading model from {}".format(model_file))
 opt = torch_utils.load_config(model_file)
 trainer = BERTtrainer(opt)
-trainer.classifier.model.resize_token_embeddings(len(tokenizer)) 
+trainer.encoder.model.resize_token_embeddings(len(tokenizer)) 
 trainer.load(model_file)
 
 # load vocab
