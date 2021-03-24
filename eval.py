@@ -53,7 +53,7 @@ assert opt['vocab_size'] == vocab.size, "Vocab size must match that in the saved
 # load data
 data_file = opt['data_dir'] + '/{}.json'.format(args.dataset)
 print("Loading data from {} with batch size {}...".format(data_file, opt['batch_size']))
-batch = DataLoader(data_file, opt['batch_size'], opt, vocab, opt['data_dir'] + '/mappings_{}.txt'.format(args.dataset), tokenizer, evaluation=True)
+batch = DataLoader(data_file, opt['batch_size'], opt, vocab, opt['data_dir'] + '/interval_{}.txt'.format(args.dataset), opt['data_dir'] + '/pattern_{}.txt'.format(args.dataset), tokenizer, evaluation=True)
 
 helper.print_config(opt)
 label2id = constant.LABEL_TO_ID
