@@ -173,7 +173,7 @@ for epoch in range(1, opt['num_epoch']+1):
     count = 0
     inputs = []
     for _, batch in enumerate(dev_batch):
-        preds, ts, tagged, ids = trainer.predict(batch)
+        preds, ts, tagged, ids = trainer.predict(batch, id2label, tokenizer)
         # preds, _, decoded, loss = trainer.predict(batch)
         predictions += preds
         tags += ts
