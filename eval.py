@@ -61,7 +61,7 @@ id2label = dict([(v,k) for k,v in label2id.items()])
 
 predictions = []
 all_probs = []
-batch_iter = tqdm(batch)
+# batch_iter = tqdm(batch)
 
 x = 0
 exact_match = 0
