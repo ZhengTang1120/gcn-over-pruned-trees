@@ -60,8 +60,6 @@ label2id = constant.LABEL_TO_ID
 id2label = dict([(v,k) for k,v in label2id.items()])
 
 predictions = []
-references = []
-candidates = []
 all_probs = []
 batch_iter = tqdm(batch)
 
@@ -102,8 +100,7 @@ predictions = [id2label[p] for p in predictions]
 # for pred in predictions:
 #     print (pred)
 p, r, f1 = scorer.score(batch.gold(), predictions, verbose=True)
-bleu = corpus_bleu(references, candidates)
-print("{} set evaluate result: {:.2f}\t{:.2f}\t{:.2f}\t{:.4f}".format(args.dataset,p,r,f1,0))
+print("{} set evaluate result: {:.2f}\t{:.2f}\t{:.2f}".format(args.dataset,p,r,f1))
 
 print("Evaluation ended.")
 
