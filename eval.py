@@ -69,7 +69,7 @@ x = 0
 exact_match = 0
 other = 0
 for c, b in enumerate(batch_iter):
-    preds = trainer.predict(b)
+    preds, ts, tagged, ids = trainer.predict(b)
     predictions += preds
     # all_probs += probs
 
