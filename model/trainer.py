@@ -166,7 +166,7 @@ class BERTtrainer(Trainer):
                 print (id2label[p], id2label[labels.data.cpu().numpy().tolist()[i]])
                 if sum(rules[i])!=0:
                     print ([(rules[i][j], t[j], t2[j], tokenizer.convert_ids_to_tokens(tokens[i][j])) for j in range(len(tokens[i])) if tokens[i][j] != 0])
-                else:
+                elif sum(t)!=0:
                     print ([(t[j], t2[j], tokenizer.convert_ids_to_tokens(tokens[i][j])) for j in range(len(tokens[i])) if tokens[i][j] != 0])
                 print ()
             else:
