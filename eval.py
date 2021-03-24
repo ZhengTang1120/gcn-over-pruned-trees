@@ -66,7 +66,7 @@ batch_iter = tqdm(batch)
 x = 0
 exact_match = 0
 other = 0
-for c, b in enumerate(batch_iter):
+for c, b in enumerate(batch):
     preds, ts, tagged, ids = trainer.predict(b, id2label, tokenizer)
     predictions += preds
     # all_probs += probs
