@@ -161,7 +161,7 @@ class BERTtrainer(Trainer):
         for i, p in enumerate(predictions):
             if p != 0:
                 t = tagging.data.cpu().numpy().tolist()[i]
-                t2 = tagging_prob.cpu().numpy().tolist()[i]
+                t2 = tagging_prob.data.cpu().numpy().tolist()[i]
                 tags += [t]
                 print (id2label[p], id2label[labels.data.cpu().numpy().tolist()[i]])
                 if sum(rules[i])!=0:
