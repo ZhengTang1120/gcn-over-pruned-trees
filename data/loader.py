@@ -116,7 +116,7 @@ class DataLoader(object):
             else:
                 tagging = [1 if i in masked else 0 for i in range(len(tokens))]
             tokens2 = self.tokenizer.convert_tokens_to_ids(tokens)
-            print ([tokens[i] if tokens[i]!=self.tokenizer.convert_ids_to_tokens(tokens2[i]) for i in range(len(tokens))])
+            print ([tokens[i] for i in range(len(tokens)) if tokens[i]!=self.tokenizer.convert_ids_to_tokens(tokens2[i])])
             pos = map_to_ids(d['stanford_pos'], constant.POS_TO_ID)
             ner = map_to_ids(d['stanford_ner'], constant.NER_TO_ID)
             deprel = map_to_ids(d['stanford_deprel'], constant.DEPREL_TO_ID)
