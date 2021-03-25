@@ -83,7 +83,7 @@ class DataLoader(object):
                 has_tag = True
             else:
                 pattern = ''
-                masked = range(min(oe, se)+4, max(os, ss)+4)
+                masked = range(min(oe, se)+4, max(os, ss)+3)
                 has_tag = False
             if ss<os:
                 os = os + 2
