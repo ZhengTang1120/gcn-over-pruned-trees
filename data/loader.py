@@ -68,7 +68,7 @@ class DataLoader(object):
             masked = eval(masked)
             ner = d['stanford_ner']
             if masked and d['relation'] != 'no_relation':
-                masked = [i for i in range(masked[0], masked[1]) if i not in range(ss, se+1)+range(os, os+1)]
+                masked = [i for i in range(masked[0], masked[1]) if i not in range(ss, se+1) and i not in range(os, os+1)]
                 for i in range(len(masked)):
                     if masked[i] < min(os, ss):
                         masked[i] += 1
