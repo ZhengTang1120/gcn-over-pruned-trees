@@ -6,6 +6,7 @@ import json
 import random
 import torch
 import numpy as np
+import string
 
 from utils import constant, helper, vocab
 from collections import defaultdict
@@ -65,10 +66,11 @@ class DataLoader(object):
             rl, masked = intervals[c].split('\t')
             rl, pattern = patterns[c].split('\t')
             masked = eval(masked)
+            ner = d['stanford_ner']
             if masked and d['relation'] != 'no_relation':
-                pattern = helper.word_tokenize(pattern)
+                # pattern = helper.word_tokenize(pattern)
 
-                masked = list(range(masked[0], masked[1]))
+                masked = [i for i range(masked[0], masked[1]) if i not in range(ss, se+1)+range(os, os+1)]
                 for i in range(len(masked)):
                     if masked[i] < min(os, ss):
                         masked[i] += 1
@@ -82,7 +84,7 @@ class DataLoader(object):
                         masked[i] += 5
                 has_tag = True
             else:
-                pattern = []
+                pattern = ''
                 masked = []
                 has_tag = False
             if ss<os:
@@ -92,6 +94,10 @@ class DataLoader(object):
                 tokens.insert(se+2, '#')
                 tokens.insert(os, '$')
                 tokens.insert(oe+2, '$')
+                ner.insert(ss, '#')
+                ner.insert(se+2, '#')
+                ner.insert(os, '$')
+                ner.insert(oe+2, '$')
             else:
                 ss = ss + 2
                 se = se + 2
@@ -99,15 +105,21 @@ class DataLoader(object):
                 tokens.insert(oe+2, '$')
                 tokens.insert(ss, '#')
                 tokens.insert(se+2, '#')
+                ner.insert(os, '$')
+                ner.insert(oe+2, '$')
+                ner.insert(ss, '#')
+                ner.insert(se+2, '#')
             tokens = ['[CLS]'] + tokens
             relation = self.label2id[d['relation']]
             if has_tag and relation!=0:
-                tagging = [0 if i not in masked else 1 if tokens[i] in pattern else 0 for i in range(len(tokens))]
+                tagging = [0 if i not in masked else 1 if (tokens[i] in pattern or ner[i] in pattern) and tokens[i] not in string.punctuation else 0 for i in range(len(tokens))]
             # elif relation!=0:
             #     tagging = [1 if i !=0 else 0 for i in range(len(tokens))]
             else:
-                tagging = [0 for i in range(len(tokens))]
+                tagging = [1 if i in range(se+2, os) else 0 for i in range(len(tokens))]
             tokens = self.tokenizer.convert_tokens_to_ids(tokens)
+            print ([(tagging[i], self.tokenizer.convert_ids_to_tokens(tokens[i])) for i in range(len(tokens))])
+            print ()
             pos = map_to_ids(d['stanford_pos'], constant.POS_TO_ID)
             ner = map_to_ids(d['stanford_ner'], constant.NER_TO_ID)
             deprel = map_to_ids(d['stanford_deprel'], constant.DEPREL_TO_ID)
@@ -119,6 +131,7 @@ class DataLoader(object):
             subj_type = [constant.SUBJ_NER_TO_ID[d['subj_type']]]
             obj_type = [constant.OBJ_NER_TO_ID[d['obj_type']]]
             processed += [(tokens, pos, ner, deprel, head, subj_positions, obj_positions, subj_type, obj_type, relation, tagging, has_tag)]
+        exit()
         return processed
 
     def gold(self):
