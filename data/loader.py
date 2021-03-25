@@ -83,7 +83,7 @@ class DataLoader(object):
                 has_tag = True
             else:
                 pattern = ''
-                masked = []
+                masked = range(min(oe, se)+4, max(os, ss)+4)
                 has_tag = False
             if ss<os:
                 os = os + 2
@@ -114,7 +114,7 @@ class DataLoader(object):
             # elif relation!=0:
             #     tagging = [1 if i !=0 else 0 for i in range(len(tokens))]
             else:
-                tagging = [1 if i in range(se+2, os) else 0 for i in range(len(tokens))]
+                tagging = [1 if i in masked else 0 for i in range(len(tokens))]
             tokens = self.tokenizer.convert_tokens_to_ids(tokens)
             print (has_tag, [(tagging[i], self.tokenizer.convert_ids_to_tokens(tokens[i])) for i in range(len(tokens))])
             print ()
