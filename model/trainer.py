@@ -149,30 +149,30 @@ class BERTtrainer(Trainer):
         self.classifier.eval()
         self.tagger.eval()
         h, b_out = self.encoder(inputs)
-        tagging_output = self.tagger(h)
-        tagging_mask = torch.round(tagging_output).squeeze(2).eq(0)
-        tagging = torch.round(tagging_output).squeeze(2)
+        # tagging_output = self.tagger(h)
+        # tagging_mask = torch.round(tagging_output).squeeze(2).eq(0)
+        # tagging = torch.round(tagging_output).squeeze(2)
         # tagging_prob = tagging_output.squeeze(2)
-        logits = self.classifier(h, tagging_mask, inputs[6], inputs[7])
+        logits = self.classifier(h, None, inputs[6], inputs[7])
         loss = self.criterion(logits, labels)
         probs = F.softmax(logits, 1) * torch.round(b_out)#.data.cpu().numpy().tolist()
         predictions = np.argmax(probs.data.cpu().numpy(), axis=1).tolist()
-        tags = []
-        for i, p in enumerate(predictions):
-            if p != 0:
-                t = tagging.data.cpu().numpy().tolist()[i]
-                tags += [t]
-                # if sum(rules[i])!=0:
-                #     pass
-                #     # r = sum([1 if t[j]==rules[i][j] else 0 for j in range(len(t)) if rules[i][j]!=0])/sum(rules[i])
-                #     # print (r)
-                # elif sum(t)!=0:
-                #     # pass
-                #     print (id2label[p], id2label[labels.data.cpu().numpy().tolist()[i]])
-                #     print ([(t[j], tokenizer.convert_ids_to_tokens(tokens[i][j])) if t[j]!=0 else tokenizer.convert_ids_to_tokens(tokens[i][j]) for j in range(len(tokens[i])) if tokens[i][j] != 0])
-                #     # print ()
-            else:
-                tags += [[]]
+        # tags = []
+        # for i, p in enumerate(predictions):
+        #     if p != 0:
+        #         t = tagging.data.cpu().numpy().tolist()[i]
+        #         tags += [t]
+        #         # if sum(rules[i])!=0:
+        #         #     pass
+        #         #     # r = sum([1 if t[j]==rules[i][j] else 0 for j in range(len(t)) if rules[i][j]!=0])/sum(rules[i])
+        #         #     # print (r)
+        #         # elif sum(t)!=0:
+        #         #     # pass
+        #         #     print (id2label[p], id2label[labels.data.cpu().numpy().tolist()[i]])
+        #         #     print ([(t[j], tokenizer.convert_ids_to_tokens(tokens[i][j])) if t[j]!=0 else tokenizer.convert_ids_to_tokens(tokens[i][j]) for j in range(len(tokens[i])) if tokens[i][j] != 0])
+        #         #     # print ()
+        #     else:
+        #         tags += [[]]
         if unsort:
             _, predictions, probs, tags, rules, tokens = [list(t) for t in zip(*sorted(zip(orig_idx,\
                     predictions, probs, tags, rules, tokens)))]
