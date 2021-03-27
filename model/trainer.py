@@ -157,7 +157,7 @@ class BERTtrainer(Trainer):
         loss = self.criterion(logits, labels)
         probs = F.softmax(logits, 1) * torch.round(b_out)#.data.cpu().numpy().tolist()
         predictions = np.argmax(probs.data.cpu().numpy(), axis=1).tolist()
-        tags = []
+        tags = predictions
         # for i, p in enumerate(predictions):
         #     if p != 0:
         #         t = tagging.data.cpu().numpy().tolist()[i]
