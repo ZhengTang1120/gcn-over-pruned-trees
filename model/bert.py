@@ -19,8 +19,8 @@ class BERTencoder(nn.Module):
         outputs = self.model(words, output_attentions=True)
         h = outputs.last_hidden_state
         out = torch.sigmoid(self.classifier(outputs.pooler_output))
-
-        return outputs.pooler_output, out
+        
+        return outputs, out
 
 class BERTclassifier(nn.Module):
     def __init__(self, opt):
