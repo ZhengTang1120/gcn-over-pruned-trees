@@ -171,7 +171,8 @@ class BERTtrainer(Trainer):
         #         #     # print (r)
         #         # elif sum(t)!=0:
         #         #     # pass
-                    print (a[-1][i][-1][0])
+                    print (a[-1].size())
+                    print (sum(a[-1][i][-1][0]))
                     exit()
                     print (id2label[p], id2label[labels.data.cpu().numpy().tolist()[i]])
                     print ([(a[i][-1][j], tokenizer.convert_ids_to_tokens(tokens[i][j])) for j in range(len(tokens[i])) if tokens[i][j] != 0])
