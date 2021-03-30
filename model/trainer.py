@@ -55,7 +55,7 @@ class Trainer(object):
 def unpack_batch(batch, cuda):
     rules = None
     if cuda:
-        with torch.cuda.device(1):
+        with torch.cuda.device(0):
             inputs = [batch[0].to('cuda')] + [Variable(b.cuda()) for b in batch[1:10]]
             labels = Variable(batch[10].cuda())
             rules  = Variable(batch[12]).cuda()
@@ -82,7 +82,7 @@ class BERTtrainer(Trainer):
         self.criterion2 = nn.BCELoss()
         self.parameters = [p for p in self.classifier.parameters() if p.requires_grad] + [p for p in self.encoder.parameters() if p.requires_grad]+ [p for p in self.tagger.parameters() if p.requires_grad]
         if opt['cuda']:
-            with torch.cuda.device(1):
+            with torch.cuda.device(0):
                 self.encoder.cuda()
                 self.tagger.cuda()
                 self.classifier.cuda()
