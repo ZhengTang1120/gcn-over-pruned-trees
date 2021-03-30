@@ -55,9 +55,10 @@ class Trainer(object):
 def unpack_batch(batch, cuda):
     rules = None
     if cuda:
-        inputs = [batch[0].to('cuda')] + [Variable(b.cuda()) for b in batch[1:10]]
-        labels = Variable(batch[10].cuda())
-        rules  = Variable(batch[12]).cuda()
+        with torch.cuda.device(1):
+            inputs = [batch[0].to('cuda')] + [Variable(b.cuda()) for b in batch[1:10]]
+            labels = Variable(batch[10].cuda())
+            rules  = Variable(batch[12]).cuda()
     else:
         inputs = [Variable(b) for b in batch[:10]]
         labels = Variable(batch[10])
@@ -81,10 +82,11 @@ class BERTtrainer(Trainer):
         self.criterion2 = nn.BCELoss()
         self.parameters = [p for p in self.classifier.parameters() if p.requires_grad] + [p for p in self.encoder.parameters() if p.requires_grad]+ [p for p in self.tagger.parameters() if p.requires_grad]
         if opt['cuda']:
-            self.encoder.cuda()
-            self.tagger.cuda()
-            self.classifier.cuda()
-            self.criterion.cuda()
+            with torch.cuda.device(1):
+                self.encoder.cuda()
+                self.tagger.cuda()
+                self.classifier.cuda()
+                self.criterion.cuda()
         #self.optimizer = torch_utils.get_optimizer(opt['optim'], self.parameters, opt['lr'])
         self.optimizer = AdamW(
             self.parameters,
@@ -105,8 +107,8 @@ class BERTtrainer(Trainer):
         tagging_output = self.tagger(h)
         loss = self.criterion2(b_out, (~(labels.eq(0))).to(torch.float32).unsqueeze(1))
         if epoch <= 10:
-            logits = self.classifier(h, inputs[1], inputs[6], inputs[7])
-            loss += self.criterion(logits, labels)
+            # logits = self.classifier(h, inputs[1], inputs[6], inputs[7])
+            # loss += self.criterion(logits, labels)
             for i, f in enumerate(tagged):
                 if f:
                     loss += self.criterion2(tagging_output[i], rules[i].unsqueeze(1).to(torch.float32))
