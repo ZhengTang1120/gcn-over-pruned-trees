@@ -158,10 +158,10 @@ class BERTtrainer(Trainer):
         probs = F.softmax(logits, 1) * torch.round(b_out)#.data.cpu().numpy().tolist()
         predictions = np.argmax(probs.data.cpu().numpy(), axis=1).tolist()
         tags = []
-        # for i, p in enumerate(predictions):
-        #     if p != 0:
-        #         t = tagging.data.cpu().numpy().tolist()[i]
-        #         tags += [t]
+        for i, p in enumerate(predictions):
+            if p != 0:
+                t = tagging.data.cpu().numpy().tolist()[i]
+                tags += [t]
         #         if sum(rules[i])!=0:
         #             pass
         #             r = sum([1 if t[j]==rules[i][j] else 0 for j in range(len(t)) if rules[i][j]!=0])/sum(rules[i])
