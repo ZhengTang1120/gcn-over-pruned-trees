@@ -151,7 +151,7 @@ class BERTtrainer(Trainer):
         o, b_out = self.encoder(inputs)
         h = o.pooler_output
         a = o.attentions
-        a = a[0].data.cpu().numpy()
+        a = a[-1].data.cpu().numpy()
         # tagging_output = self.tagger(h)
         # tagging_mask = torch.round(tagging_output).squeeze(2).eq(0)
         # tagging = torch.round(tagging_output).squeeze(2)
