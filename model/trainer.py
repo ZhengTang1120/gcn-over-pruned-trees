@@ -151,7 +151,7 @@ class BERTtrainer(Trainer):
         o, b_out = self.encoder(inputs)
         h = o.pooler_output
         a = o.attentions
-        print (len(a))
+        a = a[-1].data.cpu().numpy().tolist()
         # tagging_output = self.tagger(h)
         # tagging_mask = torch.round(tagging_output).squeeze(2).eq(0)
         # tagging = torch.round(tagging_output).squeeze(2)
@@ -163,7 +163,6 @@ class BERTtrainer(Trainer):
         tags = predictions
         for i, p in enumerate(predictions):
             if p != 0:
-                a = a[-1].data.cpu().numpy().tolist()
         #         t = tagging.data.cpu().numpy().tolist()[i]
         #         tags += [t]
                 if sum(rules[i])!=0:
@@ -173,8 +172,7 @@ class BERTtrainer(Trainer):
         #         # elif sum(t)!=0:
         #         #     # pass
                     print (id2label[p], id2label[labels.data.cpu().numpy().tolist()[i]])
-                    for k in range(16):
-                        print ([(a[i][k][0][j], tokenizer.convert_ids_to_tokens(tokens[i][j])) for j in range(len(tokens[i])) if tokens[i][j] != 0])
+                    print ([(a[i][-1][0][j], tokenizer.convert_ids_to_tokens(tokens[i][j])) for j in range(len(tokens[i])) if tokens[i][j] != 0])
                     print ()
         #     else:
         #         tags += [[]]
