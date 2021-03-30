@@ -171,6 +171,7 @@ class BERTtrainer(Trainer):
         #         #     pass
                     s = ''
                     for k in range(len(a[i])):
+                        print (k)
                         top_attn = a[i][k][0].argsort()[:n]
                         r = sum([1 if j in top_attn else 0 for j in range(len(rules[i])) if rules[i][j]!=0])/sum(rules[i])
                         s += ', '+str(r) if k != 0 else str(r)
