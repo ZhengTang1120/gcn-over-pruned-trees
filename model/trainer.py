@@ -168,7 +168,7 @@ class BERTtrainer(Trainer):
 
         #         t = tagging.data.cpu().numpy().tolist()[i]
         #         tags += [t]
-        #         # if sum(rules[i])!=0:
+                if sum(rules[i])!=0:
         #         #     pass
                     r = sum([1 if j in top_attn else 0 for j in range(len(t)) if rules[i][j]!=0])/sum(rules[i])
                     print (r)
