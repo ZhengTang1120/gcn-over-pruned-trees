@@ -168,7 +168,7 @@ class BERTtrainer(Trainer):
                 #     pass
                     r = sum([1 if t[j]==rules[i][j] else 0 for j in range(len(t)) if rules[i][j]!=0])/sum(rules[i])
                     pr = sum([1 if t[j]==rules[i][j] else 0 for j in range(len(t)) if rules[i][j]!=0])/sum(t) if sum(t)!=0 else 0
-                    print (sum(t), len(t))
+                    print ('%d, %d, %.6f, %.6f'%(sum(t), len(t), r, pr))
                     # print (r)
                 # elif sum(t)!=0:
                 #     # pass
