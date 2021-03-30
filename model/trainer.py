@@ -105,11 +105,11 @@ class BERTtrainer(Trainer):
         tagging_output = self.tagger(h)
         loss = self.criterion2(b_out, (~(labels.eq(0))).to(torch.float32).unsqueeze(1))
         if epoch <= 10:
-            logits = self.classifier(h, inputs[1], inputs[6], inputs[7])
-            loss += self.criterion(logits, labels)
-            # for i, f in enumerate(tagged):
-            #     if f:
-            #         loss += self.criterion2(tagging_output[i], rules[i].unsqueeze(1).to(torch.float32))
+            # logits = self.classifier(h, inputs[1], inputs[6], inputs[7])
+            # loss += self.criterion(logits, labels)
+            for i, f in enumerate(tagged):
+                if f:
+                    loss += self.criterion2(tagging_output[i], rules[i].unsqueeze(1).to(torch.float32))
         else:
             for i, f in enumerate(tagged):
                 if f:
@@ -158,14 +158,14 @@ class BERTtrainer(Trainer):
         probs = F.softmax(logits, 1) * torch.round(b_out)#.data.cpu().numpy().tolist()
         predictions = np.argmax(probs.data.cpu().numpy(), axis=1).tolist()
         tags = []
-        for i, p in enumerate(predictions):
-            if p != 0:
-                t = tagging.data.cpu().numpy().tolist()[i]
-                tags += [t]
-                if sum(rules[i])!=0:
-                    pass
-                    r = sum([1 if t[j]==rules[i][j] else 0 for j in range(len(t)) if rules[i][j]!=0])/sum(rules[i])
-                    print (r)
+        # for i, p in enumerate(predictions):
+        #     if p != 0:
+        #         t = tagging.data.cpu().numpy().tolist()[i]
+        #         tags += [t]
+        #         if sum(rules[i])!=0:
+        #             pass
+        #             r = sum([1 if t[j]==rules[i][j] else 0 for j in range(len(t)) if rules[i][j]!=0])/sum(rules[i])
+        #             print (r)
                 # elif sum(t)!=0:
                 #     # pass
                 #     print (id2label[p], id2label[labels.data.cpu().numpy().tolist()[i]])
