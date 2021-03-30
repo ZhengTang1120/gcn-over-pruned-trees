@@ -167,8 +167,8 @@ class BERTtrainer(Trainer):
                 if sum(rules[i])!=0:
                     pass
                     r = sum([1 if t[j]==rules[i][j] else 0 for j in range(len(t)) if rules[i][j]!=0])/sum(rules[i])
-                    p = sum([1 if t[j]==rules[i][j] else 0 for j in range(len(t)) if rules[i][j]!=0])/sum(t) if sum(t)!=0 else 0
-                    print (r, p)
+                    pr = sum([1 if t[j]==rules[i][j] else 0 for j in range(len(t)) if rules[i][j]!=0])/sum(t) if sum(t)!=0 else 0
+                    print (r, pr)
                 # elif sum(t)!=0:
                 #     # pass
                     print (id2label[p], id2label[labels.data.cpu().numpy().tolist()[i]])
