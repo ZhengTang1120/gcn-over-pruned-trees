@@ -170,7 +170,7 @@ class BERTtrainer(Trainer):
         #         tags += [t]
                 if sum(rules[i])!=0:
         #         #     pass
-                    r = sum([1 if j in top_attn else 0 for j in range(len(t)) if rules[i][j]!=0])/sum(rules[i])
+                    r = sum([1 if j in top_attn else 0 for j in range(len(rules[i])) if rules[i][j]!=0])/sum(rules[i])
                     print (r)
         #         # elif sum(t)!=0:
         #         #     # pass
