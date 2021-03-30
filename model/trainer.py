@@ -107,8 +107,8 @@ class BERTtrainer(Trainer):
         tagging_output = self.tagger(h)
         loss = self.criterion2(b_out, (~(labels.eq(0))).to(torch.float32).unsqueeze(1))
         if epoch <= 10:
-            # logits = self.classifier(h, inputs[1], inputs[6], inputs[7])
-            # loss += self.criterion(logits, labels)
+            logits = self.classifier(h, inputs[1], inputs[6], inputs[7])
+            loss += self.criterion(logits, labels)
             for i, f in enumerate(tagged):
                 if f:
                     loss += self.criterion2(tagging_output[i], rules[i].unsqueeze(1).to(torch.float32))
@@ -164,11 +164,11 @@ class BERTtrainer(Trainer):
             if p != 0:
                 t = tagging.data.cpu().numpy().tolist()[i]
                 tags += [t]
-                if sum(rules[i])!=0 and tagged:
-                #     pass
-                    r = sum([1 if t[j]==rules[i][j] else 0 for j in range(len(t)) if rules[i][j]!=0])/sum(rules[i])
-                    pr = sum([1 if t[j]==rules[i][j] else 0 for j in range(len(t)) if rules[i][j]!=0])/sum(t) if sum(t)!=0 else 0
-                    print ('%d, %d, %.6f, %.6f'%(sum(t), len(t), r, pr))
+                # if sum(rules[i])!=0 and tagged:
+                # #     pass
+                #     r = sum([1 if t[j]==rules[i][j] else 0 for j in range(len(t)) if rules[i][j]!=0])/sum(rules[i])
+                #     pr = sum([1 if t[j]==rules[i][j] else 0 for j in range(len(t)) if rules[i][j]!=0])/sum(t) if sum(t)!=0 else 0
+                #     print ('%d, %d, %.6f, %.6f'%(sum(t), len(t), r, pr))
                     # print (r)
                 # elif sum(t)!=0:
                 #     # pass
