@@ -165,7 +165,7 @@ class BERTtrainer(Trainer):
                 t = tagging.data.cpu().numpy().tolist()[i]
                 l = lens.data.cpu().numpy().tolist()[i]
                 tags += [t]
-                print (sum([t[j]*rules[i][j] for j in range(len(t))])/l)
+                print (sum(t))
                 # if sum(rules[i])!=0 and tagged:
                 #     # pass
                 #     r = sum([1 if t[j]==rules[i][j] else 0 for j in range(len(t)) if rules[i][j]!=0])/sum(rules[i])
