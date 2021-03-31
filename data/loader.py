@@ -114,7 +114,7 @@ class DataLoader(object):
             # elif relation!=0:
             #     tagging = [1 if i !=0 else 0 for i in range(len(tokens))]
             else:
-                tagging = [1 if i in masked else 0 for i in range(len(tokens))]
+                tagging = [0 for i in range(len(tokens))]
             tokens = self.tokenizer.convert_tokens_to_ids(tokens)
             pos = map_to_ids(d['stanford_pos'], constant.POS_TO_ID)
             ner = map_to_ids(d['stanford_ner'], constant.NER_TO_ID)
@@ -124,7 +124,7 @@ class DataLoader(object):
             l = len(tokens)
             subj_positions = get_positions(ss+2, se+2, l)
             obj_positions = get_positions(os+2, oe+2, l)
-            subj_type = [constant.SUBJ_NER_TO_ID[d['subj_type']]]
+            subj_type = max(ss, os)-min(se, oe)#[constant.SUBJ_NER_TO_ID[d['subj_type']]]
             obj_type = [constant.OBJ_NER_TO_ID[d['obj_type']]]
             processed += [(tokens, pos, ner, deprel, head, subj_positions, obj_positions, subj_type, obj_type, relation, tagging, has_tag)]
         return processed
@@ -166,10 +166,10 @@ class DataLoader(object):
         obj_positions = get_long_tensor(batch[6], batch_size)
         # subj_mask = torch.ge(words.input_ids, 28996) * torch.lt(words.input_ids, 28998)
         # obj_mask = torch.ge(words.input_ids, 28998)
-        subj_type = get_long_tensor(batch[7], batch_size)
+        subj_type = torch.LongTensor(batch[7])#get_long_tensor(batch[7], batch_size)
         obj_type = get_long_tensor(batch[8], batch_size)
 
-        rels = torch.LongTensor(batch[9])
+        rels = torch.LongTensor(batch[9])#
 
         rule = get_long_tensor(batch[10], batch_size)
         masks = torch.eq(rule, 0)
