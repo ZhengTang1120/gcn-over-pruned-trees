@@ -166,10 +166,10 @@ class DataLoader(object):
         obj_positions = get_long_tensor(batch[6], batch_size)
         # subj_mask = torch.ge(words.input_ids, 28996) * torch.lt(words.input_ids, 28998)
         # obj_mask = torch.ge(words.input_ids, 28998)
-        subj_type = get_long_tensor(batch[7], batch_size)
+        subj_type = torch.LongTensor(batch[7])#get_long_tensor(batch[7], batch_size)
         obj_type = get_long_tensor(batch[8], batch_size)
 
-        rels = torch.LongTensor(batch[9])
+        rels = torch.LongTensor(batch[9])#
 
         rule = get_long_tensor(batch[10], batch_size)
         masks = torch.eq(rule, 0)
