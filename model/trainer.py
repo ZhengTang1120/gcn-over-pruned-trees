@@ -172,8 +172,8 @@ class BERTtrainer(Trainer):
                     print ('%d, %d, %d, %.6f, %.6f'%(sum(t), len(t), l, r, pr))
                 # elif sum(t)!=0:
                 #     # pass
-                    # print (id2label[p], id2label[labels.data.cpu().numpy().tolist()[i]])
-                    # print ([(t[j], tokenizer.convert_ids_to_tokens(tokens[i][j])) if t[j]!=0 else tokenizer.convert_ids_to_tokens(tokens[i][j]) for j in range(len(tokens[i])) if tokens[i][j] != 0])
+                    print (id2label[p], id2label[labels.data.cpu().numpy().tolist()[i]])
+                    print ([(t[j], tokenizer.convert_ids_to_tokens(tokens[i][j])) if t[j]!=0 else tokenizer.convert_ids_to_tokens(tokens[i][j]) for j in range(len(tokens[i])) if tokens[i][j] != 0])
                 #     # print ()
             else:
                 tags += [[]]
