@@ -107,7 +107,7 @@ class DataLoader(object):
                 ner.insert(oe+2, '$')
                 ner.insert(ss, '#')
                 ner.insert(se+2, '#')
-            tokens = tokens[min(os, ss), max(oe, se)]
+            tokens = tokens[min(os, ss): max(oe, se)+1]
             print (tokens)
             tokens = ['[CLS]'] + tokens
             relation = self.label2id[d['relation']]
