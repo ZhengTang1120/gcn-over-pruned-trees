@@ -103,7 +103,8 @@ class BERTtrainer(Trainer):
         self.optimizer.zero_grad()
 
         loss = 0
-        h, b_out = self.encoder(inputs)
+        o, b_out = self.encoder(inputs)
+        h = o.pooler_output
         tagging_output = self.tagger(h)
         loss = self.criterion2(b_out, (~(labels.eq(0))).to(torch.float32).unsqueeze(1))
         if epoch <= 50:
@@ -163,9 +164,9 @@ class BERTtrainer(Trainer):
         probs = F.softmax(logits, 1) * torch.round(b_out)#.data.cpu().numpy().tolist()
         predictions = np.argmax(probs.data.cpu().numpy(), axis=1).tolist()
         tags = predictions
-        for i, p in enumerate(predictions):
-            if p != 0:
-                n = sum(rules[i])
+        # for i, p in enumerate(predictions):
+        #     if p != 0:
+        #         n = sum(rules[i])
 
         #         t = tagging.data.cpu().numpy().tolist()[i]
         #         tags += [t]
