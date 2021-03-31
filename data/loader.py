@@ -107,8 +107,8 @@ class DataLoader(object):
                 ner.insert(oe+2, '$')
                 ner.insert(ss, '#')
                 ner.insert(se+2, '#')
-            tokens = tokens[min(os, ss): max(oe, se)+3]
-            print (tokens)
+            # tokens = tokens[min(os, ss): max(oe, se)+3]
+            # print (tokens)
             tokens = ['[CLS]'] + tokens
             relation = self.label2id[d['relation']]
             if has_tag and relation!=0:
@@ -117,6 +117,7 @@ class DataLoader(object):
             #     tagging = [1 if i !=0 else 0 for i in range(len(tokens))]
             else:
                 tagging = [1 if i in masked else 0 for i in range(len(tokens))]
+            print ([(tokens[i], tagging[i]) for i in range(len(tokens))])
             tokens = self.tokenizer.convert_tokens_to_ids(tokens)
             pos = map_to_ids(d['stanford_pos'], constant.POS_TO_ID)
             ner = map_to_ids(d['stanford_ner'], constant.NER_TO_ID)
