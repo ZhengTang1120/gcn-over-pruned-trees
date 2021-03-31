@@ -55,7 +55,7 @@ class Trainer(object):
 def unpack_batch(batch, cuda):
     rules = None
     if cuda:
-        with torch.cuda.device(0):
+        with torch.cuda.device(1):
             inputs = [batch[0].to('cuda')] + [Variable(b.cuda()) for b in batch[1:10]]
             labels = Variable(batch[10].cuda())
             rules  = Variable(batch[12]).cuda()
@@ -82,7 +82,7 @@ class BERTtrainer(Trainer):
         self.criterion2 = nn.BCELoss()
         self.parameters = [p for p in self.classifier.parameters() if p.requires_grad] + [p for p in self.encoder.parameters() if p.requires_grad]+ [p for p in self.tagger.parameters() if p.requires_grad]
         if opt['cuda']:
-            with torch.cuda.device(0):
+            with torch.cuda.device(1):
                 self.encoder.cuda()
                 self.tagger.cuda()
                 self.classifier.cuda()
@@ -165,11 +165,11 @@ class BERTtrainer(Trainer):
                 t = tagging.data.cpu().numpy().tolist()[i]
                 l = lens.data.cpu().numpy().tolist()[i]
                 tags += [t]
-                # if sum(rules[i])!=0 and tagged:
-                #     pass
-                #     # r = sum([1 if t[j]==rules[i][j] else 0 for j in range(len(t)) if rules[i][j]!=0])/sum(rules[i])
-                #     # pr = sum([1 if t[j]==rules[i][j] else 0 for j in range(len(t)) if rules[i][j]!=0])/sum(t) if sum(t)!=0 else 0
-                #     # print ('%d, %d, %d, %.6f, %.6f'%(sum(t), len(t), l, r, pr))
+                if sum(rules[i])!=0 and tagged:
+                    pass
+                    r = sum([1 if t[j]==rules[i][j] else 0 for j in range(len(t)) if rules[i][j]!=0])/sum(rules[i])
+                    pr = sum([1 if t[j]==rules[i][j] else 0 for j in range(len(t)) if rules[i][j]!=0])/sum(t) if sum(t)!=0 else 0
+                    print ('%d, %d, %d, %.6f, %.6f'%(sum(t), len(t), l, r, pr))
                 # elif sum(t)!=0 and sum(t) in range(l-2, l+2):
                 # #     # pass
                 #     print ('%d, %d, %d'%(sum(t), len(t), l))
