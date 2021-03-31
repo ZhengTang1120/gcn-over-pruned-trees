@@ -170,7 +170,7 @@ class BERTtrainer(Trainer):
                     # r = sum([1 if t[j]==rules[i][j] else 0 for j in range(len(t)) if rules[i][j]!=0])/sum(rules[i])
                     # pr = sum([1 if t[j]==rules[i][j] else 0 for j in range(len(t)) if rules[i][j]!=0])/sum(t) if sum(t)!=0 else 0
                     # print ('%d, %d, %d, %.6f, %.6f'%(sum(t), len(t), l, r, pr))
-                elif sum(t)!=0:# and sum(t) in range(l-2, l+2):
+                elif sum(t)!=0 and sum(t) in range(l-2, l+2):
                 #     # pass
                     print ('%d, %d, %d'%(sum(t), len(t), l))
                     print (id2label[p], id2label[labels.data.cpu().numpy().tolist()[i]])
