@@ -124,7 +124,7 @@ class DataLoader(object):
             l = len(tokens)
             subj_positions = get_positions(ss+2, se+2, l)
             obj_positions = get_positions(os+2, oe+2, l)
-            subj_type = [constant.SUBJ_NER_TO_ID[d['subj_type']]]
+            subj_type = max(ss, os)-min(se, oe)#[constant.SUBJ_NER_TO_ID[d['subj_type']]]
             obj_type = [constant.OBJ_NER_TO_ID[d['obj_type']]]
             processed += [(tokens, pos, ner, deprel, head, subj_positions, obj_positions, subj_type, obj_type, relation, tagging, has_tag)]
         return processed

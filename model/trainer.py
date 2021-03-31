@@ -55,7 +55,7 @@ class Trainer(object):
 def unpack_batch(batch, cuda):
     rules = None
     if cuda:
-        with torch.cuda.device(1):
+        with torch.cuda.device(0):
             inputs = [batch[0].to('cuda')] + [Variable(b.cuda()) for b in batch[1:10]]
             labels = Variable(batch[10].cuda())
             rules  = Variable(batch[12]).cuda()
@@ -68,7 +68,7 @@ def unpack_batch(batch, cuda):
     subj_pos = batch[6]
     obj_pos = batch[7]
     tagged = batch[-1]
-    lens = batch[1].eq(0).long().sum(1).squeeze()
+    lens = batch[8]#batch[1].eq(0).long().sum(1).squeeze()
     return inputs, labels, rules, tokens, head, subj_pos, obj_pos, lens, tagged
 
 class BERTtrainer(Trainer):
@@ -82,7 +82,7 @@ class BERTtrainer(Trainer):
         self.criterion2 = nn.BCELoss()
         self.parameters = [p for p in self.classifier.parameters() if p.requires_grad] + [p for p in self.encoder.parameters() if p.requires_grad]+ [p for p in self.tagger.parameters() if p.requires_grad]
         if opt['cuda']:
-            with torch.cuda.device(1):
+            with torch.cuda.device(0):
                 self.encoder.cuda()
                 self.tagger.cuda()
                 self.classifier.cuda()
@@ -163,13 +163,13 @@ class BERTtrainer(Trainer):
         for i, p in enumerate(predictions):
             if p != 0:
                 t = tagging.data.cpu().numpy().tolist()[i]
+                l = lens.data.cpu().numpy().tolist()[i]
                 tags += [t]
-                # if sum(rules[i])!=0 and tagged:
-                # #     pass
-                #     r = sum([1 if t[j]==rules[i][j] else 0 for j in range(len(t)) if rules[i][j]!=0])/sum(rules[i])
-                #     pr = sum([1 if t[j]==rules[i][j] else 0 for j in range(len(t)) if rules[i][j]!=0])/sum(t) if sum(t)!=0 else 0
-                #     print ('%d, %d, %.6f, %.6f'%(sum(t), len(t), r, pr))
-                    # print (r)
+                if sum(rules[i])!=0 and tagged:
+                #     pass
+                    r = sum([1 if t[j]==rules[i][j] else 0 for j in range(len(t)) if rules[i][j]!=0])/sum(rules[i])
+                    pr = sum([1 if t[j]==rules[i][j] else 0 for j in range(len(t)) if rules[i][j]!=0])/sum(t) if sum(t)!=0 else 0
+                    print ('%d, %d, %d, %.6f, %.6f'%(sum(t), len(t), l, r, pr))
                 # elif sum(t)!=0:
                 #     # pass
                     # print (id2label[p], id2label[labels.data.cpu().numpy().tolist()[i]])
