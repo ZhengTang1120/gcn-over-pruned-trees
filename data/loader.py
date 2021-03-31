@@ -107,7 +107,7 @@ class DataLoader(object):
                 ner.insert(oe+2, '$')
                 ner.insert(ss, '#')
                 ner.insert(se+2, '#')
-            tokens = tokens[min(os, ss): max(oe, se)+1]
+            tokens = tokens[min(os, ss): max(oe, se)+2]
             print (tokens)
             tokens = ['[CLS]'] + tokens
             relation = self.label2id[d['relation']]
@@ -129,7 +129,7 @@ class DataLoader(object):
             subj_type = [constant.SUBJ_NER_TO_ID[d['subj_type']]]
             obj_type = [constant.OBJ_NER_TO_ID[d['obj_type']]]
             processed += [(tokens, pos, ner, deprel, head, subj_positions, obj_positions, subj_type, obj_type, relation, tagging, has_tag)]
-            exit()
+        exit()
         return processed
 
     def gold(self):
