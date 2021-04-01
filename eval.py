@@ -67,38 +67,9 @@ x = 0
 exact_match = 0
 other = 0
 for c, b in enumerate(batch):
-    preds, ts, tagged, ids = trainer.predict(b, id2label, tokenizer)
+    preds = trainer.predict(b, id2label, tokenizer)
     predictions += preds
-    # all_probs += probs
-
-    # batch_size = len(preds)
-    # for i in range(batch_size):
-    #     if id2label[preds[i]] != 'no_relation':
-    #         output = decoded[i]
-    #         candidate = []
-    #         for r in output[1:]:
-    #             if int(r) == 3:
-    #                 break
-    #             else:
-    #                 candidate.append(vocab.id2rule[int(r)])
-    #         if len(batch.refs[x][0])!=0:
-    #             if candidate not in batch.refs[x]:
-    #                 print (id2label[preds[i]], batch.gold()[x])
-    #                 for t in batch.refs[x]:
-    #                     print (' '.join(t))
-    #                 print (' '.join(candidate))
-    #                 print ()
-    #                 other += 1
-    #             else:
-    #                 exact_match += 1
-
-    #             references.append(batch.refs[x])
-    #             candidates.append(candidate)
-    #     x += 1
-# print (exact_match, other)
 predictions = [id2label[p] for p in predictions]
-# for pred in predictions:
-#     print (pred)
 p, r, f1 = scorer.score(batch.gold(), predictions, verbose=True)
 print("{} set evaluate result: {:.2f}\t{:.2f}\t{:.2f}".format(args.dataset,p,r,f1))
 

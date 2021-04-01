@@ -38,7 +38,7 @@ class DataLoader(object):
             random.shuffle(indices)
             data = [data[i] for i in indices]
         self.id2label = dict([(v,k) for k,v in self.label2id.items()])
-        self.labels = [self.id2label[d[-3]] for d in data]
+        self.labels = [self.id2label[d[-1]] for d in data]
         self.num_examples = len(data)
         
         # chunk into batches
@@ -49,11 +49,6 @@ class DataLoader(object):
     def preprocess(self, data, vocab, opt):
         """ Preprocess the data and convert to ids. """
         processed = []
-        processed_rule = []
-        with open(self.intervals) as f:
-            intervals = f.readlines()
-        with open(self.patterns) as f:
-            patterns = f.readlines()
         for c, d in enumerate(data):
             tokens = list(d['token'])
             if opt['lower']:
@@ -67,24 +62,6 @@ class DataLoader(object):
             rl, pattern = patterns[c].split('\t')
             masked = eval(masked)
             ner = d['stanford_ner']
-            if masked and d['relation'] != 'no_relation':
-                masked = [i for i in range(masked[0], masked[1]) if i not in range(ss, se+1) and i not in range(os, os+1)]
-                for i in range(len(masked)):
-                    if masked[i] < min(os, ss):
-                        masked[i] += 1
-                    elif masked[i] <= min(se,oe):
-                        masked[i] += 2
-                    elif masked[i] < max(os, ss):
-                        masked[i] += 3
-                    elif masked[i] <= max(se, oe):
-                        masked[i] += 4
-                    else:
-                        masked[i] += 5
-                has_tag = True
-            else:
-                pattern = ''
-                masked = range(min(oe, se)+4, max(os, ss)+3)
-                has_tag = False
             if ss<os:
                 os = os + 2
                 oe = oe + 2
@@ -107,15 +84,8 @@ class DataLoader(object):
                 ner.insert(oe+2, '$')
                 ner.insert(ss, '#')
                 ner.insert(se+2, '#')
-            tokens = tokens[min(os, ss): max(oe, se)+3]
             tokens = ['[CLS]'] + tokens
             relation = self.label2id[d['relation']]
-            if has_tag and relation!=0:
-                tagging = [0 if i not in masked else 1 if (tokens[i] in pattern or ner[i] in pattern) and tokens[i] not in string.punctuation else 0 for i in range(len(tokens))]
-            # elif relation!=0:
-            #     tagging = [1 if i !=0 else 0 for i in range(len(tokens))]
-            else:
-                tagging = [1 if i in masked else 0 for i in range(len(tokens))]
             tokens = self.tokenizer.convert_tokens_to_ids(tokens)
             pos = map_to_ids(d['stanford_pos'], constant.POS_TO_ID)
             ner = map_to_ids(d['stanford_ner'], constant.NER_TO_ID)
@@ -127,7 +97,7 @@ class DataLoader(object):
             obj_positions = get_positions(os+2, oe+2, l)
             subj_type = [constant.SUBJ_NER_TO_ID[d['subj_type']]]
             obj_type = [constant.OBJ_NER_TO_ID[d['obj_type']]]
-            processed += [(tokens, pos, ner, deprel, head, subj_positions, obj_positions, subj_type, obj_type, relation, tagging, has_tag)]
+            processed += [(tokens, pos, ner, deprel, head, subj_positions, obj_positions, subj_type, obj_type, relation)]
         return processed
 
     def gold(self):
@@ -172,9 +142,7 @@ class DataLoader(object):
 
         rels = torch.LongTensor(batch[9])
 
-        rule = get_long_tensor(batch[10], batch_size)
-        masks = torch.eq(rule, 0)
-        return (words, masks, pos, ner, deprel, head, subj_positions, obj_positions, subj_type, obj_type, rels, orig_idx, rule, batch[-1])
+        return (words, pos, ner, deprel, head, subj_positions, obj_positions, subj_type, obj_type, rels, orig_idx)
 
     def __iter__(self):
         for i in range(self.__len__()):

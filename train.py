@@ -165,58 +165,19 @@ for epoch in range(1, opt['num_epoch']+1):
     x = 0
     print("Evaluating on dev set...")
     predictions = []
-    tags = []
-    goldt = []
     dev_loss = 0
-    references = []
-    candidates = []
     count = 0
-    inputs = []
     for _, batch in enumerate(dev_batch):
-        preds, ts, tagged, ids = trainer.predict(batch, id2label, tokenizer)
-        # preds, _, decoded, loss = trainer.predict(batch)
+        preds = trainer.predict(batch, id2label, tokenizer)
         predictions += preds
-        tags += ts
-        goldt += tagged
-        dev_loss += loss
-        batch_size = len(preds)
-        for i in range(batch_size):
-            # ids = batch[0][i]
-            inputs += [[tokenizer.convert_ids_to_tokens(j) for j in ids[i]]]
-        #     print (id2label[preds[i]], dev_batch.gold()[x])
-        #     x += 1
-        #     if id2label[preds[i]] != 'no_relation':
-        #         output = decoded.transpose(0, 1)[i]
-        #         candidate = []
-        #         for r in output.tolist()[1:]:
-        #             if int(r) == 3:
-        #                 break
-        #             else:
-        #                 candidate.append(vocab.id2rule[int(r)])
-        #         if len(batch.refs[x][0])!=0:
-        #             references.append(batch.refs[x])
-        #             candidates.append(candidate)
-        #     count += 1
-    # for i, p in enumerate(predictions):
-    #     if p!=0:
-    #         print (id2label[p], dev_batch.gold()[i])
-    #         if sum(goldt[i])!=0:
-    #             print ([(goldt[i][j], tags[i][j], inputs[i][j])for j in range(len(inputs[i]))])
-    #         else:
-    #             print ([(tags[i][j], inputs[i][j])for j in range(len(inputs[i]))])
-    #         print ()
     predictions = [id2label[p] for p in predictions]
     train_loss = train_loss / train_batch.num_examples * opt['batch_size'] # avg loss per batch
     dev_loss = dev_loss / dev_batch.num_examples * opt['batch_size']
 
     dev_p, dev_r, dev_f1 = scorer.score(dev_batch.gold(), predictions)
-    bleu = 0#corpus_bleu(references, candidates) if len(candidates)!=0 else 0
-    print("epoch {}: train_loss = {:.6f}, dev_loss = {:.6f}, dev_f1 = {:.4f}, bleu = {:.4f}".format(epoch,\
-        train_loss, dev_loss, dev_f1, bleu))
-    if opt['classifier']:
-        dev_score = dev_f1 + bleu
-    else:
-        dev_score = bleu
+    print("epoch {}: train_loss = {:.6f}, dev_loss = {:.6f}, dev_f1 = {:.4f}".format(epoch,\
+        train_loss, dev_loss, dev_f1))
+    dev_score = dev_f1
     file_logger.log("{}\t{:.6f}\t{:.6f}\t{:.4f}\t{:.4f}".format(epoch, train_loss, dev_loss, dev_score, max([dev_score] + dev_score_history)))
 
     # save
