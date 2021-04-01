@@ -90,7 +90,7 @@ class BERTtrainer(Trainer):
         loss = 0
         o, b_out = self.encoder(inputs)
         h = o.pooler_output
-        logits = self.classifier(h, inputs[1], inputs[6], inputs[7])
+        logits = self.classifier(h)
         loss += self.criterion(logits, labels)
         if loss != 0:
             loss_val = loss.item()
