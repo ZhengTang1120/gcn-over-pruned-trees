@@ -17,7 +17,7 @@ class DataLoader(object):
     """
     Load data from json files, preprocess and prepare batches.
     """
-    def __init__(self, filename, batch_size, opt, vocab, intervals, patterns, tokenizer, evaluation=False):
+    def __init__(self, filename, batch_size, opt, vocab, tokenizer, evaluation=False):
         self.batch_size = batch_size
         self.opt = opt
         self.vocab = vocab
@@ -58,9 +58,6 @@ class DataLoader(object):
             os, oe = d['obj_start'], d['obj_end']
             tokens[ss:se+1] = ['[SUBJ-'+d['subj_type']+']'] * (se-ss+1)
             tokens[os:oe+1] = ['[OBJ-'+d['obj_type']+']'] * (oe-os+1)
-            rl, masked = intervals[c].split('\t')
-            rl, pattern = patterns[c].split('\t')
-            masked = eval(masked)
             ner = d['stanford_ner']
             if ss<os:
                 os = os + 2
