@@ -23,8 +23,6 @@ class DataLoader(object):
         self.vocab = vocab
         self.eval = evaluation
         self.label2id = constant.LABEL_TO_ID
-        self.intervals = intervals
-        self.patterns = patterns
         self.tokenizer = tokenizer
 
         with open(filename) as infile:
