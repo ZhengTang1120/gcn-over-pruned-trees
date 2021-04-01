@@ -15,7 +15,7 @@ class BERTencoder(nn.Module):
         self.classifier = nn.Linear(in_dim, 1)
 
     def forward(self, inputs):
-        words, masks, pos, ner, deprel, head, subj_pos, obj_pos, subj_type, obj_type = inputs
+        words, pos, ner, deprel, head, subj_pos, obj_pos, subj_type, obj_type = inputs
         outputs = self.model(words, output_attentions=True)
         h = outputs.last_hidden_state
         out = torch.sigmoid(self.classifier(outputs.pooler_output))
