@@ -8,7 +8,7 @@ import torch.nn.functional as F
 from torch.autograd import Variable
 import numpy as np
 
-from model.bert import BERTencoder, BERTclassifier, Tagger
+from model.bert import BERTencoder, BERTclassifier
 from model.decoder import Decoder
 from utils import constant, torch_utils
 
