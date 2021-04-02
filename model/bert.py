@@ -28,7 +28,7 @@ class BERTencoder(nn.Module):
 class BERTclassifier(nn.Module):
     def __init__(self, opt):
         super().__init__()
-        in_dim = 1024
+        in_dim = 1029
         self.classifier = nn.Linear(in_dim, opt['num_class'])
         self.opt = opt
 
@@ -44,7 +44,7 @@ class BERTclassifier(nn.Module):
 class Tagger(nn.Module):
     def __init__(self):
         super().__init__()
-        in_dim = 1024
+        in_dim = 1029
 
         self.tagger = nn.Linear(in_dim, 1)
         self.threshold1 = 0.8
