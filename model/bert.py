@@ -13,7 +13,7 @@ class BERTencoder(nn.Module):
         in_dim = 1024
         self.model = BertModel.from_pretrained("mrm8488/spanbert-large-finetuned-tacred")
         self.classifier = nn.Linear(in_dim, 1)
-        self.pos_emb = nn.Embedding(5, 5, padding_idx=constant.PAD_ID)
+        self.pos_emb = nn.Embedding(6, 5, padding_idx=constant.PAD_ID)
 
     def forward(self, inputs):
         words, masks, pos, ner, deprel, ent_pos, subj_pos, obj_pos, subj_type, obj_type = inputs
