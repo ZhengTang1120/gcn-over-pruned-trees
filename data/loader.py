@@ -120,6 +120,7 @@ class DataLoader(object):
                 entity_positions = get_positions2(ss+2, se+2, os+2, oe+2, l)
             else:
                 entity_positions = get_positions2(os+2, oe+2, ss+2, se+2, l)
+            print (len(entity_positions), l)
             print ([(entity_positions[i], tokens[i]) for i in range(l)])
             tokens = self.tokenizer.convert_tokens_to_ids(tokens)
             pos = map_to_ids(d['stanford_pos'], constant.POS_TO_ID)
@@ -195,11 +196,11 @@ def get_positions(start_idx, end_idx, length):
 
 def get_positions2(s1, e1, s2, e2, length):
     """ Get subj&obj position sequence. """
-    return [2] * s1 + \
-            [1] * (e1 - s1 + 1) + \
-            [3] * (s2 - e1 - 1) +\
-            [1] * (e2 - s2 + 1) + \
-            [4] * (length - e2 - 1)
+    return [2] * (s1 - 1) + \
+            [1] * (e1 - s1 + 3) + \
+            [3] * (s2 - e1 - 3) +\
+            [1] * (e2 - s2 + 3) + \
+            [4] * (length - e2 - 2)
 
 def get_long_tensor(tokens_list, batch_size):
     """ Convert list of list of tokens to a padded LongTensor. """
