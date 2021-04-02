@@ -115,16 +115,18 @@ class DataLoader(object):
             #     tagging = [1 if i !=0 else 0 for i in range(len(tokens))]
             else:
                 tagging = [0 for i in range(len(tokens))]
+            l = len(tokens)
+            entity_positions = get_positions2(ss+2, se+2, os+2, oe+2, l)
+            print ([(entity_positions[i], tokens[i]) for i in range(l)])
             tokens = self.tokenizer.convert_tokens_to_ids(tokens)
             pos = map_to_ids(d['stanford_pos'], constant.POS_TO_ID)
             ner = map_to_ids(d['stanford_ner'], constant.NER_TO_ID)
             deprel = map_to_ids(d['stanford_deprel'], constant.DEPREL_TO_ID)
             head = [int(x) for x in d['stanford_head']]
             assert any([x == 0 for x in head])
-            l = len(tokens)
             subj_positions = get_positions(ss+2, se+2, l)
             obj_positions = get_positions(os+2, oe+2, l)
-            subj_type = max(ss, os)-min(se, oe)#[constant.SUBJ_NER_TO_ID[d['subj_type']]]
+            subj_type = [constant.SUBJ_NER_TO_ID[d['subj_type']]]
             obj_type = [constant.OBJ_NER_TO_ID[d['obj_type']]]
             processed += [(tokens, pos, ner, deprel, head, subj_positions, obj_positions, subj_type, obj_type, relation, tagging, has_tag)]
         return processed
@@ -166,7 +168,7 @@ class DataLoader(object):
         obj_positions = get_long_tensor(batch[6], batch_size)
         # subj_mask = torch.ge(words.input_ids, 28996) * torch.lt(words.input_ids, 28998)
         # obj_mask = torch.ge(words.input_ids, 28998)
-        subj_type = torch.LongTensor(batch[7])#get_long_tensor(batch[7], batch_size)
+        subj_type = get_long_tensor(batch[7], batch_size)
         obj_type = get_long_tensor(batch[8], batch_size)
 
         rels = torch.LongTensor(batch[9])#
@@ -185,8 +187,16 @@ def map_to_ids(tokens, vocab):
 
 def get_positions(start_idx, end_idx, length):
     """ Get subj/obj position sequence. """
-    return list(range(-start_idx, 0)) + [1000]*(end_idx - start_idx + 1) + \
+    return list(range(-start_idx, 0)) + [0]*(end_idx - start_idx + 1) + \
             list(range(1, length-end_idx))
+
+def get_positions2(ss, se, os, oe, length):
+    """ Get subj&obj position sequence. """
+    return [2] * ss + \
+            [1] * (se - ss) + \
+            [3] * (os - se) +\
+            [1] * (oe - os) + \
+            [4] * (length - oe)
 
 def get_long_tensor(tokens_list, batch_size):
     """ Convert list of list of tokens to a padded LongTensor. """
