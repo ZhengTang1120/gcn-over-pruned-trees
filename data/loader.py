@@ -196,10 +196,10 @@ def get_positions(start_idx, end_idx, length):
 def get_positions2(s1, e1, s2, e2, length):
     """ Get subj&obj position sequence. """
     return [2] * s1 + \
-            [1] * (e1 - s1) + \
-            [3] * (s2 - e1) +\
-            [1] * (e2 - s2) + \
-            [4] * (length - e2)
+            [1] * (e1 - s1 + 1) + \
+            [3] * (s2 - e1 - 1) +\
+            [1] * (e2 - s2 + 1) + \
+            [4] * (length - e2 - 1)
 
 def get_long_tensor(tokens_list, batch_size):
     """ Convert list of list of tokens to a padded LongTensor. """
