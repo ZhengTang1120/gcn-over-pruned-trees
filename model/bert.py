@@ -19,7 +19,6 @@ class BERTencoder(nn.Module):
         words, masks, pos, ner, deprel, ent_pos, subj_pos, obj_pos, subj_type, obj_type = inputs
         outputs = self.model(words)
         h = outputs.last_hidden_state
-        print (h.size(), self.pos_emb(ent_pos).size())
         h = torch.cat([h, self.pos_emb(ent_pos)], dim=2)
         out = torch.sigmoid(self.classifier(outputs.pooler_output))
 
