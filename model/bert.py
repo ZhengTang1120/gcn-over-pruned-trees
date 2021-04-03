@@ -13,13 +13,13 @@ class BERTencoder(nn.Module):
         in_dim = 1024
         self.model = BertModel.from_pretrained("mrm8488/spanbert-large-finetuned-tacred")
         self.classifier = nn.Linear(in_dim, 1)
-        self.pos_emb = nn.Embedding(6, 5, padding_idx=constant.PAD_ID)
+        # self.pos_emb = nn.Embedding(6, 5, padding_idx=constant.PAD_ID)
 
     def forward(self, inputs):
         words, masks, pos, ner, deprel, ent_pos, subj_pos, obj_pos, subj_type, obj_type = inputs
         outputs = self.model(words)
         h = outputs.last_hidden_state
-        h = torch.cat([h, self.pos_emb(ent_pos)], dim=2)
+        # h = torch.cat([h, self.pos_emb(ent_pos)], dim=2)
         out = torch.sigmoid(self.classifier(outputs.pooler_output))
 
         return h, out
@@ -27,7 +27,7 @@ class BERTencoder(nn.Module):
 class BERTclassifier(nn.Module):
     def __init__(self, opt):
         super().__init__()
-        in_dim = 1029
+        in_dim = 1024
         self.classifier = nn.Linear(in_dim, opt['num_class'])
         self.opt = opt
 
@@ -43,7 +43,7 @@ class BERTclassifier(nn.Module):
 class Tagger(nn.Module):
     def __init__(self):
         super().__init__()
-        in_dim = 1029
+        in_dim = 1024
 
         self.tagger = nn.Linear(in_dim, 1)
         self.threshold1 = 0.8
