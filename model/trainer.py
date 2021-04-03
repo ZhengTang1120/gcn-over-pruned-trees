@@ -170,7 +170,7 @@ class BERTtrainer(Trainer):
                 t = t.data.cpu().numpy().tolist()
                 l = lens.data.cpu().numpy().tolist()[i]
                 tags += [t]
-                # print ('%d, %d, %d'%(sum(t), len(t), l))
+                print ('%d, %d, %d'%(sum(t), len(t), l))
                 # if sum(rules[i])!=0 and tagged:
                 #     pass
                 #     # print ('%d, %d, %d'%(sum(t), len(t), l))
