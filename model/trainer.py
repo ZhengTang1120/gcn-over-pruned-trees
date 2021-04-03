@@ -162,7 +162,10 @@ class BERTtrainer(Trainer):
         tags = []
         for i, p in enumerate(predictions):
             if p != 0:
-                t = tagging.data.cpu().numpy().tolist()[i]
+                t = tagging[i]#.data.cpu().numpy().tolist()[i]
+                chunk = inputs[5].eq(4).long()[i]
+                t = t * chunk
+                t = t.data.cpu().numpy().tolist()
                 l = lens.data.cpu().numpy().tolist()[i]
                 tags += [t]
                 if sum(rules[i])!=0 and tagged:
