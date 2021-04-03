@@ -68,7 +68,7 @@ def unpack_batch(batch, cuda):
     subj_pos = batch[6]
     obj_pos = batch[7]
     tagged = batch[-1]
-    lens = batch[1].eq(4).long().sum(1).squeeze()
+    lens = batch[5].eq(4).long().sum(1).squeeze()
     return inputs, labels, rules, tokens, head, subj_pos, obj_pos, lens, tagged
 
 class BERTtrainer(Trainer):
