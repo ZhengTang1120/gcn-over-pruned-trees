@@ -227,8 +227,8 @@ for epoch in range(1, opt['num_epoch']+1):
         print("new best model saved.")
         file_logger.log("new best model saved at epoch {}: {:.2f}\t{:.2f}\t{:.2f}"\
             .format(epoch, dev_p*100, dev_r*100, dev_score*100))
-    if epoch % opt['save_epoch'] != 0:
-        os.remove(model_file)
+    # if epoch % opt['save_epoch'] != 0:
+    #     os.remove(model_file)
 
     # lr schedule
     if len(dev_score_history) > opt['decay_epoch'] and dev_score <= dev_score_history[-1] and \
