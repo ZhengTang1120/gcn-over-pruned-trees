@@ -166,7 +166,7 @@ class BERTtrainer(Trainer):
             if p != 0:
                 t = tagging[i]#.data.cpu().numpy().tolist()[i]
                 chunk = inputs[5].eq(4).long()[i]
-                # t = t * chunk
+                t = t * chunk
                 t = t.data.cpu().numpy().tolist()
                 l = lens.data.cpu().numpy().tolist()[i]
                 tags += [t]
