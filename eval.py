@@ -79,7 +79,6 @@ for i, p in enumerate(predictions):
         predictions[i] = id2label[p]
         if p!=0:
             print (id2label[p], batch.gold()[i])
-            print (len(goldt[i], tags[i], inputs[i], batch.words[i]))
             if sum(goldt[i])!=0:
                 print ([(goldt[i][j], tags[i][j], inputs[i][j])for j in range(len(inputs[i]))])
                 print ([(goldt[i][j], tags[i][j], batch.words[i][j])for j in range(len(inputs[i]))])
