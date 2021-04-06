@@ -182,6 +182,7 @@ for epoch in range(1, opt['num_epoch']+1):
         for i in range(batch_size):
             inputs += [[tokenizer.convert_ids_to_tokens(j) for j in ids[i]]]
     for i, p in enumerate(predictions):
+        print (p)
         if p!=0:
             print (id2label[p], dev_batch.gold()[i])
             if sum(goldt[i])!=0:
