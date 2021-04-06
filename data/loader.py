@@ -93,6 +93,10 @@ class DataLoader(object):
                 tokens.insert(se+2, '#')
                 tokens.insert(os, '$')
                 tokens.insert(oe+2, '$')
+                words.insert(ss, '#')
+                words.insert(se+2, '#')
+                words.insert(os, '$')
+                words.insert(oe+2, '$')
                 ner.insert(ss, '#')
                 ner.insert(se+2, '#')
                 ner.insert(os, '$')
@@ -104,11 +108,16 @@ class DataLoader(object):
                 tokens.insert(oe+2, '$')
                 tokens.insert(ss, '#')
                 tokens.insert(se+2, '#')
+                words.insert(ss, '#')
+                words.insert(se+2, '#')
+                words.insert(os, '$')
+                words.insert(oe+2, '$')
                 ner.insert(os, '$')
                 ner.insert(oe+2, '$')
                 ner.insert(ss, '#')
                 ner.insert(se+2, '#')
             tokens = ['[CLS]'] + tokens
+            words = ['[CLS]'] + words
             relation = self.label2id[d['relation']]
             if has_tag and relation!=0:
                 tagging = [0 if i not in masked else 1 if (tokens[i] in pattern or ner[i] in pattern) and tokens[i] not in string.punctuation else 0 for i in range(len(tokens))]
