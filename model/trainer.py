@@ -173,7 +173,7 @@ class BERTtrainer(Trainer):
                 if sum(rules[i])!=0 and tagged:
                     pass
                     # print ('%d, %d, %d'%(sum(rules[i] * chunk), len(t), l))
-                    # print ('%d, %d, %d'%(sum(t), len(t), l))
+                    print ('%d, %d, %d'%(sum(t), len(t), l))
                 # #     # print ('%d, %d, %d'%(sum(t), len(t), l))
                 #     # r = sum([1 if t[j]==rules[i][j] else 0 for j in range(len(t)) if rules[i][j]!=0])/sum(rules[i])
                 #     # pr = sum([1 if t[j]==rules[i][j] else 0 for j in range(len(t)) if rules[i][j]!=0])/sum(t) if sum(t)!=0 else 0
