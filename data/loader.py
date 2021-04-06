@@ -39,6 +39,7 @@ class DataLoader(object):
         self.id2label = dict([(v,k) for k,v in self.label2id.items()])
         self.labels = [self.id2label[d[-4]] for d in data]
         self.words = data[-1]
+        print (self.words)
         self.num_examples = len(data)
         
         # chunk into batches
