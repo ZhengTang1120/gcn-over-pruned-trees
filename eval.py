@@ -81,12 +81,10 @@ for i, p in enumerate(predictions):
             if sum(goldt[i])!=0:
                 print (id2label[p], batch.gold()[i])
                 pass
-                # print ([(goldt[i][j], tags[i][j], inputs[i][j])for j in range(len(inputs[i])) if inputs[i][j] != '[PAD]'])
                 # print ([(goldt[i][j], tags[i][j], batch.words[i][j])for j in range(len(inputs[i])) if inputs[i][j] != '[PAD]'])
             elif sum(tags[i])!=0:
                 print (id2label[p], batch.gold()[i])
                 pass
-                print ([(tags[i][j], inputs[i][j])for j in range(len(inputs[i])) if inputs[i][j] != '[PAD]'])
                 print ([(tags[i][j], batch.words[i][j])for j in range(len(inputs[i])) if inputs[i][j] != '[PAD]'])
             print ()
 p, r, f1 = scorer.score(batch.gold(), predictions, verbose=True)
