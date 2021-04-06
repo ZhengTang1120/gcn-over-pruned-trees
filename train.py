@@ -174,37 +174,23 @@ for epoch in range(1, opt['num_epoch']+1):
     inputs = []
     for _, batch in enumerate(dev_batch):
         preds, ts, tagged, ids = trainer.predict(batch, id2label, tokenizer)
-        # preds, _, decoded, loss = trainer.predict(batch)
         predictions += preds
         tags += ts
         goldt += tagged
         dev_loss += loss
         batch_size = len(preds)
         for i in range(batch_size):
-            # ids = batch[0][i]
             inputs += [[tokenizer.convert_ids_to_tokens(j) for j in ids[i]]]
-        #     print (id2label[preds[i]], dev_batch.gold()[x])
-        #     x += 1
-        #     if id2label[preds[i]] != 'no_relation':
-        #         output = decoded.transpose(0, 1)[i]
-        #         candidate = []
-        #         for r in output.tolist()[1:]:
-        #             if int(r) == 3:
-        #                 break
-        #             else:
-        #                 candidate.append(vocab.id2rule[int(r)])
-        #         if len(batch.refs[x][0])!=0:
-        #             references.append(batch.refs[x])
-        #             candidates.append(candidate)
-        #     count += 1
-    # for i, p in enumerate(predictions):
-    #     if p!=0:
-    #         print (id2label[p], dev_batch.gold()[i])
-    #         if sum(goldt[i])!=0:
-    #             print ([(goldt[i][j], tags[i][j], inputs[i][j])for j in range(len(inputs[i]))])
-    #         else:
-    #             print ([(tags[i][j], inputs[i][j])for j in range(len(inputs[i]))])
-    #         print ()
+    for i, p in enumerate(predictions):
+        if p!=0:
+            print (id2label[p], dev_batch.gold()[i])
+            if sum(goldt[i])!=0:
+                print ([(goldt[i][j], tags[i][j], inputs[i][j])for j in range(len(inputs[i]))])
+                print ([(goldt[i][j], tags[i][j], dev_batch.words[i][j])for j in range(len(inputs[i]))])
+            else:
+                print ([(tags[i][j], inputs[i][j])for j in range(len(inputs[i]))])
+                print ([(tags[i][j], dev_batch.words[i][j])for j in range(len(inputs[i]))])
+            print ()
     predictions = [id2label[p] for p in predictions]
     train_loss = train_loss / train_batch.num_examples * opt['batch_size'] # avg loss per batch
     dev_loss = dev_loss / dev_batch.num_examples * opt['batch_size']

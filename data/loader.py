@@ -29,7 +29,6 @@ class DataLoader(object):
 
         with open(filename) as infile:
             data = json.load(infile)
-        self.raw_data = data
         data = self.preprocess(data, vocab, opt)
 
         # shuffle for training
@@ -38,7 +37,8 @@ class DataLoader(object):
             random.shuffle(indices)
             data = [data[i] for i in indices]
         self.id2label = dict([(v,k) for k,v in self.label2id.items()])
-        self.labels = [self.id2label[d[-3]] for d in data]
+        self.labels = [self.id2label[d[-4]] for d in data]
+        self.words = data[-1]
         self.num_examples = len(data)
         
         # chunk into batches
@@ -56,6 +56,7 @@ class DataLoader(object):
             patterns = f.readlines()
         for c, d in enumerate(data):
             tokens = list(d['token'])
+            words  = list(d['token'])
             if opt['lower']:
                 tokens = [t.lower() for t in tokens]
             # anonymize tokens
@@ -130,7 +131,7 @@ class DataLoader(object):
             obj_positions = get_positions(os+2, oe+2, l)
             subj_type = [constant.SUBJ_NER_TO_ID[d['subj_type']]]
             obj_type = [constant.OBJ_NER_TO_ID[d['obj_type']]]
-            processed += [(tokens, pos, ner, deprel, entity_positions, subj_positions, obj_positions, subj_type, obj_type, relation, tagging, has_tag)]
+            processed += [(tokens, pos, ner, deprel, entity_positions, subj_positions, obj_positions, subj_type, obj_type, relation, tagging, has_tag, words)]
         return processed
 
     def gold(self):
