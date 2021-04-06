@@ -182,7 +182,7 @@ for epoch in range(1, opt['num_epoch']+1):
         for i in range(batch_size):
             inputs += [[tokenizer.convert_ids_to_tokens(j) for j in ids[i]]]
     for i, p in enumerate(predictions):
-        print (p)
+        predictions[i] = id2label[p]
         if p!=0:
             print (id2label[p], dev_batch.gold()[i])
             if sum(goldt[i])!=0:
@@ -192,7 +192,6 @@ for epoch in range(1, opt['num_epoch']+1):
                 print ([(tags[i][j], inputs[i][j])for j in range(len(inputs[i]))])
                 print ([(tags[i][j], dev_batch.words[i][j])for j in range(len(inputs[i]))])
             print ()
-    predictions = [id2label[p] for p in predictions]
     train_loss = train_loss / train_batch.num_examples * opt['batch_size'] # avg loss per batch
     dev_loss = dev_loss / dev_batch.num_examples * opt['batch_size']
 
