@@ -92,7 +92,7 @@ for i, p in enumerate(predictions):
                 # print (id2label[p], batch.gold()[i])
                 # print ([(tags[i][j], batch.words[i][j])for j in range(len(inputs[i])) if inputs[i][j] != '[PAD]'])
                 # print ()
-with open("output_{}".format(args.model), 'w') as f:
+with open("output_{}".format(args.model_dir.split('/')[-1]), 'w') as f:
     f.write(json.dumps(output))
 p, r, f1 = scorer.score(batch.gold(), predictions, verbose=True)
 print("{} set evaluate result: {:.2f}\t{:.2f}\t{:.2f}".format(args.dataset,p,r,f1))
