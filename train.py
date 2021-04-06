@@ -165,38 +165,15 @@ for epoch in range(1, opt['num_epoch']+1):
     x = 0
     print("Evaluating on dev set...")
     predictions = []
-    tags = []
-    goldt = []
     dev_loss = 0
-    references = []
-    candidates = []
-    count = 0
-    inputs = []
     for _, batch in enumerate(dev_batch):
         preds, ts, tagged, ids = trainer.predict(batch, id2label, tokenizer)
         predictions += preds
-        tags += ts
-        goldt += tagged
-        dev_loss += loss
-        batch_size = len(preds)
-        for i in range(batch_size):
-            inputs += [[tokenizer.convert_ids_to_tokens(j) for j in ids[i]]]
-    for i, p in enumerate(predictions):
-        predictions[i] = id2label[p]
-        if p!=0:
-            print (id2label[p], dev_batch.gold()[i])
-            if sum(goldt[i])!=0:
-                print ([(goldt[i][j], tags[i][j], inputs[i][j])for j in range(len(inputs[i]))])
-                print ([(goldt[i][j], tags[i][j], dev_batch.words[i][j])for j in range(len(inputs[i]))])
-            else:
-                print ([(tags[i][j], inputs[i][j])for j in range(len(inputs[i]))])
-                print ([(tags[i][j], dev_batch.words[i][j])for j in range(len(inputs[i]))])
-            print ()
+    predictions = [id2label[p] for p in predictions]
     train_loss = train_loss / train_batch.num_examples * opt['batch_size'] # avg loss per batch
     dev_loss = dev_loss / dev_batch.num_examples * opt['batch_size']
 
     dev_p, dev_r, dev_f1 = scorer.score(dev_batch.gold(), predictions)
-    bleu = 0#corpus_bleu(references, candidates) if len(candidates)!=0 else 0
     print("epoch {}: train_loss = {:.6f}, dev_loss = {:.6f}, dev_f1 = {:.4f}, bleu = {:.4f}".format(epoch,\
         train_loss, dev_loss, dev_f1, bleu))
     if opt['classifier']:
