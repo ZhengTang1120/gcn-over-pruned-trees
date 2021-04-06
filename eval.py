@@ -83,11 +83,13 @@ for i, p in enumerate(predictions):
         output.append({'gold_label':batch.gold()[i], 'predicted_label':id2label[p], 'raw_words':batch.words[i], 'predicted_tags':[], 'gold_tags':[]})
         if p!=0:
             if sum(goldt[i])!=0:
+                print (i, 1)
                 output[-1]['gold_tags'] = [goldt[i][j] for j in range(len(inputs[i])) if inputs[i][j] != '[PAD]']
                 # print (id2label[p], batch.gold()[i])
                 # print ([(goldt[i][j], tags[i][j], batch.words[i][j])for j in range(len(inputs[i])) if inputs[i][j] != '[PAD]'])
                 # print ()
             if sum(tags[i])!=0:
+                print (i, 2)
                 output[-1]['predicted_tags'] = [tags[i][j] for j in range(len(inputs[i])) if inputs[i][j] != '[PAD]']
                 # print (id2label[p], batch.gold()[i])
                 # print ([(tags[i][j], batch.words[i][j])for j in range(len(inputs[i])) if inputs[i][j] != '[PAD]'])
