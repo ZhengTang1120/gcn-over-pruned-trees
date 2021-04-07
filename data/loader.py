@@ -131,6 +131,7 @@ class DataLoader(object):
             else:
                 tagging = [0 for i in range(len(tokens))]
             l = len(tokens)
+            print ([(tokens[i], tagging[i]) for i in range(l)])
             for i in range(l):
                 if tokens[i] == '-LRB-':
                     tokens[i] = '('
