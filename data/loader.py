@@ -123,18 +123,15 @@ class DataLoader(object):
                 ner.insert(se+2, '#')
             tokens = ['[CLS]'] + tokens
             words = ['[CLS]'] + words
+            ner = ['CLS'] + ner
             relation = self.label2id[d['relation']]
             if has_tag and relation!=0:
-                tagging = [0 if i not in masked else 1 if (tokens[i] in pattern) and tokens[i] not in string.punctuation else 0 for i in range(len(tokens))]
+                tagging = [0 if i not in masked else 1 if (tokens[i] in pattern or ner[i] in pattern) and tokens[i] not in string.punctuation else 0 for i in range(len(tokens))]
             # elif relation!=0:
             #     tagging = [1 if i !=0 else 0 for i in range(len(tokens))]
             else:
                 tagging = [0 for i in range(len(tokens))]
             l = len(tokens)
-            print (masked)
-            print (pattern)
-            print (ner)
-            print ([(tokens[i], tagging[i]) for i in range(l)])
             for i in range(l):
                 if tokens[i] == '-LRB-':
                     tokens[i] = '('
@@ -155,7 +152,6 @@ class DataLoader(object):
             subj_type = [constant.SUBJ_NER_TO_ID[d['subj_type']]]
             obj_type = [constant.OBJ_NER_TO_ID[d['obj_type']]]
             processed += [(tokens, pos, ner, deprel, entity_positions, subj_positions, obj_positions, subj_type, obj_type, relation, tagging, has_tag, words)]
-        exit()
         return processed
 
     def gold(self):
