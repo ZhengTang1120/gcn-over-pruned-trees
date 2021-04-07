@@ -131,6 +131,9 @@ class DataLoader(object):
             else:
                 tagging = [0 for i in range(len(tokens))]
             l = len(tokens)
+            print (masked)
+            print (pattern)
+            print (ner)
             print ([(tokens[i], tagging[i]) for i in range(l)])
             for i in range(l):
                 if tokens[i] == '-LRB-':
@@ -152,6 +155,7 @@ class DataLoader(object):
             subj_type = [constant.SUBJ_NER_TO_ID[d['subj_type']]]
             obj_type = [constant.OBJ_NER_TO_ID[d['obj_type']]]
             processed += [(tokens, pos, ner, deprel, entity_positions, subj_positions, obj_positions, subj_type, obj_type, relation, tagging, has_tag, words)]
+        exit()
         return processed
 
     def gold(self):
