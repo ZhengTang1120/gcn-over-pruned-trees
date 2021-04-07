@@ -57,12 +57,10 @@ class DataLoader(object):
         for c, d in enumerate(data):
             tokens = list(d['token'])
             words  = list(d['token'])
-            for i in range(len(tokens)):
-                if tokens[i] == '-LRB-':
-                    tokens[i] = '('
+            for i in range(len(words)):
+                if words[i] == '-LRB-':
                     words[i] = '('
-                if tokens[i] == '-RRB-':
-                    tokens[i] = ')'
+                if words[i] == '-RRB-':
                     words[i] = ')'
             if opt['lower']:
                 tokens = [t.lower() for t in tokens]
@@ -133,6 +131,12 @@ class DataLoader(object):
             else:
                 tagging = [0 for i in range(len(tokens))]
             l = len(tokens)
+            for i in range(l):
+                if tokens[i] == '-LRB-':
+                    tokens[i] = '('
+                if tokens[i] == '-RRB-':
+                    tokens[i] = ')'
+                    print (tokens)
             if ss<os:
                 entity_positions = get_positions2(ss+2, se+2, os+2, oe+2, l)
             else:
