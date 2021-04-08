@@ -72,7 +72,7 @@ class Tagger(nn.Module):
             else:
                 for ct in cand_tags:
                     ct.append(0)
-        with torch.cuda.device(0):
+        with torch.cuda.device(1):
             return torch.BoolTensor(cand_tags).cuda(), len(cand_tags)
 
 def pool(h, mask, type='max'):
