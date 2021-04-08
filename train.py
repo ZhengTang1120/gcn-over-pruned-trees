@@ -64,7 +64,7 @@ parser.add_argument('--batch_size', type=int, default=50, help='Training batch s
 parser.add_argument('--max_grad_norm', type=float, default=5.0, help='Gradient clipping.')
 parser.add_argument('--log_step', type=int, default=20, help='Print log every k steps.')
 parser.add_argument('--log', type=str, default='logs.txt', help='Write training log to file.')
-parser.add_argument('--save_epoch', type=int, default=100, help='Save model checkpoints every k epochs.')
+parser.add_argument('--save_epoch', type=int, default=10, help='Save model checkpoints every k epochs.')
 parser.add_argument('--save_dir', type=str, default='./saved_models', help='Root dir for saving models.')
 parser.add_argument('--id', type=str, default='00', help='Model ID under which to save models.')
 parser.add_argument('--info', type=str, default='', help='Optional info for the experiment.')
@@ -187,8 +187,8 @@ for epoch in range(1, opt['num_epoch']+1):
         print("new best model saved.")
         file_logger.log("new best model saved at epoch {}: {:.2f}\t{:.2f}\t{:.2f}"\
             .format(epoch, dev_p*100, dev_r*100, dev_score*100))
-    # if epoch % opt['save_epoch'] != 0:
-    #     os.remove(model_file)
+    if epoch % opt['save_epoch'] != 0:
+        os.remove(model_file)
 
     # lr schedule
     if len(dev_score_history) > opt['decay_epoch'] and dev_score <= dev_score_history[-1] and \
