@@ -123,6 +123,11 @@ class DataLoader(object):
             head = [int(x) for x in d['stanford_head']]
             assert any([x == 0 for x in head])
             l = len(tokens)
+            for i in range(l):
+                if tokens[i] == '-LRB-':
+                    tokens[i] = '('
+                if tokens[i] == '-RRB-':
+                    tokens[i] = ')'
             subj_positions = get_positions(ss+2, se+2, l)
             obj_positions = get_positions(os+2, oe+2, l)
             subj_type = [constant.SUBJ_NER_TO_ID[d['subj_type']]]
