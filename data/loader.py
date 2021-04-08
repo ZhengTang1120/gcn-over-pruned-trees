@@ -126,10 +126,7 @@ class DataLoader(object):
             ner = ['CLS'] + ner
             relation = self.label2id[d['relation']]
             if has_tag and relation!=0:
-                if d['id'] == 'e7798b1f1a42d57be83a':
-                    for i in range(len(tokens)):
-                        print (tokens[i], ner[i], pattern)
-                tagging = [0 if i not in masked else 1 if (tokens[i] in pattern or ner[i] in pattern) and tokens[i] not in string.punctuation else 0 for i in range(len(tokens))]
+                tagging = [0 if i not in masked else 1 if (tokens[i] in pattern or ner[i] in pattern) and tokens[i] not in string.punctuation and ner[i]!='O' else 0 for i in range(len(tokens))]
             # elif relation!=0:
             #     tagging = [1 if i !=0 else 0 for i in range(len(tokens))]
             else:
