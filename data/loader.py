@@ -132,9 +132,6 @@ class DataLoader(object):
             else:
                 tagging = [0 for i in range(len(tokens))]
             l = len(tokens)
-            if d['id'] == 'e7798b1f1a42d57be83a':
-                print (pattern)
-                print ([(tokens[i], tagging[i], ner[i]) for i in range(len(tokens))])
             for i in range(l):
                 if tokens[i] == '-LRB-':
                     tokens[i] = '('
