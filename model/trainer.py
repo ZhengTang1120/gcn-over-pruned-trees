@@ -52,10 +52,10 @@ class Trainer(object):
             print("[Warning: Saving failed... continuing anyway.]")
 
 
-def unpack_batch(batch, cuda):
+def unpack_batch(batch, cuda, device):
     rules = None
     if cuda:
-        with torch.cuda.device(0):
+        with torch.cuda.device(device):
             inputs = [batch[0].to('cuda')] + [Variable(b.cuda()) for b in batch[1:10]]
             labels = Variable(batch[10].cuda())
             rules  = Variable(batch[12]).cuda()
@@ -82,7 +82,7 @@ class BERTtrainer(Trainer):
         self.criterion2 = nn.BCELoss()
         self.parameters = [p for p in self.classifier.parameters() if p.requires_grad] + [p for p in self.encoder.parameters() if p.requires_grad]+ [p for p in self.tagger.parameters() if p.requires_grad]
         if opt['cuda']:
-            with torch.cuda.device(0):
+            with torch.cuda.device(self.opt['device']):
                 self.encoder.cuda()
                 self.tagger.cuda()
                 self.classifier.cuda()
@@ -94,7 +94,7 @@ class BERTtrainer(Trainer):
         )
     
     def update(self, batch, epoch):
-        inputs, labels, rules, tokens, head, subj_pos, obj_pos, lens, tagged = unpack_batch(batch, self.opt['cuda'])
+        inputs, labels, rules, tokens, head, subj_pos, obj_pos, lens, tagged = unpack_batch(batch, self.opt['cuda'], self.opt['device'])
 
         # step forward
         self.encoder.train()
@@ -124,7 +124,7 @@ class BERTtrainer(Trainer):
                     logits = self.classifier(h[i], inputs[1][i].unsqueeze(0), inputs[6][i].unsqueeze(0), inputs[7][i].unsqueeze(0))
                     loss += self.criterion(logits, labels.unsqueeze(1)[i])
                 elif labels[i] != 0:
-                    tag_cands, n = self.tagger.generate_cand_tags(tagging_output[i])
+                    tag_cands, n = self.tagger.generate_cand_tags(tagging_output[i], self.opt['device'])
                     # print (n)
                     if n != -1:
                         logits = self.classifier(h[i], tag_cands, torch.cat(n*[inputs[6][i].unsqueeze(0)], dim=0), torch.cat(n*[inputs[7][i].unsqueeze(0)], dim=0))
@@ -144,7 +144,7 @@ class BERTtrainer(Trainer):
         return loss_val
 
     def predict(self, batch, id2label, tokenizer, unsort=True):
-        inputs, labels, rules, tokens, head, subj_pos, obj_pos, lens, tagged = unpack_batch(batch, self.opt['cuda'])
+        inputs, labels, rules, tokens, head, subj_pos, obj_pos, lens, tagged = unpack_batch(batch, self.opt['cuda'], self.opt['device'])
         rules = rules.data.cpu().numpy().tolist()
         tokens = tokens.data.cpu().numpy().tolist()
         orig_idx = batch[11]

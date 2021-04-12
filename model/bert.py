@@ -55,7 +55,7 @@ class Tagger(nn.Module):
         
         return tag_logits
 
-    def generate_cand_tags(self, tag_logits):
+    def generate_cand_tags(self, tag_logits, device):
         cand_tags = [[]]
         for t in tag_logits:
             if t < self.threshold1 and t > self.threshold2:
@@ -72,7 +72,7 @@ class Tagger(nn.Module):
             else:
                 for ct in cand_tags:
                     ct.append(0)
-        with torch.cuda.device(0):
+        with torch.cuda.device(device):
             return torch.BoolTensor(cand_tags).cuda(), len(cand_tags)
 
 def pool(h, mask, type='max'):
