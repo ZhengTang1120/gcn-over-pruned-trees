@@ -137,6 +137,8 @@ class DataLoader(object):
                     tokens[i] = '('
                 if tokens[i] == '-RRB-':
                     tokens[i] = ')'
+            if sum(tagging)!=0:
+                print ([(tokens[i], tagging[i]) for i in range(l)])
             if ss<os:
                 entity_positions = get_positions2(ss+2, se+2, os+2, oe+2, l)
             else:
@@ -152,6 +154,7 @@ class DataLoader(object):
             subj_type = [constant.SUBJ_NER_TO_ID[d['subj_type']]]
             obj_type = [constant.OBJ_NER_TO_ID[d['obj_type']]]
             processed += [(tokens, pos, ner, deprel, entity_positions, subj_positions, obj_positions, subj_type, obj_type, relation, tagging, has_tag, words)]
+        exit()
         return processed
 
     def gold(self):
