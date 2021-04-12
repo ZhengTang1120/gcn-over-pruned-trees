@@ -138,7 +138,8 @@ class DataLoader(object):
                 if tokens[i] == '-RRB-':
                     tokens[i] = ')'
             if sum(tagging)!=0:
-                print ([(tokens[i], tagging[i]) for i in range(l)])
+                print (pattern)
+                print ([(tokens[i], tagging[i], ner[i]) if tagging[i]==1 else tokens[i] for i in range(l)])
             if ss<os:
                 entity_positions = get_positions2(ss+2, se+2, os+2, oe+2, l)
             else:
