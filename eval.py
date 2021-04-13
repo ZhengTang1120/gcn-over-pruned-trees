@@ -124,7 +124,7 @@ with open("output_{}_{}_{}".format(args.model_dir.split('/')[-1], args.dataset, 
     f.write(json.dumps(output))
 # for pred in predictions:
 #     print (pred)
-predictions = [id2label[p] for p in predictions]
+# predictions = [id2label[p] for p in predictions]
 p, r, f1 = scorer.score(batch.gold(), predictions, verbose=True)
 print("{} set evaluate result: {:.2f}\t{:.2f}\t{:.2f}".format(args.dataset,p,r,f1))
 
