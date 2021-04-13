@@ -79,33 +79,6 @@ for c, b in enumerate(batch):
     batch_size = len(preds)
     for i in range(batch_size):
         inputs += [[tokenizer.convert_ids_to_tokens(j) for j in ids[i]]]
-    # all_probs += probs
-
-    # batch_size = len(preds)
-    # for i in range(batch_size):
-    #     if id2label[preds[i]] != 'no_relation':
-    #         output = decoded[i]
-    #         candidate = []
-    #         for r in output[1:]:
-    #             if int(r) == 3:
-    #                 break
-    #             else:
-    #                 candidate.append(vocab.id2rule[int(r)])
-    #         if len(batch.refs[x][0])!=0:
-    #             if candidate not in batch.refs[x]:
-    #                 print (id2label[preds[i]], batch.gold()[x])
-    #                 for t in batch.refs[x]:
-    #                     print (' '.join(t))
-    #                 print (' '.join(candidate))
-    #                 print ()
-    #                 other += 1
-    #             else:
-    #                 exact_match += 1
-
-    #             references.append(batch.refs[x])
-    #             candidates.append(candidate)
-    #     x += 1
-# print (exact_match, other)
 output = list()
 for i, p in enumerate(predictions):
         predictions[i] = id2label[p]
@@ -113,18 +86,9 @@ for i, p in enumerate(predictions):
         if p!=0:
             if sum(goldt[i])!=0:
                 output[-1]['gold_tags'] = [goldt[i][j] for j in range(len(inputs[i])) if inputs[i][j] != '[PAD]']
-                # print (id2label[p], batch.gold()[i])
-                # print ([(goldt[i][j], tags[i][j], batch.words[i][j])for j in range(len(inputs[i])) if inputs[i][j] != '[PAD]'])
-                # print ()
             output[-1]['predicted_tags'] = tags[i]#[tags[i][j] for j in range(len(inputs[i])) if inputs[i][j] != '[PAD]']
-                # print (id2label[p], batch.gold()[i])
-                # print ([(tags[i][j], batch.words[i][j])for j in range(len(inputs[i])) if inputs[i][j] != '[PAD]'])
-                # print ()
 with open("output_{}_{}_{}".format(args.model_dir.split('/')[-1], args.dataset, args.model.replace('.pt', '.json')), 'w') as f:
     f.write(json.dumps(output))
-# for pred in predictions:
-#     print (pred)
-# predictions = [id2label[p] for p in predictions]
 print (len(predictions), len(batch.gold()))
 p, r, f1 = scorer.score(batch.gold(), predictions, verbose=True)
 print("{} set evaluate result: {:.2f}\t{:.2f}\t{:.2f}".format(args.dataset,p,r,f1))
