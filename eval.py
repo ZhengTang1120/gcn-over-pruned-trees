@@ -76,6 +76,7 @@ for c, b in enumerate(batch):
     predictions += preds
     tags += ts
     goldt += tagged
+    batch_size = len(preds)
     for i in range(batch_size):
         inputs += [[tokenizer.convert_ids_to_tokens(j) for j in ids[i]]]
     # all_probs += probs
