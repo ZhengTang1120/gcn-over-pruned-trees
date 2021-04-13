@@ -29,7 +29,6 @@ class DataLoader(object):
 
         with open(filename) as infile:
             data = json.load(infile)
-        self.raw_data = data
         data = self.preprocess(data, vocab, opt)
 
         # shuffle for training
@@ -38,7 +37,8 @@ class DataLoader(object):
             random.shuffle(indices)
             data = [data[i] for i in indices]
         self.id2label = dict([(v,k) for k,v in self.label2id.items()])
-        self.labels = [self.id2label[d[-3]] for d in data]
+        self.labels = [self.id2label[d[-4]] for d in data]
+        self.words = [d[-1] for d in data]
         self.num_examples = len(data)
         
         # chunk into batches
@@ -56,6 +56,12 @@ class DataLoader(object):
             patterns = f.readlines()
         for c, d in enumerate(data):
             tokens = list(d['token'])
+            words  = list(d['token'])
+            for i in range(len(words)):
+                if words[i] == '-LRB-':
+                    words[i] = '('
+                if words[i] == '-RRB-':
+                    words[i] = ')'
             if opt['lower']:
                 tokens = [t.lower() for t in tokens]
             # anonymize tokens
@@ -92,6 +98,10 @@ class DataLoader(object):
                 tokens.insert(se+2, '#')
                 tokens.insert(os, '$')
                 tokens.insert(oe+2, '$')
+                words.insert(ss, '#')
+                words.insert(se+2, '#')
+                words.insert(os, '$')
+                words.insert(oe+2, '$')
                 ner.insert(ss, '#')
                 ner.insert(se+2, '#')
                 ner.insert(os, '$')
@@ -103,37 +113,45 @@ class DataLoader(object):
                 tokens.insert(oe+2, '$')
                 tokens.insert(ss, '#')
                 tokens.insert(se+2, '#')
+                words.insert(os, '#')
+                words.insert(oe+2, '#')
+                words.insert(ss, '$')
+                words.insert(se+2, '$')
                 ner.insert(os, '$')
                 ner.insert(oe+2, '$')
                 ner.insert(ss, '#')
                 ner.insert(se+2, '#')
-            # tokens = tokens[min(os, ss): max(oe, se)+3]
             tokens = ['[CLS]'] + tokens
+            words = ['[CLS]'] + words
             ner = ['CLS'] + ner
             relation = self.label2id[d['relation']]
             if has_tag and relation!=0:
-                tagging = [0 if i not in masked else 1 if (tokens[i] in pattern or ner[i] in pattern) and tokens[i] not in string.punctuation else 0 for i in range(len(tokens))]
+                tagging = [0 if i not in masked else 1 if (tokens[i] in pattern or (ner[i] in pattern and ner[i]!='O')) and (tokens[i] not in string.punctuation) else 0 for i in range(len(tokens))]
             # elif relation!=0:
             #     tagging = [1 if i !=0 else 0 for i in range(len(tokens))]
             else:
                 tagging = [0 for i in range(len(tokens))]
-            tokens = self.tokenizer.convert_tokens_to_ids(tokens)
-            pos = map_to_ids(d['stanford_pos'], constant.POS_TO_ID)
-            ner = map_to_ids(d['stanford_ner'], constant.NER_TO_ID)
-            deprel = map_to_ids(d['stanford_deprel'], constant.DEPREL_TO_ID)
-            head = [int(x) for x in d['stanford_head']]
-            assert any([x == 0 for x in head])
             l = len(tokens)
             for i in range(l):
                 if tokens[i] == '-LRB-':
                     tokens[i] = '('
                 if tokens[i] == '-RRB-':
                     tokens[i] = ')'
+            if ss<os:
+                entity_positions = get_positions2(ss+2, se+2, os+2, oe+2, l)
+            else:
+                entity_positions = get_positions2(os+2, oe+2, ss+2, se+2, l)
+            tokens = self.tokenizer.convert_tokens_to_ids(tokens)
+            pos = map_to_ids(d['stanford_pos'], constant.POS_TO_ID)
+            ner = map_to_ids(d['stanford_ner'], constant.NER_TO_ID)
+            deprel = map_to_ids(d['stanford_deprel'], constant.DEPREL_TO_ID)
+            head = [int(x) for x in d['stanford_head']]
+            assert any([x == 0 for x in head])
             subj_positions = get_positions(ss+2, se+2, l)
             obj_positions = get_positions(os+2, oe+2, l)
             subj_type = [constant.SUBJ_NER_TO_ID[d['subj_type']]]
             obj_type = [constant.OBJ_NER_TO_ID[d['obj_type']]]
-            processed += [(tokens, pos, ner, deprel, head, subj_positions, obj_positions, subj_type, obj_type, relation, tagging, has_tag)]
+            processed += [(tokens, pos, ner, deprel, entity_positions, subj_positions, obj_positions, subj_type, obj_type, relation, tagging, has_tag, words)]
         return processed
 
     def gold(self):
@@ -168,7 +186,7 @@ class DataLoader(object):
         pos = get_long_tensor(batch[1], batch_size)
         ner = get_long_tensor(batch[2], batch_size)
         deprel = get_long_tensor(batch[3], batch_size)
-        head = get_long_tensor(batch[4], batch_size)
+        entity_positions = get_long_tensor(batch[4], batch_size)
         subj_positions = get_long_tensor(batch[5], batch_size)
         obj_positions = get_long_tensor(batch[6], batch_size)
         # subj_mask = torch.ge(words.input_ids, 28996) * torch.lt(words.input_ids, 28998)
@@ -176,11 +194,11 @@ class DataLoader(object):
         subj_type = get_long_tensor(batch[7], batch_size)
         obj_type = get_long_tensor(batch[8], batch_size)
 
-        rels = torch.LongTensor(batch[9])
+        rels = torch.LongTensor(batch[9])#
 
         rule = get_long_tensor(batch[10], batch_size)
         masks = torch.eq(rule, 0)
-        return (words, masks, pos, ner, deprel, head, subj_positions, obj_positions, subj_type, obj_type, rels, orig_idx, rule, batch[-1])
+        return (words, masks, pos, ner, deprel, entity_positions, subj_positions, obj_positions, subj_type, obj_type, rels, orig_idx, rule, batch[-1])
 
     def __iter__(self):
         for i in range(self.__len__()):
@@ -194,6 +212,14 @@ def get_positions(start_idx, end_idx, length):
     """ Get subj/obj position sequence. """
     return list(range(-start_idx, 0)) + [1000]*(end_idx - start_idx + 1) + \
             list(range(1, length-end_idx))
+
+def get_positions2(s1, e1, s2, e2, length):
+    """ Get subj&obj position sequence. """
+    return [1] + [3] * (s1 - 2) + \
+            [2] * (e1 - s1 + 3) + \
+            [4] * (s2 - e1 - 3) +\
+            [2] * (e2 - s2 + 3) + \
+            [5] * (length - e2 - 2)
 
 def get_long_tensor(tokens_list, batch_size):
     """ Convert list of list of tokens to a padded LongTensor. """
