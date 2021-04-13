@@ -102,6 +102,7 @@ for c, b in enumerate(batch):
     #             candidates.append(candidate)
     #     x += 1
 # print (exact_match, other)
+output = list()
 for i, p in enumerate(predictions):
         predictions[i] = id2label[p]
         output.append({'gold_label':batch.gold()[i], 'predicted_label':id2label[p], 'raw_words':batch.words[i], 'predicted_tags':[], 'gold_tags':[]})
