@@ -26,6 +26,9 @@ parser.add_argument('--dataset', type=str, default='test', help="Evaluate on dev
 parser.add_argument('--seed', type=int, default=1234)
 parser.add_argument('--cuda', type=bool, default=torch.cuda.is_available())
 parser.add_argument('--cpu', action='store_true')
+
+parser.add_argument('--device', type=int, default=0, help='Word embedding dimension.')
+
 args = parser.parse_args()
 
 torch.manual_seed(args.seed)
@@ -43,6 +46,7 @@ num_added_toks = tokenizer.add_special_tokens(special_tokens_dict)
 model_file = args.model_dir + '/' + args.model
 print("Loading model from {}".format(model_file))
 opt = torch_utils.load_config(model_file)
+opt['device'] = args.device
 trainer = BERTtrainer(opt)
 trainer.encoder.model.resize_token_embeddings(len(tokenizer)) 
 trainer.load(model_file)
