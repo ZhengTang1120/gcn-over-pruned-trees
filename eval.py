@@ -65,6 +65,7 @@ predictions = []
 all_probs = []
 tags = []
 goldt = []
+inputs = []
 # batch_iter = tqdm(batch)
 
 x = 0
@@ -75,6 +76,8 @@ for c, b in enumerate(batch):
     predictions += preds
     tags += ts
     goldt += tagged
+    for i in range(batch_size):
+        inputs += [[tokenizer.convert_ids_to_tokens(j) for j in ids[i]]]
     # all_probs += probs
 
     # batch_size = len(preds)
