@@ -167,9 +167,10 @@ class BERTtrainer(Trainer):
         for i, p in enumerate(predictions):
             if p != 0:
         #         n = sum(rules[i])
-                print (a[i])
-                t = a[i]
-                tags += [t]
+                temp = list()
+                for k in range(len(a[i])):
+                    temp += [a[i][k][0]]
+                tags += [temp]
         #         if sum(rules[i])!=0 and tagged[i]:
         # #         #     pass
         #             s = ''
