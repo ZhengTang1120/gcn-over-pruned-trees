@@ -154,7 +154,7 @@ class BERTtrainer(Trainer):
         o, b_out = self.encoder(inputs)
         h = o.pooler_output
         a = o.attentions
-        a = a[-1].data.cpu().numpy()
+        a = a[-1].data.cpu().numpy().tolist()
         # tagging_output = self.tagger(h)
         # tagging_mask = torch.round(tagging_output).squeeze(2).eq(0)
         # tagging = torch.round(tagging_output).squeeze(2)
@@ -163,13 +163,13 @@ class BERTtrainer(Trainer):
         loss = self.criterion(logits, labels)
         probs = F.softmax(logits, 1) * torch.round(b_out)#.data.cpu().numpy().tolist()
         predictions = np.argmax(probs.data.cpu().numpy(), axis=1).tolist()
-        tags = predictions
-        # for i, p in enumerate(predictions):
-        #     if p != 0:
+        tags = list()
+        for i, p in enumerate(predictions):
+            if p != 0:
         #         n = sum(rules[i])
 
-        #         t = tagging.data.cpu().numpy().tolist()[i]
-        #         tags += [t]
+                t = a[i]
+                tags += [t]
         #         if sum(rules[i])!=0 and tagged[i]:
         # #         #     pass
         #             s = ''
