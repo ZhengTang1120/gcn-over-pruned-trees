@@ -167,13 +167,15 @@ class BERTtrainer(Trainer):
                     temp += [a[i][k][0]]
                 tags += [temp]
                 if sum(rules[i])!=0 and tagged[i]:
-                    s = ''
+                    prs = []
                     for k in range(len(a[i])):
                         top_attn = a[i][k][0].argsort()[:5]
                         r = sum([1 if j in top_attn else 0 for j in range(len(rules[i])) if rules[i][j]!=0])/sum(rules[i])
                         pr = sum([1 if j in top_attn else 0 for j in range(len(rules[i])) if rules[i][j]!=0])/5
-                        s += ', '+str(r) if k != 0 else str(r)
-                    print (s)
+                        
+                        prs += ['%.6f, %.6f'%(r, pr)]
+                    print (','.join(prs))
+                    
             else:
                 tags += [[[]]]
         if unsort:
