@@ -102,12 +102,6 @@ class DataLoader(object):
                 entity_positions = get_positions2(os+1, oe+1, ss+1, se+1, l)
             subj_positions = get_positions(ss+1, se+1, l)
             obj_positions = get_positions(os+1, oe+1, l)
-            if has_tag:
-                print ([(tokens[i], tagging[i]) for i in range(l)])
-                print ([(tokens[i], entity_positions[i]) for i in range(l)])
-                print ([(tokens[i], subj_positions[i]) for i in range(l)])
-                print ([(tokens[i], obj_positions[i]) for i in range(l)])
-                print ()
             tokens = self.tokenizer.convert_tokens_to_ids(tokens)
             pos = map_to_ids(d['stanford_pos'], constant.POS_TO_ID)
             ner = map_to_ids(d['stanford_ner'], constant.NER_TO_ID)
@@ -117,7 +111,6 @@ class DataLoader(object):
             subj_type = [constant.SUBJ_NER_TO_ID[d['subj_type']]]
             obj_type = [constant.OBJ_NER_TO_ID[d['obj_type']]]
             processed += [(tokens, pos, ner, deprel, entity_positions, subj_positions, obj_positions, subj_type, obj_type, relation, tagging, has_tag, words)]
-        exit()
         return processed
 
     def gold(self):
