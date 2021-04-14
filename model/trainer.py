@@ -157,7 +157,7 @@ class BERTtrainer(Trainer):
         h, b_out = self.encoder(inputs)
         tagging_output = self.tagger(h)
         tagging_mask = torch.round(tagging_output).squeeze(2).eq(0)
-        tagging = tagging_output.squeeze(2)
+        tagging = torch.round(tagging_output).squeeze(2)
         # tagging_prob = tagging_output.squeeze(2)
         logits = self.classifier(h, tagging_mask, inputs[6], inputs[7])
         loss = self.criterion(logits, labels)
@@ -171,7 +171,7 @@ class BERTtrainer(Trainer):
                 t = t.data.cpu().numpy().tolist()
                 l = lens.data.cpu().numpy().tolist()[i]
                 tags += [t]
-                if sum(rules[i])!=0 and tagged:
+                if sum(g[i])!=0 and tagged:
                     r = sum([1 if t[j]==rules[i][j] else 0 for j in range(len(t)) if rules[i][j]!=0])/sum(rules[i])
                     pr = sum([1 if t[j]==rules[i][j] else 0 for j in range(len(t)) if rules[i][j]!=0])/sum(t) if sum(t)!=0 else 0
                     r2 = sum([1 if chunk[j]==rules[i][j] else 0 for j in range(len(chunk)) if rules[i][j]!=0])/sum(rules[i])
