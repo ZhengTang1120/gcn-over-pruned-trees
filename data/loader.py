@@ -97,11 +97,11 @@ class DataLoader(object):
                 if tokens[i] == '-RRB-':
                     tokens[i] = ')'
             if ss<os:
-                entity_positions = get_positions2(ss+2, se+2, os+2, oe+2, l)
+                entity_positions = get_positions2(ss+1, se+1, os+1, oe+1, l)
             else:
-                entity_positions = get_positions2(os+2, oe+2, ss+2, se+2, l)
-            subj_positions = get_positions(ss+2, se+2, l)
-            obj_positions = get_positions(os+2, oe+2, l)
+                entity_positions = get_positions2(os+1, oe+1, ss+1, se+1, l)
+            subj_positions = get_positions(ss+1, se+1, l)
+            obj_positions = get_positions(os+1, oe+1, l)
             print ([(tokens[i], tagging[i]) for i in range(l)])
             print ([(tokens[i], entity_positions[i]) for i in range(l)])
             print ([(tokens[i], subj_positions[i]) for i in range(l)])
