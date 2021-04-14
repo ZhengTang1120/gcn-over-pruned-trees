@@ -162,19 +162,20 @@ class BERTtrainer(Trainer):
         tags = list()
         for i, p in enumerate(predictions):
             if p != 0:
-                temp = list()
-                for k in range(len(a[i])):
-                    temp += [a[i][k][0].tolist()]
+                top_attn = a[i][10][0].argsort()[:5]
+                temp = [1 if j in top_attn else 0 for j in range(len(rules[i]))]
+                # for k in range(len(a[i])):
+                #     temp += [a[i][k][0].tolist()]
                 tags += [temp]
-                if sum(rules[i])!=0 and tagged[i]:
-                    prs = []
-                    for k in range(len(a[i])):
-                        top_attn = a[i][k][0].argsort()[:5]
-                        r = sum([1 if j in top_attn else 0 for j in range(len(rules[i])) if rules[i][j]!=0])/sum(rules[i])
-                        pr = sum([1 if j in top_attn else 0 for j in range(len(rules[i])) if rules[i][j]!=0])/5
+                # if sum(rules[i])!=0 and tagged[i]:
+                #     prs = []
+                #     for k in range(len(a[i])):
+                #         top_attn = a[i][k][0].argsort()[:5]
+                #         r = sum([1 if j in top_attn else 0 for j in range(len(rules[i])) if rules[i][j]!=0])/sum(rules[i])
+                #         pr = sum([1 if j in top_attn else 0 for j in range(len(rules[i])) if rules[i][j]!=0])/5
                         
-                        prs += ['%.6f, %.6f'%(r, pr)]
-                    print (','.join(prs))
+                #         prs += ['%.6f, %.6f'%(r, pr)]
+                #     print (','.join(prs))
                     
             else:
                 tags += [[[]]]
