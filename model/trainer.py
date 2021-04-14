@@ -167,26 +167,16 @@ class BERTtrainer(Trainer):
         for i, p in enumerate(predictions):
             if p != 0:
                 t = tagging[i]#.data.cpu().numpy().tolist()[i]
-                chunk = inputs[5].eq(4).long()[i]
-                # t = t * chunk
+                chunk = inputs[5].eq(4).long()[i].data.cpu().numpy().tolist()
                 t = t.data.cpu().numpy().tolist()
                 l = lens.data.cpu().numpy().tolist()[i]
                 tags += [t]
-                # if sum(rules.data.cpu().numpy().tolist()[i])!=0 and tagged:
-                # #     pass
-                #     # print ('%d, %d, %d'%(sum((rules[i] * chunk).data.cpu().numpy().tolist()), len(t), l))
-                #     print ('%d, %d, %d'%(sum(t), len(t), l))
-                # # #     # print ('%d, %d, %d'%(sum(t), len(t), l))
-                #     # r = sum([1 if t[j]==rules[i][j] else 0 for j in range(len(t)) if rules[i][j]!=0])/sum(rules[i])
-                #     # pr = sum([1 if t[j]==rules[i][j] else 0 for j in range(len(t)) if rules[i][j]!=0])/sum(t) if sum(t)!=0 else 0
-                #     # print ('%d, %d, %d, %.6f, %.6f'%(sum(t), len(t), l, r, pr))
-                # elif sum(t)!=0:
-                #     print ('%d, %d, %d'%(sum(t), len(t), l))
-                # #     pass
-                #     # print ('%d, %d, %d'%(sum(t), len(t), l))
-                #     print (id2label[p], id2label[labels.data.cpu().numpy().tolist()[i]])
-                #     print ([(t[j], tokenizer.convert_ids_to_tokens(tokens[i][j])) if t[j]!=0 else tokenizer.convert_ids_to_tokens(tokens[i][j]) for j in range(len(tokens[i])) if tokens[i][j] != 0])
-                #     # print ()
+                if sum(rules.data.cpu().numpy().tolist()[i])!=0 and tagged:
+                    r = sum([1 if t[j]==rules[i][j] else 0 for j in range(len(t)) if rules[i][j]!=0])/sum(rules[i])
+                    pr = sum([1 if t[j]==rules[i][j] else 0 for j in range(len(t)) if rules[i][j]!=0])/sum(t) if sum(t)!=0 else 0
+                    r2 = sum([1 if chunk[j]==rules[i][j] else 0 for j in range(len(chunk)) if rules[i][j]!=0])/sum(rules[i])
+                    pr2 = sum([1 if chunk[j]==rules[i][j] else 0 for j in range(len(chunk)) if rules[i][j]!=0])/sum(chunk) if sum(chunk)!=0 else 0
+                    print ('%.6f, %.6f, %.6f, %.6f'%(r, pr, r2, pr2))
             else:
                 tags += [[]]
         if unsort:
