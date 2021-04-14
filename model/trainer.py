@@ -154,7 +154,7 @@ class BERTtrainer(Trainer):
         o, b_out = self.encoder(inputs)
         h = o.pooler_output
         a = o.attentions
-        a = a[-1].data.cpu().numpy().tolist()
+        a = a[-1].data.cpu().numpy()
         logits = self.classifier(h, None, inputs[6], inputs[7])
         loss = self.criterion(logits, labels)
         probs = F.softmax(logits, 1) * torch.round(b_out)#.data.cpu().numpy().tolist()
@@ -164,7 +164,7 @@ class BERTtrainer(Trainer):
             if p != 0:
                 temp = list()
                 for k in range(len(a[i])):
-                    temp += [a[i][k][0]]
+                    temp += [a[i][k][0].tolist()]
                 tags += [temp]
                 if sum(rules[i])!=0 and tagged[i]:
                     prs = []
