@@ -75,52 +75,11 @@ class DataLoader(object):
             ner = d['stanford_ner']
             if masked and d['relation'] != 'no_relation':
                 masked = [i for i in range(masked[0], masked[1]) if i not in range(ss, se+1) and i not in range(os, os+1)]
-                for i in range(len(masked)):
-                    if masked[i] < min(os, ss):
-                        masked[i] += 1
-                    elif masked[i] <= min(se,oe):
-                        masked[i] += 2
-                    elif masked[i] < max(os, ss):
-                        masked[i] += 3
-                    elif masked[i] <= max(se, oe):
-                        masked[i] += 4
-                    else:
-                        masked[i] += 5
                 has_tag = True
             else:
                 pattern = ''
                 masked = range(min(oe, se)+4, max(os, ss)+3)
                 has_tag = False
-            if ss<os:
-                os = os + 2
-                oe = oe + 2
-                tokens.insert(ss, '#')
-                tokens.insert(se+2, '#')
-                tokens.insert(os, '$')
-                tokens.insert(oe+2, '$')
-                words.insert(ss, '#')
-                words.insert(se+2, '#')
-                words.insert(os, '$')
-                words.insert(oe+2, '$')
-                ner.insert(ss, '#')
-                ner.insert(se+2, '#')
-                ner.insert(os, '$')
-                ner.insert(oe+2, '$')
-            else:
-                ss = ss + 2
-                se = se + 2
-                tokens.insert(os, '$')
-                tokens.insert(oe+2, '$')
-                tokens.insert(ss, '#')
-                tokens.insert(se+2, '#')
-                words.insert(os, '#')
-                words.insert(oe+2, '#')
-                words.insert(ss, '$')
-                words.insert(se+2, '$')
-                ner.insert(os, '$')
-                ner.insert(oe+2, '$')
-                ner.insert(ss, '#')
-                ner.insert(se+2, '#')
             tokens = ['[CLS]'] + tokens
             words = ['[CLS]'] + words
             ner = ['CLS'] + ner
@@ -141,17 +100,23 @@ class DataLoader(object):
                 entity_positions = get_positions2(ss+2, se+2, os+2, oe+2, l)
             else:
                 entity_positions = get_positions2(os+2, oe+2, ss+2, se+2, l)
+            subj_positions = get_positions(ss+2, se+2, l)
+            obj_positions = get_positions(os+2, oe+2, l)
+            print ([(tokens[i], tagging[i]) for i in range(l)])
+            print ([(tokens[i], entity_positions[i]) for i in range(l)])
+            print ([(tokens[i], subj_positions[i]) for i in range(l)])
+            print ([(tokens[i], obj_positions[i]) for i in range(l)])
+            print ()
             tokens = self.tokenizer.convert_tokens_to_ids(tokens)
             pos = map_to_ids(d['stanford_pos'], constant.POS_TO_ID)
             ner = map_to_ids(d['stanford_ner'], constant.NER_TO_ID)
             deprel = map_to_ids(d['stanford_deprel'], constant.DEPREL_TO_ID)
             head = [int(x) for x in d['stanford_head']]
             assert any([x == 0 for x in head])
-            subj_positions = get_positions(ss+2, se+2, l)
-            obj_positions = get_positions(os+2, oe+2, l)
             subj_type = [constant.SUBJ_NER_TO_ID[d['subj_type']]]
             obj_type = [constant.OBJ_NER_TO_ID[d['obj_type']]]
             processed += [(tokens, pos, ner, deprel, entity_positions, subj_positions, obj_positions, subj_type, obj_type, relation, tagging, has_tag, words)]
+        exit()
         return processed
 
     def gold(self):
