@@ -38,7 +38,7 @@ if args.cpu:
 elif args.cuda:
     torch.cuda.manual_seed(args.seed)
 
-tokenizer = BertTokenizer.from_pretrained('bert-large-cased')
+tokenizer = BertTokenizer.from_pretrained('mrm8488/spanbert-large-finetuned-tacred')
 special_tokens_dict = {'additional_special_tokens': constant.ENTITY_TOKENS}
 num_added_toks = tokenizer.add_special_tokens(special_tokens_dict)
 
