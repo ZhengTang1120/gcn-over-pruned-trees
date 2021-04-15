@@ -75,52 +75,11 @@ class DataLoader(object):
             ner = d['stanford_ner']
             if masked and d['relation'] != 'no_relation':
                 masked = [i for i in range(masked[0], masked[1]) if i not in range(ss, se+1) and i not in range(os, os+1)]
-                for i in range(len(masked)):
-                    if masked[i] < min(os, ss):
-                        masked[i] += 1
-                    elif masked[i] <= min(se,oe):
-                        masked[i] += 2
-                    elif masked[i] < max(os, ss):
-                        masked[i] += 3
-                    elif masked[i] <= max(se, oe):
-                        masked[i] += 4
-                    else:
-                        masked[i] += 5
                 has_tag = True
             else:
                 pattern = ''
                 masked = range(min(oe, se)+4, max(os, ss)+3)
                 has_tag = False
-            if ss<os:
-                os = os + 2
-                oe = oe + 2
-                tokens.insert(ss, '#')
-                tokens.insert(se+2, '#')
-                tokens.insert(os, '$')
-                tokens.insert(oe+2, '$')
-                words.insert(ss, '#')
-                words.insert(se+2, '#')
-                words.insert(os, '$')
-                words.insert(oe+2, '$')
-                ner.insert(ss, '#')
-                ner.insert(se+2, '#')
-                ner.insert(os, '$')
-                ner.insert(oe+2, '$')
-            else:
-                ss = ss + 2
-                se = se + 2
-                tokens.insert(os, '$')
-                tokens.insert(oe+2, '$')
-                tokens.insert(ss, '#')
-                tokens.insert(se+2, '#')
-                words.insert(os, '#')
-                words.insert(oe+2, '#')
-                words.insert(ss, '$')
-                words.insert(se+2, '$')
-                ner.insert(os, '$')
-                ner.insert(oe+2, '$')
-                ner.insert(ss, '#')
-                ner.insert(se+2, '#')
             tokens = ['[CLS]'] + tokens
             words = ['[CLS]'] + words
             ner = ['CLS'] + ner
@@ -138,17 +97,17 @@ class DataLoader(object):
                 if tokens[i] == '-RRB-':
                     tokens[i] = ')'
             if ss<os:
-                entity_positions = get_positions2(ss+2, se+2, os+2, oe+2, l)
+                entity_positions = get_positions2(ss+1, se+1, os+1, oe+1, l)
             else:
-                entity_positions = get_positions2(os+2, oe+2, ss+2, se+2, l)
+                entity_positions = get_positions2(os+1, oe+1, ss+1, se+1, l)
+            subj_positions = get_positions(ss+1, se+1, l)
+            obj_positions = get_positions(os+1, oe+1, l)
             tokens = self.tokenizer.convert_tokens_to_ids(tokens)
             pos = map_to_ids(d['stanford_pos'], constant.POS_TO_ID)
             ner = map_to_ids(d['stanford_ner'], constant.NER_TO_ID)
             deprel = map_to_ids(d['stanford_deprel'], constant.DEPREL_TO_ID)
             head = [int(x) for x in d['stanford_head']]
             assert any([x == 0 for x in head])
-            subj_positions = get_positions(ss+2, se+2, l)
-            obj_positions = get_positions(os+2, oe+2, l)
             subj_type = [constant.SUBJ_NER_TO_ID[d['subj_type']]]
             obj_type = [constant.OBJ_NER_TO_ID[d['obj_type']]]
             processed += [(tokens, pos, ner, deprel, entity_positions, subj_positions, obj_positions, subj_type, obj_type, relation, tagging, has_tag, words)]
@@ -215,11 +174,11 @@ def get_positions(start_idx, end_idx, length):
 
 def get_positions2(s1, e1, s2, e2, length):
     """ Get subj&obj position sequence. """
-    return [1] + [3] * (s1 - 2) + \
-            [2] * (e1 - s1 + 3) + \
-            [4] * (s2 - e1 - 3) +\
-            [2] * (e2 - s2 + 3) + \
-            [5] * (length - e2 - 2)
+    return [1] + [3] * (s1 - 1) + \
+            [2] * (e1 - s1 + 1) + \
+            [4] * (s2 - e1 - 1) +\
+            [2] * (e2 - s2 + 1) + \
+            [5] * (length - e2 - 1)
 
 def get_long_tensor(tokens_list, batch_size):
     """ Convert list of list of tokens to a padded LongTensor. """
