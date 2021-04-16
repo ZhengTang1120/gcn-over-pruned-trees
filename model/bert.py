@@ -32,14 +32,20 @@ class BERTclassifier(nn.Module):
         self.opt = opt
         self.ent_emb = nn.Embedding(19, in_dim)
 
-    def forward(self, h, masks,subj_type, obj_type):
-        # subj_mask, obj_mask = subj_pos.eq(1000).unsqueeze(2), obj_pos.eq(1000).unsqueeze(2)
-        subj = self.ent_emb(subj_type).squeeze(1)
-        obj = self.ent_emb(obj_type).squeeze(1)
+    def forward(self, h, masks, subj_pos, obj_pos, subj_type, obj_type):
+        subj_mask, obj_mask = subj_pos.eq(1000).unsqueeze(2), obj_pos.eq(1000).unsqueeze(2)
+        #replace subj and obj bert vector with embeddings.
+        subj = self.ent_emb(subj_type)
+        obj = self.ent_emb(obj_type)
+        print (h)
+        print (h.size(), subj.size(), subj_mask.size())
+        print (subj_mask.squeeze(2).squeeze(0).nonzero(), obj_mask.squeeze(2).squeeze(0).nonzero())
+        h[subj_mask.squeeze(2).squeeze(0).nonzero()] = subj
+        h[obj_mask.squeeze(2).squeeze(0).nonzero()] = obj
+        print (h)
         pool_type = self.opt['pooling']
-        out_mask = masks.unsqueeze(2).eq(0)# + subj_mask + obj_mask
-        cls_out = pool(h, out_mask.eq(0), subj, obj, type=pool_type)
-        print (cls_out.size())
+        out_mask = masks.unsqueeze(2).eq(0) + subj_mask + obj_mask
+        cls_out = pool(h, out_mask.eq(0), type=pool_type)
         logits = self.classifier(cls_out)
         return logits
 
@@ -78,16 +84,13 @@ class Tagger(nn.Module):
         with torch.cuda.device(device):
             return torch.BoolTensor(cand_tags).cuda(), len(cand_tags)
 
-def pool(h, mask, subj, obj, type='max'):
+def pool(h, mask, type='max'):
     if type == 'max':
         h = h.masked_fill(mask, -constant.INFINITY_NUMBER)
         return torch.max(h, 1)[0]
     elif type == 'avg':
         h = h.masked_fill(mask, 0)
-        print (h.size())
-        h = h.sum(1) / (mask.size(1) - mask.float().sum(1))
-        print (h.size(), subj.size(), obj.size())
-        return (h + subj + obj)/3
+        return h.sum(1) / (mask.size(1) - mask.float().sum(1))
     else:
         h = h.masked_fill(mask, 0)
-        return h.sum(1) + subj + obj
+        return h.sum(1)
