@@ -141,7 +141,7 @@ class DataLoader(object):
                 entity_positions = get_positions2(ss+2, se+2, os+2, oe+2, l)
             else:
                 entity_positions = get_positions2(os+2, oe+2, ss+2, se+2, l)
-            tokens = self.tokenizer.convert_tokens_to_ids(tokens)
+            # tokens = self.tokenizer.convert_tokens_to_ids(tokens)
             pos = map_to_ids(d['stanford_pos'], constant.POS_TO_ID)
             ner = map_to_ids(d['stanford_ner'], constant.NER_TO_ID)
             deprel = map_to_ids(d['stanford_deprel'], constant.DEPREL_TO_ID)
@@ -152,7 +152,7 @@ class DataLoader(object):
             subj_type = [constant.ENTITY_TOKEN_TO_ID['[SUBJ-'+d['subj_type']+']']+1 if i in range(ss+2, se+3)  else 0 for i in range(l)]
             obj_type = [constant.ENTITY_TOKEN_TO_ID['[OBJ-'+d['obj_type']+']']+1 if i in range(os+2, oe+3) else 0 for i in range(l)]
             processed += [(tokens, pos, ner, deprel, entity_positions, subj_positions, obj_positions, subj_type, obj_type, relation, tagging, has_tag, words)]
-            print ([(words[i], subj_positions[i], subj_type[i]) for i in range(l)])
+            print ([(tokens[i], subj_positions[i], subj_type[i]) for i in range(l)])
             print ()
         return processed
 
