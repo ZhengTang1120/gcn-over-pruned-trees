@@ -153,6 +153,7 @@ class DataLoader(object):
             obj_type = [constant.ENTITY_TOKEN_TO_ID['[OBJ-'+d['obj_type']+']']+1 if i in range(os+2, oe+2) else 0 for i in range(l)]
             processed += [(tokens, pos, ner, deprel, entity_positions, subj_positions, obj_positions, subj_type, obj_type, relation, tagging, has_tag, words)]
             print ([(words[i], subj_positions[i], subj_type[i]) for i in range(l)])
+            print ()
         return processed
 
     def gold(self):
