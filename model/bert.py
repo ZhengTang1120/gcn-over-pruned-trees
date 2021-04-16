@@ -40,7 +40,7 @@ class BERTclassifier(nn.Module):
         print (h)
         print (h.size(), subj.size(), subj_mask.size())
         h[subj_mask.squeeze(2).squeeze(0).nonzero()] = subj
-        h[obj_mask.squeeze(2).squeeze(0)nonzero()] = obj
+        h[obj_mask.squeeze(2).squeeze(0).nonzero()] = obj
         print (h)
         pool_type = self.opt['pooling']
         out_mask = masks.unsqueeze(2).eq(0) + subj_mask + obj_mask
