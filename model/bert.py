@@ -84,6 +84,7 @@ def pool(h, mask, subj, obj, type='max'):
     elif type == 'avg':
         h = h.masked_fill(mask, 0)
         h = h.sum(1) / (mask.size(1) - mask.float().sum(1))
+        print (h.size(), subj.size(), obj.size())
         return (h + subj + obj)/3
     else:
         h = h.masked_fill(mask, 0)
