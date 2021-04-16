@@ -39,8 +39,7 @@ class BERTclassifier(nn.Module):
         obj = self.ent_emb(obj_type)
         print (subj.size(), h.size())
         print (h)
-        h = h.masked_fill(subj_mask.eq(0), 0)+subj.masked_fill(subj_mask, 0)
-        h = h.masked_fill(obj_mask.eq(0), 0)+obj.masked_fill(obj_mask, 0)
+        h = h.masked_fill((subj_mask+obj_mask).eq(0), 0)+subj.masked_fill(subj_mask, 0)+obj.masked_fill(obj_mask, 0)
         print (h)
         print ()
         pool_type = self.opt['pooling']
