@@ -32,7 +32,7 @@ class BERTclassifier(nn.Module):
         self.opt = opt
         self.ent_emb = nn.Embedding(19, in_dim)
 
-    def forward(self, h, masks, subj_mask, obj_mask, subj_type, obj_type):
+    def forward(self, h, masks, subj_pos, obj_pos, subj_type, obj_type):
         subj_mask, obj_mask = subj_pos.eq(1000).unsqueeze(2), obj_pos.eq(1000).unsqueeze(2)
         #replace subj and obj bert vector with embeddings.
         subj = self.ent_emb(subj_type)
