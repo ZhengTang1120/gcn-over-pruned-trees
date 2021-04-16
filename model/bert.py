@@ -37,11 +37,7 @@ class BERTclassifier(nn.Module):
         #replace subj and obj bert vector with embeddings.
         subj = self.ent_emb(subj_type)
         obj = self.ent_emb(obj_type)
-        print (subj.size(), h.size())
-        print (h)
         h = h.masked_fill((subj_mask+obj_mask), 0)+subj.masked_fill(subj_mask.eq(0), 0)+obj.masked_fill(obj_mask.eq(0), 0)
-        print (h)
-        print ()
         pool_type = self.opt['pooling']
         out_mask = masks.unsqueeze(2).eq(0) + subj_mask + obj_mask
         cls_out = pool(h, out_mask.eq(0), type=pool_type)
