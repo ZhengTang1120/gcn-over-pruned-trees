@@ -149,8 +149,8 @@ class DataLoader(object):
             assert any([x == 0 for x in head])
             subj_positions = get_positions(ss+2, se+2, l)
             obj_positions = get_positions(os+2, oe+2, l)
-            subj_type = [constant.ENTITY_TOKEN_TO_ID['[SUBJ-'+d['subj_type']+']']+1 if i in range(ss+2, se+2)  else 0 for i in range(l)]
-            obj_type = [constant.ENTITY_TOKEN_TO_ID['[OBJ-'+d['obj_type']+']']+1 if i in range(os+2, oe+2) else 0 for i in range(l)]
+            subj_type = [constant.ENTITY_TOKEN_TO_ID['[SUBJ-'+d['subj_type']+']']+1 if i in range(ss+2, se+3)  else 0 for i in range(l)]
+            obj_type = [constant.ENTITY_TOKEN_TO_ID['[OBJ-'+d['obj_type']+']']+1 if i in range(os+2, oe+3) else 0 for i in range(l)]
             processed += [(tokens, pos, ner, deprel, entity_positions, subj_positions, obj_positions, subj_type, obj_type, relation, tagging, has_tag, words)]
             print ([(words[i], subj_positions[i], subj_type[i]) for i in range(l)])
             print ()
