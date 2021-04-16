@@ -38,7 +38,7 @@ class BERTclassifier(nn.Module):
         subj = self.ent_emb(subj_type)
         obj = self.ent_emb(obj_type)
         print (h)
-        print (h.size(), subj.size(), subj_mask.size())
+        print (subj_mask.squeeze(2).squeeze(0).nonzero(), obj_mask.squeeze(2).squeeze(0).nonzero())
         h[subj_mask.squeeze(2).squeeze(0).nonzero()] = subj
         h[obj_mask.squeeze(2).squeeze(0).nonzero()] = obj
         print (h)
