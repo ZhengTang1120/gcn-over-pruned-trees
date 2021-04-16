@@ -114,7 +114,7 @@ class BERTtrainer(Trainer):
             for i, f in enumerate(tagged):
                 if f:
                     loss += self.criterion2(tagging_output[i], rules[i].unsqueeze(1).to(torch.float32))
-                    logits = self.classifier(h[i], inputs[1][i].unsqueeze(0), inputs[6][i].unsqueeze(0), inputs[7][i].unsqueeze(0))
+                    logits = self.classifier(h[i], inputs[1][i].unsqueeze(0), inputs[6][i].unsqueeze(0), inputs[7][i].unsqueeze(0), inputs[8][i], inputs[9][i])
                     loss += self.criterion(logits, labels.unsqueeze(1)[i])
         else:
             for i, f in enumerate(tagged):
@@ -123,13 +123,13 @@ class BERTtrainer(Trainer):
                         loss = self.criterion2(tagging_output[i], rules[i].unsqueeze(1).to(torch.float32))
                     else:
                         loss += self.criterion2(tagging_output[i], rules[i].unsqueeze(1).to(torch.float32))
-                    logits = self.classifier(h[i], inputs[1][i].unsqueeze(0), inputs[6][i].unsqueeze(0), inputs[7][i].unsqueeze(0))
+                    logits = self.classifier(h[i], inputs[1][i].unsqueeze(0), inputs[6][i].unsqueeze(0), inputs[7][i].unsqueeze(0), inputs[8][i], inputs[9][i])
                     loss += self.criterion(logits, labels.unsqueeze(1)[i])
                 elif labels[i] != 0:
                     tag_cands, n = self.tagger.generate_cand_tags(tagging_output[i], self.opt['device'])
                     # print (n)
                     if n != -1:
-                        logits = self.classifier(h[i], tag_cands, torch.cat(n*[inputs[6][i].unsqueeze(0)], dim=0), torch.cat(n*[inputs[7][i].unsqueeze(0)], dim=0))
+                        logits = self.classifier(h[i], tag_cands, torch.cat(n*[inputs[6][i].unsqueeze(0)], dim=0), torch.cat(n*[inputs[7][i].unsqueeze(0)], dim=0), torch.cat(n*inputs[8][i]), torch.cat(n*inputs[9][i]))
                         best = np.argmax(logits.data.cpu().numpy(), axis=0).tolist()[labels[i]]
                         if loss == 0:
                             loss = self.criterion2(tagging_output[i], tag_cands[best].unsqueeze(1).to(torch.float32))
@@ -159,7 +159,7 @@ class BERTtrainer(Trainer):
         tagging_mask = torch.round(tagging_output).squeeze(2).eq(0)
         tagging = torch.round(tagging_output).squeeze(2)
         # tagging_prob = tagging_output.squeeze(2)
-        logits = self.classifier(h, tagging_mask, inputs[6], inputs[7])
+        logits = self.classifier(h, tagging_mask, inputs[6], inputs[7], inputs[8], inputs[9])
         loss = self.criterion(logits, labels)
         probs = F.softmax(logits, 1) * torch.round(b_out)#.data.cpu().numpy().tolist()
         predictions = np.argmax(probs.data.cpu().numpy(), axis=1).tolist()
