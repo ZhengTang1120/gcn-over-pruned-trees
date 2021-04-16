@@ -34,11 +34,12 @@ class BERTclassifier(nn.Module):
 
     def forward(self, h, masks,subj_type, obj_type):
         # subj_mask, obj_mask = subj_pos.eq(1000).unsqueeze(2), obj_pos.eq(1000).unsqueeze(2)
-        subj = self.ent_emb(subj_type)
-        obj = self.ent_emb(obj_type)
+        subj = self.ent_emb(subj_type).squeeze(1)
+        obj = self.ent_emb(obj_type).squeeze(1)
         pool_type = self.opt['pooling']
         out_mask = masks.unsqueeze(2).eq(0)# + subj_mask + obj_mask
         cls_out = pool(h, out_mask.eq(0), subj, obj, type=pool_type)
+        print (cls_out.size())
         logits = self.classifier(cls_out)
         return logits
 
@@ -83,6 +84,7 @@ def pool(h, mask, subj, obj, type='max'):
         return torch.max(h, 1)[0]
     elif type == 'avg':
         h = h.masked_fill(mask, 0)
+        print (h.size())
         h = h.sum(1) / (mask.size(1) - mask.float().sum(1))
         print (h.size(), subj.size(), obj.size())
         return (h + subj + obj)/3
