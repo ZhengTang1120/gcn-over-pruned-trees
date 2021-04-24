@@ -77,9 +77,9 @@ class DataLoader(object):
             ol, tagged = odin[c].split('\t')
             masked = eval(masked)
             tagged = eval(tagged)
-            # print (tagged)
             ner = d['stanford_ner']
             if tagged and d['relation'] != 'no_relation':
+                print (tagged, masked)
                 for i in range(len(tagged)):
                     if tagged[i] < min(os, ss):
                         tagged[i] += 1
@@ -165,8 +165,6 @@ class DataLoader(object):
                 entity_positions = get_positions2(ss+2, se+2, os+2, oe+2, l)
             else:
                 entity_positions = get_positions2(os+2, oe+2, ss+2, se+2, l)
-            if tagged and sum(tagging)==0:
-                print ([(tokens[i], tagging[i]) for i in range(l)])
             tokens = self.tokenizer.convert_tokens_to_ids(tokens)
             pos = map_to_ids(d['stanford_pos'], constant.POS_TO_ID)
             ner = map_to_ids(d['stanford_ner'], constant.NER_TO_ID)
