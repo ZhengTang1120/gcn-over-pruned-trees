@@ -17,7 +17,7 @@ class DataLoader(object):
     """
     Load data from json files, preprocess and prepare batches.
     """
-    def __init__(self, filename, batch_size, opt, vocab, intervals, patterns, tokenizer, evaluation=False):
+    def __init__(self, filename, batch_size, opt, vocab, intervals, patterns, tokenizer, odin, evaluation=False):
         self.batch_size = batch_size
         self.opt = opt
         self.vocab = vocab
@@ -54,6 +54,8 @@ class DataLoader(object):
             intervals = f.readlines()
         with open(self.patterns) as f:
             patterns = f.readlines()
+        with open(self.odin) as f:
+            odin = f.readlines()
         for c, d in enumerate(data):
             tokens = list(d['token'])
             words  = list(d['token'])
@@ -71,9 +73,25 @@ class DataLoader(object):
             tokens[os:oe+1] = ['[OBJ-'+d['obj_type']+']'] * (oe-os+1)
             rl, masked = intervals[c].split('\t')
             rl, pattern = patterns[c].split('\t')
+            ol, tagged = odin[c].split('\t')
             masked = eval(masked)
+            tagged = eval(tagged)
             ner = d['stanford_ner']
+            if tagged and d['relation'] != 'no_relation':
+                for i in range(len(tagged)):
+                    if tagged[i] < min(os, ss):
+                        tagged[i] += 1
+                    elif tagged[i] <= min(se,oe):
+                        tagged[i] += 2
+                    elif tagged[i] < max(os, ss):
+                        tagged[i] += 3
+                    elif tagged[i] <= max(se, oe):
+                        tagged[i] += 4
+                    else:
+                        tagged[i] += 5
+                has_tag = True
             if masked and d['relation'] != 'no_relation':
+                tagged = []
                 masked = [i for i in range(masked[0], masked[1]) if i not in range(ss, se+1) and i not in range(os, os+1)]
                 for i in range(len(masked)):
                     if masked[i] < min(os, ss):
@@ -88,6 +106,7 @@ class DataLoader(object):
                         masked[i] += 5
                 has_tag = True
             else:
+                tagged = []
                 pattern = ''
                 masked = range(min(oe, se)+4, max(os, ss)+3)
                 has_tag = False
@@ -126,7 +145,10 @@ class DataLoader(object):
             ner = ['CLS'] + ner
             relation = self.label2id[d['relation']]
             if has_tag and relation!=0:
-                tagging = [0 if i not in masked else 1 if (tokens[i] in pattern or (ner[i] in pattern and ner[i]!='O')) and (tokens[i] not in string.punctuation) else 0 for i in range(len(tokens))]
+                if tagged:
+                    tagging = [0 if i not in tagged else 1 for i in range(len(tokens))]
+                else:
+                    tagging = [0 if i not in masked else 1 if (tokens[i] in pattern or (ner[i] in pattern and ner[i]!='O')) and (tokens[i] not in string.punctuation) else 0 for i in range(len(tokens))]
             # elif relation!=0:
             #     tagging = [1 if i !=0 else 0 for i in range(len(tokens))]
             else:
