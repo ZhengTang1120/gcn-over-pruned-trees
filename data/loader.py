@@ -26,6 +26,7 @@ class DataLoader(object):
         self.intervals = intervals
         self.patterns = patterns
         self.tokenizer = tokenizer
+        self.odin = odin
 
         with open(filename) as infile:
             data = json.load(infile)
