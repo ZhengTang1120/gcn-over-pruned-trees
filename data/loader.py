@@ -77,6 +77,7 @@ class DataLoader(object):
             ol, tagged = odin[c].split('\t')
             masked = eval(masked)
             tagged = eval(tagged)
+            print (tagged)
             ner = d['stanford_ner']
             if tagged and d['relation'] != 'no_relation':
                 for i in range(len(tagged)):
