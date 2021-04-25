@@ -79,7 +79,6 @@ class DataLoader(object):
             tagged = eval(tagged)
             ner = d['stanford_ner']
             if tagged and d['relation'] != 'no_relation':
-                print (tagged, masked)
                 for i in range(len(tagged)):
                     if tagged[i] < min(os, ss):
                         tagged[i] += 1
@@ -176,7 +175,6 @@ class DataLoader(object):
             subj_type = [constant.SUBJ_NER_TO_ID[d['subj_type']]]
             obj_type = [constant.OBJ_NER_TO_ID[d['obj_type']]]
             processed += [(tokens, pos, ner, deprel, entity_positions, subj_positions, obj_positions, subj_type, obj_type, relation, tagging, has_tag, words)]
-        exit()
         return processed
 
     def gold(self):
