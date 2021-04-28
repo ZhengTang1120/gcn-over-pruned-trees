@@ -78,7 +78,7 @@ class DataLoader(object):
             masked = eval(masked)
             tagged = eval(tagged)
             ner = d['stanford_ner']
-            if tagged and d['relation'] != 'no_relation':
+            if tagged and d['relation'] != 'no_relation' and d['relation'] == ol:
                 for i in range(len(tagged)):
                     if tagged[i] < min(os, ss):
                         tagged[i] += 1
@@ -91,7 +91,7 @@ class DataLoader(object):
                     else:
                         tagged[i] += 5
                 has_tag = True
-            elif masked and d['relation'] != 'no_relation':
+            elif masked and d['relation'] != 'no_relation' and d['relation'] == rl:
                 tagged = []
                 masked = [i for i in range(masked[0], masked[1]) if i not in range(ss, se+1) and i not in range(os, os+1)]
                 for i in range(len(masked)):
