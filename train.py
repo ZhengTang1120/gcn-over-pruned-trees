@@ -168,13 +168,13 @@ for epoch in range(1, 1+1):
         predictions += preds
         tags += ts
         goldt += tagged
-        dev_loss += loss
+        # dev_loss += loss
         batch_size = len(preds)
         for i in range(batch_size):
             inputs += [[tokenizer.convert_ids_to_tokens(j) for j in ids[i]]]
     predictions = [id2label[p] for p in predictions]
     train_loss = 0#train_loss / train_batch.num_examples * opt['batch_size'] # avg loss per batch
-    dev_loss = dev_loss / dev_batch.num_examples * opt['batch_size']
+    dev_loss = 0#dev_loss / dev_batch.num_examples * opt['batch_size']
 
     dev_p, dev_r, dev_f1 = scorer.score(dev_batch.gold(), predictions)
     print("epoch {}: train_loss = {:.6f}, dev_loss = {:.6f}, dev_f1 = {:.4f}, bleu = {:.4f}".format(epoch,\
