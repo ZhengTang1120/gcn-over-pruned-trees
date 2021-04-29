@@ -110,7 +110,7 @@ num_added_toks = tokenizer.add_special_tokens(special_tokens_dict)
 # print (tokenizer.get_vocab())
 print("Loading data from {} with batch size {}...".format(opt['data_dir'], opt['batch_size']))
 train_batch = DataLoader(opt['data_dir'] + '/train.json', opt['batch_size'], opt, vocab, opt['data_dir'] + '/interval_train.txt', opt['data_dir'] + '/pattern_train.txt', tokenizer, evaluation=False)
-dev_batch = DataLoader(opt['data_dir'] + '/dev.json', opt['batch_size'], opt, vocab, opt['data_dir'] + '/interval_dev.txt', opt['data_dir'] + '/pattern_dev.txt', tokenizer, evaluation=True)
+dev_batch = DataLoader(opt['data_dir'] + '/test.json', opt['batch_size'], opt, vocab, opt['data_dir'] + '/interval_test.txt', opt['data_dir'] + '/pattern_test.txt', tokenizer, evaluation=True)
 
 model_id = opt['id'] if len(opt['id']) > 1 else '0' + opt['id']
 model_save_dir = opt['save_dir'] + '/' + model_id
