@@ -11,7 +11,7 @@ class BERTencoder(nn.Module):
     def __init__(self):
         super().__init__()
         in_dim = 1024
-        self.model = BertModel.from_pretrained("mrm8488/spanbert-large-finetuned-tacred")
+        self.model = BertModel.from_pretrained("SpanBERT/spanbert-large-cased")
         self.classifier = nn.Linear(in_dim, 1)
         self.pos_emb = nn.Embedding(6, 5, padding_idx=constant.PAD_ID)
 
