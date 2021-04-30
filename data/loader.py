@@ -114,17 +114,17 @@ class DataLoader(object):
                 entity_positions = get_positions2(ss+2, se+2, os+2, oe+2, l)
             else:
                 entity_positions = get_positions2(os+2, oe+2, ss+2, se+2, l)
+            subj_positions = get_positions(ss+2, se+2, l)
+            obj_positions = get_positions(os+2, oe+2, l)
+            subj_type = [constant.SUBJ_NER_TO_ID[d['subj_type']]]
+            obj_type = [constant.OBJ_NER_TO_ID[d['obj_type']]]
+            print ([(entity_positions[i], subj_positions[i], words[i]) for i in range(l)])
             tokens = self.tokenizer.convert_tokens_to_ids(tokens)
             pos = map_to_ids(d['stanford_pos'], constant.POS_TO_ID)
             ner = map_to_ids(d['stanford_ner'], constant.NER_TO_ID)
             deprel = map_to_ids(d['stanford_deprel'], constant.DEPREL_TO_ID)
             head = [int(x) for x in d['stanford_head']]
             assert any([x == 0 for x in head])
-            subj_positions = get_positions(ss+2, se+2, l)
-            obj_positions = get_positions(os+2, oe+2, l)
-            print ([(subj_positions[i], words[i]) for i in range(l)])
-            subj_type = [constant.SUBJ_NER_TO_ID[d['subj_type']]]
-            obj_type = [constant.OBJ_NER_TO_ID[d['obj_type']]]
             processed += [(tokens, pos, ner, deprel, entity_positions, subj_positions, obj_positions, subj_type, obj_type, relation, tagging, has_tag, words)]
         return processed
 
