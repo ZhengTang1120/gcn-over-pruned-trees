@@ -157,7 +157,7 @@ class DataLoader(object):
 
         rule = get_long_tensor(batch[10], batch_size)
         masks = torch.eq(rule, 0)
-        return (words, masks, pos, ner, deprel, entity_positions, subj_positions, obj_positions, subj_type, obj_type, rels, orig_idx, rule, batch[-1])
+        return (words, masks, pos, ner, deprel, entity_positions, subj_positions, obj_positions, subj_type, obj_type, rels, orig_idx, rule, batch[-2])
 
     def __iter__(self):
         for i in range(self.__len__()):
