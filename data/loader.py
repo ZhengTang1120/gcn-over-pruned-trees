@@ -80,67 +80,19 @@ class DataLoader(object):
             ner = d['stanford_ner']
             if tagged and d['relation'] != 'no_relation' and d['relation'] == ol:
                 for i in range(len(tagged)):
-                    if tagged[i] < min(os, ss):
-                        tagged[i] += 1
-                    elif tagged[i] <= min(se,oe):
-                        tagged[i] += 2
-                    elif tagged[i] < max(os, ss):
-                        tagged[i] += 3
-                    elif tagged[i] <= max(se, oe):
-                        tagged[i] += 4
-                    else:
-                        tagged[i] += 5
+                    tagged[i] += 1
                 has_tag = True
             elif masked and d['relation'] != 'no_relation' and d['relation'] == rl:
                 tagged = []
                 masked = [i for i in range(masked[0], masked[1]) if i not in range(ss, se+1) and i not in range(os, os+1)]
                 for i in range(len(masked)):
-                    if masked[i] < min(os, ss):
-                        masked[i] += 1
-                    elif masked[i] <= min(se,oe):
-                        masked[i] += 2
-                    elif masked[i] < max(os, ss):
-                        masked[i] += 3
-                    elif masked[i] <= max(se, oe):
-                        masked[i] += 4
-                    else:
-                        masked[i] += 5
+                    masked[i] += 1
                 has_tag = True
             else:
                 tagged = []
                 pattern = ''
-                masked = range(min(oe, se)+4, max(os, ss)+3)
+                masked = []
                 has_tag = False
-            if ss<os:
-                os = os + 2
-                oe = oe + 2
-                tokens.insert(ss, '[SUBJ-SEP]')
-                tokens.insert(se+2, '[SUBJ-SEP]')
-                tokens.insert(os, '[OBJ-SEP]')
-                tokens.insert(oe+2, '[OBJ-SEP]')
-                words.insert(ss, '[SUBJ-SEP]')
-                words.insert(se+2, '[SUBJ-SEP]')
-                words.insert(os, '[OBJ-SEP]')
-                words.insert(oe+2, '[OBJ-SEP]')
-                ner.insert(ss, '[SUBJ-SEP]')
-                ner.insert(se+2, '[SUBJ-SEP]')
-                ner.insert(os, '[OBJ-SEP]')
-                ner.insert(oe+2, '[OBJ-SEP]')
-            else:
-                ss = ss + 2
-                se = se + 2
-                tokens.insert(os, '[OBJ-SEP]')
-                tokens.insert(oe+2, '[OBJ-SEP]')
-                tokens.insert(ss, '[SUBJ-SEP]')
-                tokens.insert(se+2, '[SUBJ-SEP]')
-                words.insert(os, '[SUBJ-SEP]')
-                words.insert(oe+2, '[SUBJ-SEP]')
-                words.insert(ss, '[OBJ-SEP]')
-                words.insert(se+2, '[OBJ-SEP]')
-                ner.insert(os, '[OBJ-SEP]')
-                ner.insert(oe+2, '[OBJ-SEP]')
-                ner.insert(ss, '[SUBJ-SEP]')
-                ner.insert(se+2, '[SUBJ-SEP]')
             tokens = ['[CLS]'] + tokens
             words = ['[CLS]'] + words
             ner = ['CLS'] + ner
@@ -150,8 +102,6 @@ class DataLoader(object):
                     tagging = [0 if i not in tagged else 1 for i in range(len(tokens))]
                 else:
                     tagging = [0 if i not in masked else 1 if (tokens[i] in pattern or (ner[i] in pattern and ner[i]!='O')) and (tokens[i] not in string.punctuation) else 0 for i in range(len(tokens))]
-            # elif relation!=0:
-            #     tagging = [1 if i !=0 else 0 for i in range(len(tokens))]
             else:
                 tagging = [0 for i in range(len(tokens))]
             l = len(tokens)
@@ -172,6 +122,7 @@ class DataLoader(object):
             assert any([x == 0 for x in head])
             subj_positions = get_positions(ss+2, se+2, l)
             obj_positions = get_positions(os+2, oe+2, l)
+            print ([(subj_positions[i], words[i]) for i in range(l)])
             subj_type = [constant.SUBJ_NER_TO_ID[d['subj_type']]]
             obj_type = [constant.OBJ_NER_TO_ID[d['obj_type']]]
             processed += [(tokens, pos, ner, deprel, entity_positions, subj_positions, obj_positions, subj_type, obj_type, relation, tagging, has_tag, words)]
