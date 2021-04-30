@@ -105,12 +105,12 @@ assert emb_matrix.shape[1] == opt['emb_dim']
 
 # load data
 tokenizer = BertTokenizer.from_pretrained('SpanBERT/spanbert-large-cased')
-# special_tokens_dict = {'additional_special_tokens': constant.ENTITY_TOKENS}
-# num_added_toks = tokenizer.add_special_tokens(special_tokens_dict)
+special_tokens_dict = {'additional_special_tokens': constant.ENTITY_TOKENS}
+num_added_toks = tokenizer.add_special_tokens(special_tokens_dict)
 # print (tokenizer.get_vocab())
 print("Loading data from {} with batch size {}...".format(opt['data_dir'], opt['batch_size']))
 train_batch = DataLoader(opt['data_dir'] + '/train.json', opt['batch_size'], opt, vocab, opt['data_dir'] + '/interval_train.txt', opt['data_dir'] + '/pattern_train.txt', tokenizer, evaluation=False)
-dev_batch = DataLoader(opt['data_dir'] + '/test.json', opt['batch_size'], opt, vocab, opt['data_dir'] + '/interval_test.txt', opt['data_dir'] + '/pattern_test.txt', tokenizer, evaluation=True)
+dev_batch = DataLoader(opt['data_dir'] + '/dev.json', opt['batch_size'], opt, vocab, opt['data_dir'] + '/interval_dev.txt', opt['data_dir'] + '/pattern_dev.txt', tokenizer, evaluation=True)
 
 model_id = opt['id'] if len(opt['id']) > 1 else '0' + opt['id']
 model_save_dir = opt['save_dir'] + '/' + model_id
@@ -149,7 +149,17 @@ format_str = '{}: step {}/{} (epoch {}/{}), loss = {:.6f} ({:.3f} sec/batch), lr
 max_steps = len(train_batch) * opt['num_epoch']
 
 # start training
-for epoch in range(1, 1+1):
+for epoch in range(1, opt['num_epoch']+1):
+    train_loss = 0
+    for i, batch in enumerate(train_batch):
+        start_time = time.time()
+        global_step += 1
+        loss = trainer.update(batch, epoch)
+        train_loss += loss
+        if global_step % opt['log_step'] == 0:
+            duration = time.time() - start_time
+            print(format_str.format(datetime.now(), global_step, max_steps, epoch,\
+                    opt['num_epoch'], loss, duration, current_lr))
 
     # eval on dev
     x = 0
@@ -168,18 +178,23 @@ for epoch in range(1, 1+1):
         predictions += preds
         tags += ts
         goldt += tagged
-        # dev_loss += loss
+        dev_loss += loss
         batch_size = len(preds)
         for i in range(batch_size):
+            # ids = batch[0][i]
             inputs += [[tokenizer.convert_ids_to_tokens(j) for j in ids[i]]]
     predictions = [id2label[p] for p in predictions]
-    train_loss = 0#train_loss / train_batch.num_examples * opt['batch_size'] # avg loss per batch
-    dev_loss = 0#dev_loss / dev_batch.num_examples * opt['batch_size']
+    train_loss = train_loss / train_batch.num_examples * opt['batch_size'] # avg loss per batch
+    dev_loss = dev_loss / dev_batch.num_examples * opt['batch_size']
 
     dev_p, dev_r, dev_f1 = scorer.score(dev_batch.gold(), predictions)
-    print("epoch {}: train_loss = {:.6f}, dev_loss = {:.6f}, dev_f1 = {:.4f}".format(epoch,\
-        train_loss, dev_loss, dev_f1))
-    dev_score = dev_f1
+    bleu = 0#corpus_bleu(references, candidates) if len(candidates)!=0 else 0
+    print("epoch {}: train_loss = {:.6f}, dev_loss = {:.6f}, dev_f1 = {:.4f}, bleu = {:.4f}".format(epoch,\
+        train_loss, dev_loss, dev_f1, bleu))
+    if opt['classifier']:
+        dev_score = dev_f1 + bleu
+    else:
+        dev_score = bleu
     file_logger.log("{}\t{:.6f}\t{:.6f}\t{:.4f}\t{:.4f}".format(epoch, train_loss, dev_loss, dev_score, max([dev_score] + dev_score_history)))
 
     # save
